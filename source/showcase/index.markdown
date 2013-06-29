@@ -6,6 +6,27 @@ tags: []
 published: true
 comments: true
 ---
+
+# [Volume Recorder - 音量录音机](https://itunes.apple.com/cn/app/volume-recorder/id646243166)
+
+`2013年6月29日`
+
+{% img right http://img.onevcat.com/2013/VR_icon.png %}
+
+音量录音机（Volume Recorder）是一款帮助您解决梦话、会议或者嘈杂情景下录音需求的app。它可以根据监测到的音量来自动进行录音，您能够在获得所有录音信息的同时节省您的设备空间和电量。这是一个免费应用，也不会包含任何广告或者录音限制等，唯一的限制是您只有通过内购完全版才能将录音导出，同时可以获得同步至Dropbox等更多功能。
+
+对于录音的处理，由于在预想的使用情景中可能面临时间长，碎片多等问题，实现时采用了比较低层级的手段，可以说是被迫读了一些C和C++的代码。因为其实之前在绝大多数情况下我都在和高层级的API和界面交互打交道，所以对于纯C的代码还是比较怵的，不过幸好坚持下来并且完成了。回头想一想，收获是很大的，希望这会成为一个转机吧。
+
+## 详细介绍
+
+  * 施工中
+
+## AppStore页面
+
+  * [https://itunes.apple.com/cn/app/volume-recorder/id646243166](https://itunes.apple.com/cn/app/volume-recorder/id646243166)
+
+***
+
 # [XUPorter - Unity3D编译XCode工程的依赖管理](http://onevcat.com/2012/12/xuporter/)
 
 `2013年5月11日`
@@ -31,7 +52,7 @@ XUPorter是一个能够在Unity3D生成Xcode工程文件后，根据配置文件
 
 `2013年3月21日`
 
-{% img right http://img.onevcat.com/2013/ourmoney_icon.png %}
+{% img right http://img.onevcat.com/2013/OurMoneyIcon.png %}
 
 Our Money是我在[Kayac](http://www.kayac.com)工作期间，用业余时间开发的一款云端多人协同记账的iOS应用。该app最大的特点是可以很简单地实现多人共享一个账本进行记账，从而免去了汇总和统计的麻烦（想像一下老公每天要记住自己的开销，然后晚上回家向老婆汇报的场景）。简单高效的UI以及完全无感的自动后端同步，可以帮助养成记账的良好习惯，进而追踪自己的日常开销。这是完全由自己独立完成的第二款应用，在之前[Pomodoro Do](http://www.onevcat.com/showcase/pomodoro_do/)的开发中积累的一些经验得到了很好的运用。
 
