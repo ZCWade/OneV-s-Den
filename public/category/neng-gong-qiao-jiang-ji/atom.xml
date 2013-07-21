@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 能工巧匠集 | OneV's Den]]></title>
   <link href="http://onevcat.com/category/neng-gong-qiao-jiang-ji/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2013-07-16T23:11:43+09:00</updated>
+  <updated>2013-07-21T22:53:47+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -910,15 +910,17 @@ if ([[self subviews] count] &gt; 0) {
 <p>另外，github等代码托管网站上有不少大神们写的插件，都开源放出。这些必须是学习插件编写的最优秀的教材和参考：</p>
 
 <ul>
-<li><a href="https://github.com/omz/ColorSense-for-Xcode">omz / ColorSense-for-Xcode</a> Plugin for Xcode to make working with colors more visual</li>
-<li><a href="https://github.com/omz/Dash-Plugin-for-Xcode">omz / Dash-Plugin-for-Xcode</a> Plugin for Xcode to integrate the Dash documentation viewer app</li>
-<li><a href="https://github.com/omz/MiniXcode">omz / MiniXcode</a> Xcode plugin for working without the main toolbar</li>
-<li><a href="https://github.com/ksuther/KSImageNamed-Xcode">ksuther / KSImageNamed-Xcode</a> Xcode plug-in that provides autocomplete for imageNamed: calls</li>
-<li><a href="https://github.com/JugglerShu/XVim">JugglerShu / XVim</a> Xcode plugin for Vim keybindings</li>
-<li><a href="https://github.com/davekeck/Xcode-4-Fixins">davekeck / Xcode-4-Fixins</a> Plugins for fixing Xcode 4 bugs and shortcomings</li>
-<li><a href="https://github.com/0xced/CLITool-InfoPlist">0xced / CLITool-InfoPlist</a> Xcode plugin to process Info.plist file for CLI Tool targets</li>
-<li><a href="https://github.com/questbeat/Lin">questbeat / Lin</a> Xcode4 plugin shows completion for NSLocalizedString</li>
-<li><a href="https://github.com/onevcat/VVPluginDemo">stefanceriu / SCXcodeMiniMap</a> Xcode MiniMap plugin (Think about Sublime2's minimap)</li>
+<li><a href="https://github.com/mneorr/Alcatraz">mneorr / Alcatraz</a> Xcode的包管理插件，管理其他插件的插件</li>
+<li><a href="https://github.com/onevcat/VVDocumenter-Xcode">onevcat / VVDocumenter-Xcode</a> 帮助快速写文档注释的插件，自动提取参数返回值等</li>
+<li><a href="https://github.com/omz/ColorSense-for-Xcode">omz / ColorSense-for-Xcode</a> 在UIColor/NSColor上显示出对应的颜色</li>
+<li><a href="https://github.com/omz/Dash-Plugin-for-Xcode">omz / Dash-Plugin-for-Xcode</a> 在Xcode中集成Dash，方便看文档</li>
+<li><a href="https://github.com/omz/MiniXcode">omz / MiniXcode</a> 隐藏Xcode臃肿的工具栏，获得更大的可视空间</li>
+<li><a href="https://github.com/ksuther/KSImageNamed-Xcode">ksuther / KSImageNamed-Xcode</a> 输入imageNamed的时候自动补完图片名称</li>
+<li><a href="https://github.com/JugglerShu/XVim">JugglerShu / XVim</a> 将Xcode编辑器改造成Vim</li>
+<li><a href="https://github.com/davekeck/Xcode-4-Fixins">davekeck / Xcode-4-Fixins</a> 修正一些Xcode的bugs（应该已经没有太大用了）</li>
+<li><a href="https://github.com/0xced/CLITool-InfoPlist">0xced / CLITool-InfoPlist</a> 方便修改Info.plist为CLI目标的插件</li>
+<li><a href="https://github.com/questbeat/Lin">questbeat / Lin</a> 为NSLocalizedString显示补全</li>
+<li><a href="https://github.com/stefanceriu/SCXcodeMiniMap">stefanceriu / SCXcodeMiniMap</a> 在侧边显示代码小地图</li>
 </ul>
 
 

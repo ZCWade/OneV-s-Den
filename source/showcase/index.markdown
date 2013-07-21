@@ -7,6 +7,54 @@ published: true
 comments: true
 ---
 
+# [VVDocumenter - Xcode缺失已久的文档插件](http://unirate.onevcat.com/)
+
+`2013年7月21日`
+
+{% img right http://img.onevcat.com/2013/VVDocumenter.png %}
+
+一直以来虽然ObjC代码因为其可读性极强，而不太需要时常查阅文档，但是其实对于大多数人（包括我自己）来说，可能为方法或变量取一个好名字并不是那么简单的事情。这时候可能就需要文档或者注释来帮助之后的开发者（包括大家自己）尽快熟悉和方便修改。但是用Xcode写文档是一件让人很头疼的事情，Xcode对写文档的支持几乎为0，没有像VS之类的成熟IDE的方便的方法，一直以来都是依靠像Snippet这样的东西，然后自己辛苦填写大量已有的内容。
+
+之前看到一个用[Ruby+系统服务来生成注释的方案](http://blog.chukong-inc.com/index.php/2012/05/16/xcode4_fast_doxygen/)，但是每次要自己去选还要按快捷键，总觉得是很麻烦的事情。借鉴其他平台IDE一般都是采用三个斜杠（`///`）来生成文档注释的方法，所以也为Xcode写了一个类似的。用法很简单，在要写文档的代码上面连打三个斜杠，就能自动提取参数等生成规范的Javadoc格式文档注释。**VVDocumenter**整个项目MIT开源，并且扔在github上了，有兴趣的童鞋可以从下面的链接找到，欢迎大家加星fork以及给我发pull request来改善这个插件。
+
+Writing document is so important for developing, but it is really painful with Xcode. Think about how much time you are wasting in pressing '*' or '/', and typing the parameters again and again. Now, you can find the method (or any code) you want to document to, and type in ///, the document will be generated for you and all params and return will be extracted into a beatiful Javadoc style. You can just fill the inline placeholders to finish your document。
+
+## Github页面
+
+* [https://github.com/onevcat/VVDocumenter-Xcode](https://github.com/onevcat/VVDocumenter-Xcode)
+
+***
+
+# [UniRate - 更好的即开即用Unity评价提醒插件](http://unirate.onevcat.com/)
+
+`2013年7月18日`
+
+{% img right http://img.onevcat.com/2013/unirate-icon.png %}
+
+UniRate是一个帮助Unity移动游戏开发者简单集成AppStore/Google Play Market评分提示功能的插件。当用户打开应用指定次数和天数时，将弹出窗口提示用户评价应用。用户如果选择评价，UniRate将自动引导用户前往对应的页面进行评价。用户也可以选择稍后评价或不评价。采用这样的策略可以得到尽可能多的5星评论，对于推广应用很有好处。
+
+UniRate的集成和使用非常简单，在拖拽一次就完美工作的同时，也提供了各种详细的设定，可以使UniRate按照设定工作。对于UniRate，我会提供完整的支持和更新，详细可以参见下面的链接。
+
+UniRate is a Unity package to help you promote you mobile games by prompting users to rate the app after using it for a few days or times. Integrating UniRate to your project is deadly simple as a drag & drop. It will count the using of the times and days automatically and if the conditions you set are met, a native prompt will pop up and user can decide whether rate it or not. 
+
+This approach is one of the best ways to get positive app reviews by targeting only regular users (who presumably like the game or they wouldn't keep playing it). 
+
+Although UniRate is very easy to use, it can be very powerful and you can tweak it performs exactly as you want. For more detailed description, please have a look at the online manual. All code is well documented and you can find online manual and forum support in links below. Hope you use it happily! 
+
+## Unity Asset Store页面
+
+* [https://www.assetstore.unity3d.com/#/content/10116](https://www.assetstore.unity3d.com/#/content/10116)
+
+## 用户手册
+
+* [https://github.com/onevcat/UniRate/wiki/UniRate-Manual](https://github.com/onevcat/UniRate/wiki/UniRate-Manual)
+
+## 代码文档
+
+* [http://unirate.onevcat.com/reference/class_uni_rate.html](http://unirate.onevcat.com/reference/class_uni_rate.html)
+
+***
+
 # [Volume Recorder - 音量录音机](https://itunes.apple.com/cn/app/volume-recorder/id646243166)
 
 `2013年6月29日`
@@ -16,10 +64,6 @@ comments: true
 音量录音机（Volume Recorder）是一款帮助您解决梦话、会议或者嘈杂情景下录音需求的app。它可以根据监测到的音量来自动进行录音，您能够在获得所有录音信息的同时节省您的设备空间和电量。这是一个免费应用，也不会包含任何广告或者录音限制等，唯一的限制是您只有通过内购完全版才能将录音导出，同时可以获得同步至Dropbox等更多功能。
 
 对于录音的处理，由于在预想的使用情景中可能面临时间长，碎片多等问题，实现时采用了比较低层级的手段，可以说是被迫读了一些C和C++的代码。因为其实之前在绝大多数情况下我都在和高层级的API和界面交互打交道，所以对于纯C的代码还是比较怵的，不过幸好坚持下来并且完成了。回头想一想，收获是很大的，希望这会成为一个转机吧。
-
-## 详细介绍
-
-  * 施工中
 
 ## AppStore页面
 
