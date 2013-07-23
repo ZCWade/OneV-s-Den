@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Jul 21st, 2013 胡言乱语集 近期做的两三事 夏日炎炎，无心睡眠。 虽然已经有一段时间没有更新博客了，但是我确实是一直在努力干活儿的。这一个月以来大部分视线都在WWDC上，也写了几篇博文介绍个人觉得iOS7中需要深入挖掘和研究的API。但是因为NDA加上现在人在国外的缘故， &hellip;">
+	<meta name="description" content="Jul 23rd, 2013 能工巧匠集 Shader-tutorial-1 猫都能学会的Unity3D Shader入门指南（一） 动机 自己使用Unity3D也有一段时间了，但是很多时候是流于表面，更多地是把这个引擎简单地用作脚本控制，而对更深入一些的层次几乎没有了解。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,6 +92,60 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-23T23:14:00+09:00" data-updated="true" itemprop="datePublished">Jul 23<span>rd</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/07/shader-tutorial-1/" itemprop="url">Shader-tutorial-1</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>猫都能学会的Unity3D Shader入门指南（一）</p>
+
+<p><img src="http://img.onevcat.com/2013/shader-tutorial-banner.jpg" alt="Unity Shader教程" /></p>
+
+<h2>动机</h2>
+
+<p>自己使用Unity3D也有一段时间了，但是很多时候是流于表面，更多地是把这个引擎简单地用作脚本控制，而对更深入一些的层次几乎没有了解。虽然说Unity引擎设计的初衷就是创建简单的不需要开发者操心的谁都能用的3D引擎，但是只是肤浅的使用，可能是无法达到随心所欲的境地的，因此，这种状况必须改变！从哪里开始呢，貌似有句话叫做会写Shader的都是高手，于是，想大概看看从Shader开始能不能使所能到达的层次再深入一些吧，再于是，有了这个系列（希望我能坚持写完它，虽然应该会拖个半年左右）。</p>
+
+<p>Unity3D的所有渲染工作都离不开着色器（Shader），如果你和我一样最近开始对Shader编程比较感兴趣的话，可能你和我有着同样的困惑：如何开始？Unity3D提供了一些Shader的手册和文档（比如<a href="http://docs.unity3d.com/Documentation/Manual/Shaders.html">这里</a>，<a href="http://docs.unity3d.com/Documentation/Components/Built-inShaderGuide.html">这里</a>和<a href="http://docs.unity3d.com/Documentation/Components/SL-Reference.html">这里</a>），但是一来内容比较分散，二来学习阶梯稍微陡峭了些。这对于像我这样之前完全没有接触过有关内容的新人来说是相当不友好的。国内外虽然也有一些Shader的介绍和心得，但是也同样存在内容分散的问题，很多教程前一章就只介绍了基本概念，接下来马上就搬出一个超复杂的例子，对于很多基本的用法并没有解释。也许对于Shader熟练使用的开发者来说是没有问题，但是我相信像我这样的入门者也并不在少数。在多方寻觅无果后，我觉得有必要写一份教程，来以一个入门者的角度介绍一些Shader开发的基本步骤。其实与其说是教程，倒不如说是一份自我总结，希望能够帮到有需要的人。</p>
+
+<p>所以，本“教程”的对象是</p>
+
+<ul>
+<li>总的来说是新接触Shader开发的人：也许你知道什么是Shader，也会使用别人的Shader，但是仅限于知道一些基本的内建Shader名字，从来没有打开它们查看其源码。</li>
+<li>想要更多了解Shader和有需求要进行Shader开发的开发者，但是之前并没有Shader开发的经验。</li>
+</ul>
+
+
+<p>当然，因为我本身在Shader开发方面也是一个不折不扣的大菜鸟，本文很多内容也只是在自己的理解加上一些可能不太靠谱的求证和总结。本文中的示例应该会有更好的方式来实现，因此您是高手并且恰巧路过的话，如果有好的方式来实现某些内容，恳请您不吝留下评论，我会对本文进行不断更新和维护。</p>
+
+
+		
+		<a href="/2013/07/shader-tutorial-1/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -665,54 +719,6 @@ Store Kit在内购方面采用了新的订单系统，这将可以实现对订�
 
 		
 		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-02T00:00:00+09:00" data-updated="true" itemprop="datePublished">Feb 2<span>nd</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/02/xcode-plugin/" itemprop="url">Xcode 4 插件制作入门</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://www.onevcat.com/wp-content/uploads/2013/02/QQ20130202-15.png"></p>
-
-<p>本文欢迎转载，但烦请保留此行出处信息：<a href="http://www.onevcat.com/2013/02/xcode-plugin/">http://www.onevcat.com/2013/02/xcode-plugin/</a></p>
-
-<p>本文将介绍创建一个Xcode4插件所需要的基本步骤以及一些常用的方法。请注意为Xcode创建插件并没有任何的官方支持，因此本文所描述的方法和提供的信息可能会随Apple在Xcode上做的变化而失效。另外，由于创建插件会使用到私有API，因此Xcode插件也不可能被提交到Mac App Store上进行出售。</p>
-
-<p>本文内容是基于Xcode 4.6（4H127）完成的，但是应该可以适用于任意的Xcode 4.X版本。VVPlugInDemo的工程文件我放到了github上，有需要的话您可以从<a href="https://github.com/onevcat/VVPluginDemo">这里下载</a>并作为参考和起始来使用。</p>
-
-<h2>综述</h2>
-
-<p>Xcode本身作为一个IDE来说已经可以算上优秀，但是依然会有很多缺失的功能，另外在开发中针对自己的开发需求，创建一些便利的IDE插件，必定将大为加快开发速度。由于苹果官方并不对Xcode插件提供任何技术和文档支持，因此对于大部分开发者来说可能难于上手。虽然没有官方支持，但是在Xcode中开发并使用插件是可能的，并且也是被默许的。在Xcode启动的时候，Xcode将会寻找位于~/Library/Application Support/Developer/Shared/Xcode/Plug-ins文件夹中的后缀名为.xcplugin的bundle作为插件进行加载（运行其中的可执行文件），这就可以令我们光明正大合法合理地将我们的代码注入（虽然这个词有点不好听）Xcode，并得到运行。因此，想要创建Xcode插件，<strong>我们需要创建Bundle工程并将编译的bundle放到上面所说的插件目录中去</strong>，这就是Xcode插件的原理。</p>
-
-<p>需要特别说明的是，因为Xcode会在启动时加载你的插件，这样就相当于你的代码有机会注入Xcode。只要你的插件加载成功，那么它将和Xcode共用一个进程，也就是说当你的代码crash的时候，Xcode也会随之crash。同样的情况也可能在Xcode版本更新的时候，由于兼容性问题而出现（因为插件可能使用私有API，Apple没有义务去维护这些API的可用性）。在出现这种情况的时候，可以直接删除插件目录下的导致问题的xcplugin文件即可。</p>
-
-
-		
-		<a href="/2013/02/xcode-plugin/" class="more-link">继续阅读</a>
 	</div>
 
 </article>
