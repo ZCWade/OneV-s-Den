@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 能工巧匠集 | OneV's Den]]></title>
   <link href="http://onevcat.com/category/neng-gong-qiao-jiang-ji/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2013-07-23T23:16:20+09:00</updated>
+  <updated>2013-07-23T23:19:50+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -14,13 +14,11 @@
 
   
   <entry>
-    <title type="html"><![CDATA[shader-tutorial-1]]></title>
+    <title type="html"><![CDATA[猫都能学会的Unity3D Shader入门指南（一）]]></title>
     <link href="http://onevcat.com/2013/07/shader-tutorial-1/"/>
     <updated>2013-07-23T23:14:00+09:00</updated>
     <id>http://onevcat.com/2013/07/shader-tutorial-1</id>
-    <content type="html"><![CDATA[<p>猫都能学会的Unity3D Shader入门指南（一）</p>
-
-<p><img src="http://img.onevcat.com/2013/shader-tutorial-banner.jpg" alt="Unity Shader教程" /></p>
+    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/shader-tutorial-banner.jpg" alt="Unity Shader教程" /></p>
 
 <h2>动机</h2>
 

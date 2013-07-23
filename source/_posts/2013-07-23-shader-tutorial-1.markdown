@@ -1,12 +1,10 @@
 ---
 layout: post
-title: "shader-tutorial-1"
+title: "猫都能学会的Unity3D Shader入门指南（一）"
 date: 2013-07-23 23:14
 comments: true
 categories: 能工巧匠集
 ---
-
-猫都能学会的Unity3D Shader入门指南（一）
 
 ![Unity Shader教程](http://img.onevcat.com/2013/shader-tutorial-banner.jpg)
 
