@@ -4,7 +4,7 @@
   <title><![CDATA[OneV's Den]]></title>
   <link href="http://onevcat.com/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2013-07-23T23:19:50+09:00</updated>
+  <updated>2013-07-23T23:27:28+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -22,7 +22,7 @@
 
 <h2>动机</h2>
 
-<p>自己使用Unity3D也有一段时间了，但是很多时候是流于表面，更多地是把这个引擎简单地用作脚本控制，而对更深入一些的层次几乎没有了解。虽然说Unity引擎设计的初衷就是创建简单的不需要开发者操心的谁都能用的3D引擎，但是只是肤浅的使用，可能是无法达到随心所欲的境地的，因此，这种状况必须改变！从哪里开始呢，貌似有句话叫做会写Shader的都是高手，于是，想大概看看从Shader开始能不能使所能到达的层次再深入一些吧，再于是，有了这个系列（希望我能坚持写完它，虽然应该会拖个半年左右）。</p>
+<p>自己使用Unity3D也有一段时间了，但是很多时候是流于表面，更多地是把这个引擎简单地用作脚本控制，而对更深入一些的层次几乎没有了解。虽然说Unity引擎设计的初衷就是创建简单的不需要开发者操心的谁都能用的3D引擎，但是只是肤浅的使用，可能是无法达到随心所欲的境地的，因此，这种状况必须改变！从哪里开始呢，貌似有句话叫做会写Shader的都是高手，于是，想大概看看从Shader开始能不能使自己到达的层次能再深入一些吧，再于是，有了这个系列（希望我能坚持写完它，虽然应该会拖个半年左右）。</p>
 
 <p>Unity3D的所有渲染工作都离不开着色器（Shader），如果你和我一样最近开始对Shader编程比较感兴趣的话，可能你和我有着同样的困惑：如何开始？Unity3D提供了一些Shader的手册和文档（比如<a href="http://docs.unity3d.com/Documentation/Manual/Shaders.html">这里</a>，<a href="http://docs.unity3d.com/Documentation/Components/Built-inShaderGuide.html">这里</a>和<a href="http://docs.unity3d.com/Documentation/Components/SL-Reference.html">这里</a>），但是一来内容比较分散，二来学习阶梯稍微陡峭了些。这对于像我这样之前完全没有接触过有关内容的新人来说是相当不友好的。国内外虽然也有一些Shader的介绍和心得，但是也同样存在内容分散的问题，很多教程前一章就只介绍了基本概念，接下来马上就搬出一个超复杂的例子，对于很多基本的用法并没有解释。也许对于Shader熟练使用的开发者来说是没有问题，但是我相信像我这样的入门者也并不在少数。在多方寻觅无果后，我觉得有必要写一份教程，来以一个入门者的角度介绍一些Shader开发的基本步骤。其实与其说是教程，倒不如说是一份自我总结，希望能够帮到有需要的人。</p>
 
