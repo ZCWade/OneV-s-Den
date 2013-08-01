@@ -13,6 +13,8 @@ comments: true
 
 {% img right http://img.onevcat.com/2013/VVDocumenter.png %}
 
+<a href="http://flattr.com/thing/1710755/onevcatVVDocumenter-Xcode-on-GitHub" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
+
 一直以来虽然ObjC代码因为其可读性极强，而不太需要时常查阅文档，但是其实对于大多数人（包括我自己）来说，可能为方法或变量取一个好名字并不是那么简单的事情。这时候可能就需要文档或者注释来帮助之后的开发者（包括大家自己）尽快熟悉和方便修改。但是用Xcode写文档是一件让人很头疼的事情，Xcode对写文档的支持几乎为0，没有像VS之类的成熟IDE的方便的方法，一直以来都是依靠像Snippet这样的东西，然后自己辛苦填写大量已有的内容。
 
 之前看到一个用[Ruby+系统服务来生成注释的方案](http://blog.chukong-inc.com/index.php/2012/05/16/xcode4_fast_doxygen/)，但是每次要自己去选还要按快捷键，总觉得是很麻烦的事情。借鉴其他平台IDE一般都是采用三个斜杠（`///`）来生成文档注释的方法，所以也为Xcode写了一个类似的。用法很简单，在要写文档的代码上面连打三个斜杠，就能自动提取参数等生成规范的Javadoc格式文档注释。**VVDocumenter**整个项目MIT开源，并且扔在github上了，有兴趣的童鞋可以从下面的链接找到，欢迎大家加星fork以及给我发pull request来改善这个插件。
