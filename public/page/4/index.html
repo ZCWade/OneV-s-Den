@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Apr 4th, 2012 不醒春色集 难得的假期 工作日到学校忙论文的事情，同时照顾着兼职开发，周末的时候到北语学日语。生活的忙碌看来将会一直持续一段时间了。难得迎来了一个月以来的唯一一天假期，早上很开心地睡到了快10点，然后借着马岛战争30年的契机，赖在床上和老婆一起把The Iron &hellip;">
+	<meta name="description" content="Apr 22nd, 2012 能工巧匠集 深入Objective-C的动态特性 Objective-C具有相当多的动态特性，基本的，也是经常被提到和用到的有动态类型（Dynamic typing），动态绑定（Dynamic binding）和动态加载（Dynamic loading）。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,6 +92,49 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-22T00:00:00+09:00" data-updated="true" itemprop="datePublished">Apr 22<span>nd</span>, 2012</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2012/04/objective-c-runtime/" itemprop="url">深入Objective-C的动态特性</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><!--:zh--><a href="http://www.onevcat.com/wp-content/uploads/2012/04/1295091_135049048284_2.jpg"><img class="aligncenter size-full wp-image-736" title="1295091_135049048284_2" src="http://www.onevcat.com/wp-content/uploads/2012/04/1295091_135049048284_2.jpg" alt="" width="1024" height="256" data-pinit="registered" /></a></p>
+
+<p>Objective-C具有相当多的动态特性，基本的，也是经常被提到和用到的有动态类型（Dynamic typing），动态绑定（Dynamic binding）和动态加载（Dynamic loading）。</p>
+
+<p>这些动态特性都是在Cocoa程序开发时非常常用的语言特性，而在这之后，OC在底层也提供了相当丰富的运行时的特性，比如枚举类属性方法、获取方法实现等等。虽然在平常的Cocoa开发中这些较底层的运行特性基本用不着，但是在某些情况下如果你知道这些特性并合理加以运用的话，往往能事半功倍～
+<h3>动态特性基础</h3>
+<h4>1、动态类型</h4>
+即运行时再决定对象的类型。这类动态特性在日常应用中非常常见，简单说就是id类型。id类型即通用的对象类，任何对象都可以被id指针所指，而在实际使用中，往往使用introspection来确定该对象的实际所属类：</p>
+
+<p><!--:-->
+		
+		<a href="/2012/04/objective-c-runtime/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -469,48 +512,6 @@ iOS好很多，因为iPhone和iTouch的分辨率完全一致(就算retina也有A
 
 		
 		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-02T00:00:00+09:00" data-updated="true" itemprop="datePublished">Feb 2<span>nd</span>, 2012</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2012/02/uiviewcontroller/" itemprop="url">UIViewController的误用</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><!--:zh--><p style="text-align: justify;"><a href="http://www.onevcat.com/wp-content/uploads/2012/02/vc.jpg"><img class="aligncenter size-full wp-image-621" title="vc" src="http://www.onevcat.com/wp-content/uploads/2012/02/vc.jpg" alt="" width="1037" height="384" /></a></p>
-<p style="text-align: justify;">转载本文请保留以下原作者信息:<br />
-原作：OneV
-<a href="http://www.onevcat.com/2012/02/uiviewcontroller/">http://www.onevcat.com/2012/02/uiviewcontroller/</a></p></p>
-
-<p><h1 style="text-align: justify;">什么是UIViewController的误用</h1>
-<p style="text-align: justify;">UIViewController是iOS开发中最常见也最重要的部件之一，可以说绝大多数的app都用到了UIViewController来管理页面的view。它是MVC的核心结构和桥梁构成，可以说UIViewController是绝大多数开发者所花时间最多的部分了。<br />
-但是正是这样一个重要的类却经常被误用，从而导致app的不稳定，莫名奇妙的bug甚至无法通过appstore的审查。最常见和最可怕的误用在于在一个UIViewController里加入本来不应该由它管理的其他UIViewController，也即违反了Apple在开发者文档中关于UIViewController的描述：</p>
-<p style="text-align: justify;"><!--:-->
-		
-		<a href="/2012/02/uiviewcontroller/" class="more-link">继续阅读</a>
 	</div>
 
 </article>

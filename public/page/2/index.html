@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Feb 2nd, 2013 能工巧匠集 Xcode 4 插件制作入门 本文欢迎转载，但烦请保留此行出处信息：http://www.onevcat.com/2013/02/xcode-plugin/ 本文将介绍创建一个Xcode4插件所需要的基本步骤以及一些常用的方法。 &hellip;">
+	<meta name="description" content="Mar 24th, 2013 能工巧匠集 MGTwitterEngine中Twitter API 1.1的使用 在iOS5中使用Twitter framework或者在iOS6中使用Social framework来完成Twitter的集成是非常简单和轻松的， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,6 +92,104 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-24T00:00:00+09:00" data-updated="true" itemprop="datePublished">Mar 24<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/03/mgtwitterengine%E4%B8%ADtwitter-api-1-1%E7%9A%84%E4%BD%BF%E7%94%A8/" itemprop="url">MGTwitterEngine中Twitter API 1.1的使用</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在iOS5中使用Twitter framework或者在iOS6中使用Social framework来完成Twitter的集成是非常简单和轻松的，但是如果应用要针对iOS5之前的系统版本，那么就不能使用iOS提供的框架了。一个比较常见也是使用最广泛的选择是<a href="https://github.com/mattgemmell/MGTwitterEngine">MGTwitterEngine</a>，比如<a href="http://www.onevcat.com/showcase/pomodoro_do/">PomodoroDo</a>选择使用的就是该框架。</p>
+
+<p>但是今天在对PomodoroDo作更新的时候，发现Twitter的分享无法使用了，在查阅Twitter文档说明之后，发现这是Twitter采用了新版API的原因。默认状况下MGTwitterEngine采用的是v1版的API，并且使用XML的版本进行请求，而在1.1中，将<a href="https://dev.twitter.com/docs/api/1.1/overview#JSON_support_only">只有JSON方式的API可以使用</a>。v1.0版本的API已经于2013年3月5日被完全废弃，因此想要继续使用MGTwitterEngine来适配iOS5之前的Twitter集成需求，就需要将MGTwitterEngine的请求改为JSON方式。MGTwitterEngine也考虑到了这一点，但是因为时间比较古老了，MGTwitterEngine使用了YAJL来作为JSON的Wrapper，因此还需要将YAJL集成进来。下午的时候尝试了一会儿，成功地让MGTwitterEngine用上了1.1的Twitter API，为了以防之后别人或是自己可能遇到同样的问题，将更新的方法在此留底备忘。</p>
+
+<ol>
+<li><p>导入YAJL Framework</p>
+
+<ul>
+<li>YAJL的OC实现，从<a href="https://github.com/gabriel/yajl-objc/download">该地址下载该框架</a>。(2013年3月24日的最新版本为YAJL 0.3.1 for iOS)</li>
+<li>解压下载得到的zip，将解压后的YAJLiOS.framework加入项目工程</li>
+<li>在Xcode的Build Setting里在Other Linker Flags中添加-ObjC和-all_load标记</li>
+</ul>
+</li>
+<li><p>加入MGTwitterEngine的JSON相关代码</p>
+
+<ul>
+<li>从<a href="https://github.com/mattgemmell/MGTwitterEngine">MGTwitterEngine的页面</a>down下该项目。当然如果有新版或者有别的branch可以用的话更省事儿，但是鉴于MGTwitterEngine现在的活跃度来说估计可能性不大，所以还是乖乖自己更新吧。</li>
+<li>解开下载的zip，用Xcode打开MGTwitterEngine.xcodeproj工程文件，将其中Twitter YAJL Parsers组下的所有文件copy到自己的项目中。</li>
+</ul>
+</li>
+<li><p>YAJL头文件集成</p>
+
+<ul>
+<li>接下来是C和OC接口头文件的导入，从下面下载YAJL库：<a href="https://github.com/thinglabs/yajl-objc">https://github.com/thinglabs/yajl-objc</a></li>
+<li>在下载得到的文件夹中，寻找并将以下h文件拷贝到自己的工程中：
+
+<ul>
+<li>yajl_common.h</li>
+<li>yajl_gen.h</li>
+<li>yajl_parse.h</li>
+<li>NSObject+YAJL.h</li>
+<li>YAJL.h</li>
+<li>YAJLDocument.h</li>
+<li>YAJLGen.h</li>
+<li>YAJLParser.h</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>最后是在MGTwitterEngine设定为使用v1.1 API以及JSON方式请求</p></li>
+</ol>
+
+
+<p>在MGTwitterEngine.m中，将对应代码修改为以下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define USE_LIBXML 0</span>
+</span><span class='line'><span class="cp">#define TWITTER_DOMAIN @&quot;api.twitter.com/1.1&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在MGbTwitader.h，启用YAJL</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define define YAJL_AVAILABLE 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>本文参考：</p>
+
+<p><a href="https://github.com/mattgemmell/MGTwitterEngine/issues/107">MGTwitterEngine issues 107</a></p>
+
+<p><a href="http://damienh.org/2009/06/20/setting-up-mgtwitterengine-with-yajl-106-for-iphone-development/">http://damienh.org/2009/06/20/setting-up-mgtwitterengine-with-yajl-106-for-iphone-development/</a></p>
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -586,55 +684,6 @@ if (Time.timeScale == 0 ){
 <p style="text-align: justify;"><!--:-->
 		
 		<a href="/2012/08/not-a-studen/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-07-25T00:00:00+09:00" data-updated="true" itemprop="datePublished">Jul 25<span>th</span>, 2012</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2012/07/pomodoro-do-%E6%8B%96%E5%BB%B6%E7%97%87%E6%82%A3%E8%80%85%E7%9A%84%E7%A6%8F%E9%9F%B3/" itemprop="url">Pomodoro Do - 拖延症患者的福音</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><!--:zh--><p style="text-align: center;"><img title="PomodoroDo Logo" src="http://pomo.onevcat.com/img/Icon-50.png" alt="" width="282" height="141" data-pinit="registered" /></p>
-<p style="text-align: justify;"><span style="color: #ff0000;"><em>由于完全是自己完成的应用啦，所以详细介绍就写的偏向广告一点吧～欢迎大家购买使用，并给我提意见哦～我会不断完善这款app的。</em></span></p></p>
-
-<p><ul>
-	<li>App Store地址：<a href="http://itunes.apple.com/cn/app/pomodoro-do/id533469911?ls=1&amp;mt=8">http://itunes.apple.com/cn/app/pomodoro-do/id533469911?ls=1&amp;mt=8</a></li>
-	<li>Pomodoro Do官方主页：<a href="http://pomo.onevcat.com/">http://pomo.onevcat.com/</a></li>
-	<li>i果儿评测：<a href="http://www.iguor.com/4050.html">Pomodoro Do——拖延症什么的，我才不怕呢</a></li>
-	<li>PunApp：<a href="http://punapp.com/review/article/7437">用一顆番茄來改變你的人生 – Pomodoro Do 評測</a></li>
-</ul>
-<p style="text-align: justify;"></p></p>
-
-<p><h2 style="text-align: justify;">什么是Pomodoro Do</h2>
-<p style="text-align: justify;">一款新鲜上架的番茄工作法辅助应用，功能上十分齐全，从自定义时间到历史统计和推送都很完整。这款应用加入了成就系统和箴言系统的创新，让用户自然地养成使用番茄工作法的习惯，从而提高效率。有拖延症和想提高效率的读者可以试试看这款应用。</p>
-<p style="text-align: justify;">拖延症是现在颇为流行的一个说法，人们在习惯网络带来的便利同时也容易被网络分散太多的时间，相信大家多少都有点拖延症患者的感觉，每天工作开始总要那么一些时间浏览一下网页、收收邮件才能进入学习或者工作状态，或者工作到一半不知不觉地就开始刷刷微博，时间不知不觉就过去了，但是手上的事儿却远没做完。这款应用对于那些希望告别拖延症的用户来说正是瞌睡送来的枕头，只要您有一点决心，就可以显著改善拖延症的状况。</p>
-<p style="text-align: justify;">我们先来简单了解一下番茄工作法：所谓番茄工作法，就是设定一个任务，将番茄时间设为25分钟，专注工作，中途不允许做任何与该任务无关的事，直到番茄时钟响起，短暂休息一下（5分钟）完成一个番茄时段，每4个番茄时段有一个长休息。通过番茄工作法可以有效提升集中力和注意力。不太了解的朋友对于番茄工作法的详细介绍可以<a href="http://baike.baidu.com/view/5259318.htm">百度一下</a>，E文好的朋友可以直接看看<a href="http://www.pomodorotechnique.com/">番茄工作法的官方网站</a>哦。</p>
-<p style="text-align: justify;"><!--:-->
-		
-		<a href="/2012/07/pomodoro-do-%E6%8B%96%E5%BB%B6%E7%97%87%E6%82%A3%E8%80%85%E7%9A%84%E7%A6%8F%E9%9F%B3/" class="more-link">继续阅读</a>
 	</div>
 
 </article>

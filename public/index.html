@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Jul 23rd, 2013 能工巧匠集 猫都能学会的Unity3D Shader入门指南（一） 动机 自己使用Unity3D也有一段时间了，但是很多时候是流于表面，更多地是把这个引擎简单地用作脚本控制，而对更深入一些的层次几乎没有了解。 &hellip;">
+	<meta name="description" content="Aug 31st, 2013 能工巧匠集 猫都能学会的Unity3D Shader入门指南（二） 关于本系列 这是Unity3D Shader入门指南系列的第二篇，本系列面向的对象是新接触Shader开发的Unity3D使用者，因为我本身自己也是Shader初学者，因此可能会存在错误或者疏漏， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,6 +92,50 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-31T22:18:00+09:00" data-updated="true" itemprop="datePublished">Aug 31<span>st</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/08/shader-tutorial-2/" itemprop="url">猫都能学会的Unity3D Shader入门指南（二）</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/shader-tutorial2-light.jpg" alt="Unity Shader教程" /></p>
+
+<h2>关于本系列</h2>
+
+<p>这是Unity3D Shader入门指南系列的第二篇，本系列面向的对象是新接触Shader开发的Unity3D使用者，因为我本身自己也是Shader初学者，因此可能会存在错误或者疏漏，如果您在Shader开发上有所心得，很欢迎并恳请您指出文中纰漏，我会尽快改正。在<a href="http://onevcat.com/2013/07/shader-tutorial-1/">之前的开篇</a>中介绍了一些Shader的基本知识，包括ShaderLab的基本结构和语法，以及简单逐句地讲解了一个基本的shader。在具有这些基础知识后，阅读简单的shader应该不会有太大问题，在继续教程之前简单阅读一下Unity的<a href="http://docs.unity3d.com/Documentation/Components/SL-SurfaceShaderExamples.html">Surface Shader Example</a>，以检验您是否掌握了上一节的内容。如果您对阅读大部分示例Shader并没有太大问题，可以正确地指出Shader的结构，声明和使用的话，就说明您已经准备好继续阅读本节的内容了。</p>
+
+<h2>法线贴图(Normal Mapping)</h2>
+
+<p>法线贴图是凸凹贴图(Bump mapping)的一种常见应用，简单说就是在不增加模型多边形数量的前提下，通过渲染暗部和亮部的不同颜色深度，来为原来的贴图和模型增加视觉细节和真实效果。简单原理是在普通的贴图的基础上，再另外提供一张对应原来贴图的，可以表示渲染浓淡的贴图。通过将这张附加的表示表面凸凹的贴图的因素于实际的原贴图进行运算后，可以得到新的细节更加丰富富有立体感的渲染效果。在本节中，我们将首先实现一个法线贴图的Shader，然后对Unity Shader的光照模型进行一些讨论，并实现一个自定义的光照模型。最后再通过更改shader模拟一个石头上的积雪效果，并对模型顶点进行一些修改使积雪效果看起来比较真实。在本节结束的时候，我们就会有一个比较强大的可以满足一些真实开发工作时可用的shader了，而且更重要的是，我们将会掌握它是如何被创造出来的。</p>
+
+
+		
+		<a href="/2013/08/shader-tutorial-2/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -619,104 +663,6 @@ Store Kit在内购方面采用了新的订单系统，这将可以实现对订�
 
 		
 		<a href="/2013/04/half-year-in-japan/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-24T00:00:00+09:00" data-updated="true" itemprop="datePublished">Mar 24<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/03/mgtwitterengine%E4%B8%ADtwitter-api-1-1%E7%9A%84%E4%BD%BF%E7%94%A8/" itemprop="url">MGTwitterEngine中Twitter API 1.1的使用</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在iOS5中使用Twitter framework或者在iOS6中使用Social framework来完成Twitter的集成是非常简单和轻松的，但是如果应用要针对iOS5之前的系统版本，那么就不能使用iOS提供的框架了。一个比较常见也是使用最广泛的选择是<a href="https://github.com/mattgemmell/MGTwitterEngine">MGTwitterEngine</a>，比如<a href="http://www.onevcat.com/showcase/pomodoro_do/">PomodoroDo</a>选择使用的就是该框架。</p>
-
-<p>但是今天在对PomodoroDo作更新的时候，发现Twitter的分享无法使用了，在查阅Twitter文档说明之后，发现这是Twitter采用了新版API的原因。默认状况下MGTwitterEngine采用的是v1版的API，并且使用XML的版本进行请求，而在1.1中，将<a href="https://dev.twitter.com/docs/api/1.1/overview#JSON_support_only">只有JSON方式的API可以使用</a>。v1.0版本的API已经于2013年3月5日被完全废弃，因此想要继续使用MGTwitterEngine来适配iOS5之前的Twitter集成需求，就需要将MGTwitterEngine的请求改为JSON方式。MGTwitterEngine也考虑到了这一点，但是因为时间比较古老了，MGTwitterEngine使用了YAJL来作为JSON的Wrapper，因此还需要将YAJL集成进来。下午的时候尝试了一会儿，成功地让MGTwitterEngine用上了1.1的Twitter API，为了以防之后别人或是自己可能遇到同样的问题，将更新的方法在此留底备忘。</p>
-
-<ol>
-<li><p>导入YAJL Framework</p>
-
-<ul>
-<li>YAJL的OC实现，从<a href="https://github.com/gabriel/yajl-objc/download">该地址下载该框架</a>。(2013年3月24日的最新版本为YAJL 0.3.1 for iOS)</li>
-<li>解压下载得到的zip，将解压后的YAJLiOS.framework加入项目工程</li>
-<li>在Xcode的Build Setting里在Other Linker Flags中添加-ObjC和-all_load标记</li>
-</ul>
-</li>
-<li><p>加入MGTwitterEngine的JSON相关代码</p>
-
-<ul>
-<li>从<a href="https://github.com/mattgemmell/MGTwitterEngine">MGTwitterEngine的页面</a>down下该项目。当然如果有新版或者有别的branch可以用的话更省事儿，但是鉴于MGTwitterEngine现在的活跃度来说估计可能性不大，所以还是乖乖自己更新吧。</li>
-<li>解开下载的zip，用Xcode打开MGTwitterEngine.xcodeproj工程文件，将其中Twitter YAJL Parsers组下的所有文件copy到自己的项目中。</li>
-</ul>
-</li>
-<li><p>YAJL头文件集成</p>
-
-<ul>
-<li>接下来是C和OC接口头文件的导入，从下面下载YAJL库：<a href="https://github.com/thinglabs/yajl-objc">https://github.com/thinglabs/yajl-objc</a></li>
-<li>在下载得到的文件夹中，寻找并将以下h文件拷贝到自己的工程中：
-
-<ul>
-<li>yajl_common.h</li>
-<li>yajl_gen.h</li>
-<li>yajl_parse.h</li>
-<li>NSObject+YAJL.h</li>
-<li>YAJL.h</li>
-<li>YAJLDocument.h</li>
-<li>YAJLGen.h</li>
-<li>YAJLParser.h</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>最后是在MGTwitterEngine设定为使用v1.1 API以及JSON方式请求</p></li>
-</ol>
-
-
-<p>在MGTwitterEngine.m中，将对应代码修改为以下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define USE_LIBXML 0</span>
-</span><span class='line'><span class="cp">#define TWITTER_DOMAIN @&quot;api.twitter.com/1.1&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在MGbTwitader.h，启用YAJL</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define define YAJL_AVAILABLE 1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>本文参考：</p>
-
-<p><a href="https://github.com/mattgemmell/MGTwitterEngine/issues/107">MGTwitterEngine issues 107</a></p>
-
-<p><a href="http://damienh.org/2009/06/20/setting-up-mgtwitterengine-with-yajl-106-for-iphone-development/">http://damienh.org/2009/06/20/setting-up-mgtwitterengine-with-yajl-106-for-iphone-development/</a></p>
-
-		
-		
 	</div>
 
 </article>
