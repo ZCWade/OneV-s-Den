@@ -16,6 +16,7 @@ categories: 能工巧匠集
 * 工具 [WWDC2013笔记 Xcode5和ObjC新特性](http://onevcat.com/) http://onevcat.com/2013/06/new-in-xcode5-and-objc/
 * UIKit动力学 [WWDC2013笔记 UIKit力学模型入门](http://onevcat.com/) http://onevcat.com/2013/06/uikit-dynamics-started/
 * SpriteKit入门 [WWDC2013笔记 SpriteKit快速入门和新时代iOS游戏开发指南](http://onevcat.com/) http://onevcat.com/2013/06/sprite-kit-start/
+* 后台应用运行和多任务新特性 [WWDC2013笔记 iOS7中的多任务](http://onevcat.com/) http://onevcat.com/2013/08/ios7-background-multitask/
 
 <!--
 ---

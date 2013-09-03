@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "SpriteKit快速入门和新时代iOS游戏开发指南"
+title: "WWDC 2013 Session笔记 - SpriteKit快速入门和新时代iOS游戏开发指南"
 date: 2013-06-16 18:13
 comments: true
 categories: 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "WWDC2013笔记 iOS7中的多任务"
+title: "WWDC 2013 Session笔记 - iOS7中的多任务"
 date: 2013-08-17 19:16
 comments: true
 categories: 能工巧匠集

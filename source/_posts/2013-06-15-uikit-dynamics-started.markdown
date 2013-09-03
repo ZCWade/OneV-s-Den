@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "UIKit力学模型入门"
+title: "WWDC 2013 Session笔记 - UIKit Dynamics入门"
 date: 2013-06-15 15:11
 comments: true
 categories: 能工巧匠集

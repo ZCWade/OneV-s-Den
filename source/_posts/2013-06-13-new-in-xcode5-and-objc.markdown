@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "WWDC2013笔记 Xcode5和ObjC新特性"
+title: "WWDC 2013 Session笔记 - Xcode5和ObjC新特性"
 date: 2013-06-13 10:05
 comments: true
 categories: 能工巧匠集

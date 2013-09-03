@@ -92,272 +92,450 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 	<h1 class="title" itemprop="name">WWDC 2012 Session笔记——219 Advanced Collection Views and Building Custom Layouts</h1>
-	<div class="entry-content" itemprop="articleBody"><p><!--:zh--><p style="text-align: justify;"><a href="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-3.png"><img class="aligncenter size-full wp-image-984" title="uicollectionview-struct" src="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-3.png" alt="" width="983" height="251" data-pinit="registered" /></a></p>
-<p style="text-align: justify;">这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看<a href="http://www.onevcat.com/tag/wwdc/">这里</a>。如果您是首次来到本站，也许您会有兴趣通过<a href="http://www.onevcat.com/feed">RSS</a>，或者通过页面下方的邮件订阅的方式订阅本站。</p>
-<p style="text-align: justify;">在上一篇<a href="http://www.onevcat.com/2012/06/introducing-collection-views/">UICollectionView的入门介绍</a>中，大概地对iOS6新加入的强大的UICollectionView进行了一些说明。在这篇博文中，将结合WWDC2012 Session219：Advanced Collection View的内容，对Collection View进行一个深入的使用探讨，并给出一个自定义的Demo。</p></p>
+	<div class="entry-content" itemprop="articleBody"><p><a href="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-3.png"><img src="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-3.png" title="uicollectionview-struct" alt="" /></a></p>
 
-<p><h2 style="text-align: justify;">UICollectionView的结构回顾</h2>
-<p style="text-align: justify;">首先回顾一下Collection View的构成，我们能看到的有三个部分：</p></p>
+<p>这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看<a href="http://www.onevcat.com/tag/wwdc/">这里</a>。如果您是首次来到本站，也许您会有兴趣通过<a href="http://onevcat.com/atom.xml">RSS</a>，或者通过页面左侧的邮件订阅的方式订阅本站。</p>
 
-<p><ul style="text-align: justify;">
-	<li>Cells</li>
-	<li>Supplementary Views 追加视图 （类似Header或者Footer）</li>
-	<li>Decoration Views 装饰视图 （用作背景展示）</li>
-</ul>
-<p style="text-align: justify;">而在表面下，由两个方面对UICollectionView进行支持。其中之一和tableView一样，即提供数据的UICollectionViewDataSource以及处理用户交互的UICollectionViewDelegate。另一方面，对于cell的样式和组织方式，由于collectionView比tableView要复杂得多，因此没有按照类似于tableView的style的方式来定义，而是专门使用了一个类来对collectionView的布局和行为进行描述，这就是UICollectionViewLayout。</p>
-<p style="text-align: justify;">这次的笔记将把重点放在UICollectionViewLayout上，因为这不仅是collectionView和tableView的最重要求的区别，也是整个UICollectionView的精髓所在。</p>
-<p style="text-align: justify;"><!--:--><!--more--><!--:zh--></p>
-<p style="text-align: justify;">如果对UICollectionView的基本构成要素和使用方法还不清楚的话，可以移步到我之前的一篇笔记：<a href="http://www.onevcat.com/2012/06/introducing-collection-views/">Session笔记——205 Introducing Collection Views</a>中进行一些了解。</p></p>
+<p>在上一篇<a href="http://www.onevcat.com/2012/06/introducing-collection-views/">UICollectionView的入门介绍</a>中，大概地对iOS6新加入的强大的UICollectionView进行了一些说明。在这篇博文中，将结合WWDC2012 Session219：Advanced Collection View的内容，对Collection View进行一个深入的使用探讨，并给出一个自定义的Demo。</p>
 
-<p><hr /></p>
+<h2>UICollectionView的结构回顾</h2>
 
-<p><h2 style="text-align: justify;">UICollectionViewLayoutAttributes</h2>
-<p style="text-align: justify;">UICollectionViewLayoutAttributes是一个非常重要的类，先来看看property列表：</p></p>
+<p>首先回顾一下Collection View的构成，我们能看到的有三个部分：</p>
 
-<p><ul style="text-align: justify;">
-	<li>@property (nonatomic) CGRect frame</li>
-	<li>@property (nonatomic) CGPoint center</li>
-	<li>@property (nonatomic) CGSize size</li>
-	<li>@property (nonatomic) CATransform3D transform3D</li>
-	<li>@property (nonatomic) CGFloat alpha</li>
-	<li>@property (nonatomic) NSInteger zIndex</li>
-	<li>@property (nonatomic, getter=isHidden) BOOL hidden</li>
-</ul>
-<p style="text-align: justify;">可以看到，UICollectionViewLayoutAttributes的实例中包含了诸如边框，中心点，大小，形状，透明度，层次关系和是否隐藏等信息。和DataSource的行为十分类似，当UICollectionView在获取布局时将针对每一个indexPath的部件（包括cell，追加视图和装饰视图），向其上的UICollectionViewLayout实例询问该部件的布局信息（在这个层面上说的话，实现一个UICollectionViewLayout的时候，其实很像是zap一个delegate，之后的例子中会很明显地看出），这个布局信息，就以UICollectionViewLayoutAttributes的实例的方式给出。</p></p>
-
-<p><hr /></p>
-
-<p><h2 style="text-align: justify;">自定义的UICollectionViewLayout</h2>
-<p style="text-align: justify;">UICollectionViewLayout的功能为向UICollectionView提供布局信息，不仅包括cell的布局信息，也包括追加视图和装饰视图的布局信息。实现一个自定义layout的常规做法是继承UICollectionViewLayout类，然后重载下列方法：</p></p>
-
-<p><ul style="text-align: justify;">
-	<li>-(CGSize)collectionViewContentSize
 <ul>
-	<li>返回collectionView的内容的尺寸</li>
+<li>Cells</li>
+<li>Supplementary Views 追加视图 （类似Header或者Footer）</li>
+<li>Decoration Views 装饰视图 （用作背景展示）</li>
+</ul>
+
+
+<p>而在表面下，由两个方面对UICollectionView进行支持。其中之一和tableView一样，即提供数据的UICollectionViewDataSource以及处理用户交互的UICollectionViewDelegate。另一方面，对于cell的样式和组织方式，由于collectionView比tableView要复杂得多，因此没有按照类似于tableView的style的方式来定义，而是专门使用了一个类来对collectionView的布局和行为进行描述，这就是UICollectionViewLayout。</p>
+
+<p>这次的笔记将把重点放在UICollectionViewLayout上，因为这不仅是collectionView和tableView的最重要求的区别，也是整个UICollectionView的精髓所在。</p>
+
+<!--more-->
+
+
+<p>如果对UICollectionView的基本构成要素和使用方法还不清楚的话，可以移步到我之前的一篇笔记：<a href="http://www.onevcat.com/2012/06/introducing-collection-views/">Session笔记——205 Introducing Collection Views</a>中进行一些了解。</p>
+
+<hr />
+
+<h2>UICollectionViewLayoutAttributes</h2>
+
+<p>UICollectionViewLayoutAttributes是一个非常重要的类，先来看看property列表：</p>
+
+<ul>
+<li>@property (nonatomic) CGRect frame</li>
+<li>@property (nonatomic) CGPoint center</li>
+<li>@property (nonatomic) CGSize size</li>
+<li>@property (nonatomic) CATransform3D transform3D</li>
+<li>@property (nonatomic) CGFloat alpha</li>
+<li>@property (nonatomic) NSInteger zIndex</li>
+<li>@property (nonatomic, getter=isHidden) BOOL hidden</li>
+</ul>
+
+
+<p>可以看到，UICollectionViewLayoutAttributes的实例中包含了诸如边框，中心点，大小，形状，透明度，层次关系和是否隐藏等信息。和DataSource的行为十分类似，当UICollectionView在获取布局时将针对每一个indexPath的部件（包括cell，追加视图和装饰视图），向其上的UICollectionViewLayout实例询问该部件的布局信息（在这个层面上说的话，实现一个UICollectionViewLayout的时候，其实很像是zap一个delegate，之后的例子中会很明显地看出），这个布局信息，就以UICollectionViewLayoutAttributes的实例的方式给出。</p>
+
+<hr />
+
+<h2>自定义的UICollectionViewLayout</h2>
+
+<p>UICollectionViewLayout的功能为向UICollectionView提供布局信息，不仅包括cell的布局信息，也包括追加视图和装饰视图的布局信息。实现一个自定义layout的常规做法是继承UICollectionViewLayout类，然后重载下列方法：</p>
+
+<ul>
+<li><p>-(CGSize)collectionViewContentSize</p>
+
+<ul>
+<li>返回collectionView的内容的尺寸</li>
 </ul>
 </li>
-	<li>-(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
+<li><p>-(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect</p>
+
 <ul>
-	<li>返回rect中的所有的元素的布局属性</li>
-	<li>返回的是包含UICollectionViewLayoutAttributes的NSArray</li>
-	<li>UICollectionViewLayoutAttributes可以是cell，追加视图或装饰视图的信息，通过不同的UICollectionViewLayoutAttributes初始化方法可以得到不同类型的UICollectionViewLayoutAttributes：
+<li>返回rect中的所有的元素的布局属性</li>
+<li>返回的是包含UICollectionViewLayoutAttributes的NSArray</li>
+<li><p>UICollectionViewLayoutAttributes可以是cell，追加视图或装饰视图的信息，通过不同的UICollectionViewLayoutAttributes初始化方法可以得到不同类型的UICollectionViewLayoutAttributes：</p>
+
 <ul>
-	<li>layoutAttributesForCellWithIndexPath:</li>
-	<li>layoutAttributesForSupplementaryViewOfKind:withIndexPath:</li>
-	<li>layoutAttributesForDecorationViewOfKind:withIndexPath:</li>
-</ul>
-</li>
-</ul>
-</li>
-	<li>-(UICollectionViewLayoutAttributes <em>)layoutAttributesForItemAtIndexPath:(NSIndexPath </em>)indexPath
-<ul>
-	<li>返回对应于indexPath的位置的cell的布局属性</li>
-</ul>
-</li>
-	<li>-(UICollectionViewLayoutAttributes <em>)layoutAttributesForSupplementaryViewOfKind:(NSString </em>)kind atIndexPath:(NSIndexPath *)indexPath
-<ul>
-	<li>返回对应于indexPath的位置的追加视图的布局属性，如果没有追加视图可不重载</li>
-</ul>
-</li>
-	<li>-(UICollectionViewLayoutAttributes * )layoutAttributesForDecorationViewOfKind:(NSString<em>)decorationViewKind atIndexPath:(NSIndexPath </em>)indexPath
-<ul>
-	<li>返回对应于indexPath的位置的装饰视图的布局属性，如果没有装饰视图可不重载</li>
-</ul>
-</li>
-	<li>-(BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
-<ul>
-	<li>当边界发生改变时，是否应该刷新布局。如果YES则在边界变化（一般是scroll到其他地方）时，将重新计算需要的布局信息。</li>
+<li>layoutAttributesForCellWithIndexPath:</li>
+<li>layoutAttributesForSupplementaryViewOfKind:withIndexPath:</li>
+<li>layoutAttributesForDecorationViewOfKind:withIndexPath:</li>
 </ul>
 </li>
 </ul>
-<p style="text-align: justify;">另外需要了解的是，在初始化一个UICollectionViewLayout实例后，会有一系列准备方法被自动调用，以保证layout实例的正确。</p>
-<p style="text-align: justify;">首先，-(void)prepareLayout将被调用，默认下该方法什么没做，但是在自己的子类实现中，一般在该方法中设定一些必要的layout的结构和初始需要的参数等。</p>
-<p style="text-align: justify;">之后，-(CGSize) collectionViewContentSize将被调用，以确定collection应该占据的尺寸。注意这里的尺寸不是指可视部分的尺寸，而应该是所有内容所占的尺寸。collectionView的本质是一个scrollView，因此需要这个尺寸来配置滚动行为。</p>
-<p style="text-align: justify;">接下来-(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect被调用，这个没什么值得多说的。初始的layout的外观将由该方法返回的UICollectionViewLayoutAttributes来决定。</p>
-<p style="text-align: justify;">另外，在需要更新layout时，需要给当前layout发送 -invalidateLayout，该消息会立即返回，并且预约在下一个loop的时候刷新当前layout，这一点和UIView的setNeedsLayout方法十分类似。在-invalidateLayout后的下一个collectionView的刷新loop中，又会从prepareLayout开始，依次再调用-collectionViewContentSize和-layoutAttributesForElementsInRect来生成更新后的布局。</p></p>
+</li>
+<li><p>-(UICollectionViewLayoutAttributes <em>)layoutAttributesForItemAtIndexPath:(NSIndexPath </em>)indexPath</p>
 
-<p><hr /></p>
-
-<p><h2 style="text-align: justify;">Demo</h2>
-<p style="text-align: justify;">说了那么多，其实还是Demo最能解决问题。Apple官方给了一个flow layout和一个circle layout的例子，都很经典，需要的同学可以从<a href="http://www.onevcat.com/wp-content/uploads/2012/08/advanced-collection-view-demo.zip">这里下载</a>。</p></p>
-
-<p><h3 style="text-align: justify;">LineLayout——对于个别UICollectionViewLayoutAttributes的调整</h3>
-<p style="text-align: justify;">先看LineLayout，它继承了UICollectionViewFlowLayout这个Apple提供的基本的布局。它主要实现了单行布局，自动对齐到网格以及当前网格cell放大三个特性。如图：</p>
-<p style="text-align: justify;"><a href="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-1-e1346145550225.png"><img class="aligncenter size-full wp-image-988" title="collection-view-line-layout" src="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-1-e1346145550225.png" alt="" width="800" height="264" data-pinit="registered" /></a></p>
-<p style="text-align: justify;">先看LineLayout的init方法：</p></p>
-
-<p><pre>-(id)init
-{
-    self = [super init];
-    if (self) {
-        self.itemSize = CGSizeMake(ITEM_SIZE, ITEM_SIZE);
-        self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        self.sectionInset = UIEdgeInsetsMake(200, 0.0, 200, 0.0);
-        self.minimumLineSpacing = 50.0;
-    }
-    return self;
-}</pre>
-<p style="text-align: justify;">self.sectionInset = UIEdgeInsetsMake(200, 0.0, 200, 0.0); 确定了缩进，此处为上方和下方各缩进200个point。由于cell的size已经定义了为200x200，因此屏幕上在缩进后就只有一排item的空间了。</p>
-<p style="text-align: justify;">self.minimumLineSpacing = 50.0; 这个定义了每个item在水平方向上的最小间距。</p>
-<p style="text-align: justify;">UICollectionViewFlowLayout是Apple为我们准备的开袋即食的现成布局，因此之前提到的几个必须重载的方法中需要我们操心的很少，即使完全不重载它们，现在也可以得到一个不错的线状一行的gridview了。而我们的LineLayout通过重载父类方法后，可以实现一些新特性，比如这里的动对齐到网格以及当前网格cell放大。</p>
-<p style="text-align: justify;">自动对齐到网格</p></p>
-
-<p><pre>- (CGPoint)targetContentOffsetForProposedContentOffset: (CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity
-{
-    //proposedContentOffset是没有对齐到网格时本来应该停下的位置
-    CGFloat offsetAdjustment = MAXFLOAT;
-    CGFloat horizontalCenter = proposedContentOffset.x + (CGRectGetWidth(self.collectionView.bounds) / 2.0);</pre></p>
-
-<p>    CGRect targetRect = CGRectMake(proposedContentOffset.x, 0.0, self.collectionView.bounds.size.width, self.collectionView.bounds.size.height);<br />
-    NSArray* array = [super layoutAttributesForElementsInRect:targetRect];</p>
-
-<p>    //对当前屏幕中的UICollectionViewLayoutAttributes逐个与屏幕中心进行比较，找出最接近中心的一个<br />
-    for (UICollectionViewLayoutAttributes* layoutAttributes in array) {<br />
-        CGFloat itemHorizontalCenter = layoutAttributes.center.x;<br />
-        if (ABS(itemHorizontalCenter - horizontalCenter) &lt; ABS(offsetAdjustment)) {<br />
-        offsetAdjustment = itemHorizontalCenter - horizontalCenter;<br />
-        }<br />
-    }    <br />
-    return CGPointMake(proposedContentOffset.x + offsetAdjustment, proposedContentOffset.y);<br />
-}
-<p style="text-align: justify;">当前item放大</p></p>
-
-<p><pre>-(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
-{
-    NSArray* array = [super layoutAttributesForElementsInRect:rect];
-    CGRect visibleRect;
-    visibleRect.origin = self.collectionView.contentOffset;
-    visibleRect.size = self.collectionView.bounds.size;</pre></p>
-
-<p>    for (UICollectionViewLayoutAttributes* attributes in array) {<br />
-        if (CGRectIntersectsRect(attributes.frame, rect)) {<br />
-            CGFloat distance = CGRectGetMidX(visibleRect) - attributes.center.x;<br />
-            CGFloat normalizedDistance = distance / ACTIVE_DISTANCE;<br />
-            if (ABS(distance) &lt; ACTIVE_DISTANCE) {<br />
-                CGFloat zoom = 1 + ZOOM_FACTOR*(1 - ABS(normalizedDistance));<br />
-                attributes.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);<br />
-                attributes.zIndex = 1;<br />
-            }<br />
-        }<br />
-    }<br />
-    return array;<br />
-}
-<p style="text-align: justify;">对于个别UICollectionViewLayoutAttributes进行调整，以达到满足设计需求是UICollectionView使用中的一种思路。在根据位置提供不同layout属性的时候，需要记得让-shouldInvalidateLayoutForBoundsChange:返回YES，这样当边界改变的时候，-invalidateLayout会自动被发送，才能让layout得到刷新。</p></p>
-
-<p><h3 style="text-align: justify;">CircleLayout——完全自定义的Layout，添加删除item，以及手势识别</h3>
-<p style="text-align: justify;">CircleLayout的例子稍微复杂一些，cell分布在圆周上，点击cell的话会将其从collectionView中移出，点击空白处会加入一个cell，加入和移出都有动画效果。</p>
-<p style="text-align: justify;">这放在以前的话估计够写一阵子了，而得益于UICollectionView，基本只需要100来行代码就可以搞定这一切，非常cheap。通过CircleLayout的实现，可以完整地看到自定义的layout的编写流程，非常具有学习和借鉴的意义。</p>
-<p style="text-align: justify;"><img src="http://www.onevcat.com/wp-content/uploads/2012/06/QQ20120630-5.png" alt="CircleLayout" data-pinit="registered" /></p>
-<p style="text-align: justify;">首先，布局准备中定义了一些之后计算所需要用到的参数。</p></p>
-
-<p><pre>-(void)prepareLayout
-{   //和init相似，必须call super的prepareLayout以保证初始化正确
-    [super prepareLayout];</pre></p>
-
-<p>    CGSize size = self.collectionView.frame.size;<br />
-    _cellCount = [[self collectionView] numberOfItemsInSection:0];<br />
-    _center = CGPointMake(size.width / 2.0, size.height / 2.0);<br />
-    _radius = MIN(size.width, size.height) / 2.5;<br />
-}
-<p style="text-align: justify;">其实对于一个size不变的collectionView来说，除了_cellCount之外的中心和半径的定义也可以扔到init里去做，但是显然在prepareLayout里做的话具有更大的灵活性。因为每次重新给出layout时都会调用prepareLayout，这样在以后如果有collectionView大小变化的需求时也可以自动适应变化。</p>
-<p style="text-align: justify;">然后，按照UICollectionViewLayout子类的要求，重载了所需要的方法：</p></p>
-
-<p><pre>//整个collectionView的内容大小就是collectionView的大小（没有滚动）
--(CGSize)collectionViewContentSize
-{
-    return [self collectionView].frame.size;
-}</pre></p>
-
-<p>//通过所在的indexPath确定位置。<br />
-- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)path<br />
-{
-    UICollectionViewLayoutAttributes* attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:path]; //生成空白的attributes对象，其中只记录了类型是cell以及对应的位置是indexPath</p>
-
-<p>    //配置attributes到圆周上<br />
-    attributes.size = CGSizeMake(ITEM_SIZE, ITEM_SIZE);<br />
-    attributes.center = CGPointMake(_center.x + _radius * cosf(2 * path.item * M_PI / _cellCount), _center.y + _radius * sinf(2 * path.item * M_PI / _cellCount));<br />
-    return attributes;<br />
-}</p>
-
-<p>//用来在一开始给出一套UICollectionViewLayoutAttributes<br />
--(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect<br />
-{
-    NSMutableArray* attributes = [NSMutableArray array];<br />
-    for (NSInteger i=0 ; i &lt; self.cellCount; i++) {<br />
-        //这里利用了-layoutAttributesForItemAtIndexPath:来获取attributes<br />
-        NSIndexPath* indexPath = [NSIndexPath indexPathForItem:i inSection:0];<br />
-        [attributes addObject:[self layoutAttributesForItemAtIndexPath:indexPath]];<br />
-    }    <br />
-    return attributes;<br />
-}
-<p style="text-align: justify;">现在已经得到了一个circle layout。为了实现cell的添加和删除，需要为collectionView加上手势识别，这个很简单，在ViewController中：</p></p>
-
-<p><pre>UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-[self.collectionView addGestureRecognizer:tapRecognizer];</pre>
-<p style="text-align: justify;">对应的处理方法handleTapGesture:为</p></p>
-
-<p><pre>- (void)handleTapGesture:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint initialPinchPoint = [sender locationInView:self.collectionView];
-        NSIndexPath* tappedCellPath = [self.collectionView indexPathForItemAtPoint:initialPinchPoint]; //获取点击处的cell的indexPath
-        if (tappedCellPath!=nil) { //点击处没有cell
-            self.cellCount = self.cellCount - 1;
-            [self.collectionView performBatchUpdates:^{
-                [self.collectionView deleteItemsAtIndexPaths:[NSArray arrayWithObject:tappedCellPath]];
-            } completion:nil];
-        } else {
-            self.cellCount = self.cellCount + 1;
-            [self.collectionView performBatchUpdates:^{
-                [self.collectionView insertItemsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForItem:0 inSection:0]]];
-            } completion:nil];
-        }
-    }
-}</pre>
-<p style="text-align: justify;">performBatchUpdates:completion: 再次展示了block的强大的一面..这个方法可以用来对collectionView中的元素进行批量的插入，删除，移动等操作，同时将触发collectionView所对应的layout的对应的动画。相应的动画由layout中的下列四个方法来定义：</p></p>
-
-<p><ul style="text-align: justify;">
-	<li>initialLayoutAttributesForAppearingItemAtIndexPath:</li>
-	<li>initialLayoutAttributesForAppearingDecorationElementOfKind:atIndexPath:</li>
-	<li>finalLayoutAttributesForDisappearingItemAtIndexPath:</li>
-	<li>finalLayoutAttributesForDisappearingDecorationElementOfKind:atIndexPath:</li>
+<ul>
+<li>返回对应于indexPath的位置的cell的布局属性</li>
 </ul>
-<div style="text-align: justify;"><span style="color: #ff0000;">更正：正式版中API发生了变化（而且不止一次变化）。</span></div>
-<div style="text-align: justify;"><span style="color: #ff0000;">initialLayoutAttributesForInsertedItemAtIndexPath:在正式版中已经被废除。现在在insert或者delete之前，prepareForCollectionViewUpdates:会被调用，可以使用这个方法来完成添加/删除的布局。关于更多这方面的内容以及新的示例demo，可以参看<a href="http://markpospesel.wordpress.com/2012/10/25/fixing-circlelayout/">这篇博文</a>（需要翻墙）。新的示例demo在Github上也有，<a href="https://github.com/mpospese/CircleLayout">链接</a>。</span></div>
-<p style="text-align: justify;">在CircleLayout中，实现了cell的动画。</p></p>
+</li>
+<li><p>-(UICollectionViewLayoutAttributes <em>)layoutAttributesForSupplementaryViewOfKind:(NSString </em>)kind atIndexPath:(NSIndexPath *)indexPath</p>
 
-<p><pre>//插入前，cell在圆心位置，全透明
-- (UICollectionViewLayoutAttributes *)initialLayoutAttributesForInsertedItemAtIndexPath:(NSIndexPath *)itemIndexPath
-{
-    UICollectionViewLayoutAttributes* attributes = [self layoutAttributesForItemAtIndexPath:itemIndexPath];
-    attributes.alpha = 0.0;
-    attributes.center = CGPointMake(_center.x, _center.y);
-    return attributes;
-}</pre></p>
+<ul>
+<li>返回对应于indexPath的位置的追加视图的布局属性，如果没有追加视图可不重载</li>
+</ul>
+</li>
+<li><p>-(UICollectionViewLayoutAttributes * )layoutAttributesForDecorationViewOfKind:(NSString<em>)decorationViewKind atIndexPath:(NSIndexPath </em>)indexPath</p>
 
-<p>//删除时，cell在圆心位置，全透明，且只有原来的1/10大<br />
-- (UICollectionViewLayoutAttributes *)finalLayoutAttributesForDeletedItemAtIndexPath:(NSIndexPath *)itemIndexPath<br />
-{
-    UICollectionViewLayoutAttributes* attributes = [self layoutAttributesForItemAtIndexPath:itemIndexPath];<br />
-    attributes.alpha = 0.0;<br />
-    attributes.center = CGPointMake(_center.x, _center.y);<br />
-    attributes.transform3D = CATransform3DMakeScale(0.1, 0.1, 1.0);<br />
-    return attributes;<br />
-}
-<p style="text-align: justify;">在插入或删除时，将分别以插入前和删除后的attributes和普通状态下的attributes为基准，进行UIView的动画过渡。而这一切并没有很多代码要写，几乎是free的，感谢苹果…</p></p>
+<ul>
+<li>返回对应于indexPath的位置的装饰视图的布局属性，如果没有装饰视图可不重载</li>
+</ul>
+</li>
+<li><p>-(BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds</p>
 
-<p><hr /></p>
+<ul>
+<li>当边界发生改变时，是否应该刷新布局。如果YES则在边界变化（一般是scroll到其他地方）时，将重新计算需要的布局信息。</li>
+</ul>
+</li>
+</ul>
 
-<p><h2 style="text-align: justify;">布局之间的切换</h2>
-<p style="text-align: justify;">有时候可能需要不同的布局，Apple也提供了方便的布局间切换的方法。直接更改collectionView的collectionViewLayout属性可以立即切换布局。而如果通过setCollectionViewLayout:animated:，则可以在切换布局的同时，使用动画来过渡。对于每一个cell，都将有对应的UIView动画进行对应，又是一个接近free的特性。</p>
-<p style="text-align: justify;">对于我自己来说，UICollectionView可能是我转向iOS 6 SDK的最具有吸引力的特性之一，因为UIKit团队的努力和CoreAnimation的成熟，使得创建一个漂亮优雅的UI变的越来越简单了。可以断言说UICollectionView在今后的iOS开发中，一定会成为和UITableView一样的强大和最常用的类之一。在iOS 6还未正式上市前，先对其特性进行一些学习，以期尽快能使用新特性来简化开发流程，可以说是非常值得的。</p><!--:--><!--:en-->&nbsp;</p>
 
-<p>&nbsp;</p>
+<p>另外需要了解的是，在初始化一个UICollectionViewLayout实例后，会有一系列准备方法被自动调用，以保证layout实例的正确。</p>
 
-<p><!--:--><!--:ja-->&nbsp;</p>
+<p>首先，-(void)prepareLayout将被调用，默认下该方法什么没做，但是在自己的子类实现中，一般在该方法中设定一些必要的layout的结构和初始需要的参数等。</p>
 
-<p>&nbsp;</p>
+<p>之后，-(CGSize) collectionViewContentSize将被调用，以确定collection应该占据的尺寸。注意这里的尺寸不是指可视部分的尺寸，而应该是所有内容所占的尺寸。collectionView的本质是一个scrollView，因此需要这个尺寸来配置滚动行为。</p>
 
-<p><!--:--></p>
+<p>接下来-(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect被调用，这个没什么值得多说的。初始的layout的外观将由该方法返回的UICollectionViewLayoutAttributes来决定。</p>
+
+<p>另外，在需要更新layout时，需要给当前layout发送 -invalidateLayout，该消息会立即返回，并且预约在下一个loop的时候刷新当前layout，这一点和UIView的setNeedsLayout方法十分类似。在-invalidateLayout后的下一个collectionView的刷新loop中，又会从prepareLayout开始，依次再调用-collectionViewContentSize和-layoutAttributesForElementsInRect来生成更新后的布局。</p>
+
+<hr />
+
+<h2>Demo</h2>
+
+<p>说了那么多，其实还是Demo最能解决问题。Apple官方给了一个flow layout和一个circle layout的例子，都很经典，需要的同学可以从<a href="http://www.onevcat.com/wp-content/uploads/2012/08/advanced-collection-view-demo.zip">这里下载</a>。</p>
+
+<h3>LineLayout——对于个别UICollectionViewLayoutAttributes的调整</h3>
+
+<p>先看LineLayout，它继承了UICollectionViewFlowLayout这个Apple提供的基本的布局。它主要实现了单行布局，自动对齐到网格以及当前网格cell放大三个特性。如图：</p>
+
+<p><a href="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-1-e1346145550225.png"><img src="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-1-e1346145550225.png" title="collection-view-line-layout" alt="" /></a></p>
+
+<p>先看LineLayout的init方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">init</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">itemSize</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="n">ITEM_SIZE</span><span class="p">,</span> <span class="n">ITEM_SIZE</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">scrollDirection</span> <span class="o">=</span> <span class="n">UICollectionViewScrollDirectionHorizontal</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">sectionInset</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">minimumLineSpacing</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>self.sectionInset = UIEdgeInsetsMake(200, 0.0, 200, 0.0); 确定了缩进，此处为上方和下方各缩进200个point。由于cell的size已经定义了为200x200，因此屏幕上在缩进后就只有一排item的空间了。</p>
+
+<p>self.minimumLineSpacing = 50.0; 这个定义了每个item在水平方向上的最小间距。</p>
+
+<p>UICollectionViewFlowLayout是Apple为我们准备的开袋即食的现成布局，因此之前提到的几个必须重载的方法中需要我们操心的很少，即使完全不重载它们，现在也可以得到一个不错的线状一行的gridview了。而我们的LineLayout通过重载父类方法后，可以实现一些新特性，比如这里的动对齐到网格以及当前网格cell放大。</p>
+
+<p>自动对齐到网格</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nf">targetContentOffsetForProposedContentOffset:</span> <span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nv">proposedContentOffset</span> <span class="nf">withScrollingVelocity:</span><span class="p">(</span><span class="n">CGPoint</span><span class="p">)</span><span class="nv">velocity</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//proposedContentOffset是没有对齐到网格时本来应该停下的位置</span>
+</span><span class='line'>    <span class="n">CGFloat</span> <span class="n">offsetAdjustment</span> <span class="o">=</span> <span class="n">MAXFLOAT</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">CGFloat</span> <span class="n">horizontalCenter</span> <span class="o">=</span> <span class="n">proposedContentOffset</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">CGRectGetWidth</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">collectionView</span><span class="p">.</span><span class="n">bounds</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">CGRect</span> <span class="n">targetRect</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="n">proposedContentOffset</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">collectionView</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">collectionView</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">NSArray</span><span class="o">*</span> <span class="n">array</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">layoutAttributesForElementsInRect:</span><span class="n">targetRect</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//对当前屏幕中的UICollectionViewLayoutAttributes逐个与屏幕中心进行比较，找出最接近中心的一个</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">UICollectionViewLayoutAttributes</span><span class="o">*</span> <span class="n">layoutAttributes</span> <span class="k">in</span> <span class="n">array</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">CGFloat</span> <span class="n">itemHorizontalCenter</span> <span class="o">=</span> <span class="n">layoutAttributes</span><span class="p">.</span><span class="n">center</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">ABS</span><span class="p">(</span><span class="n">itemHorizontalCenter</span> <span class="o">-</span> <span class="n">horizontalCenter</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ABS</span><span class="p">(</span><span class="n">offsetAdjustment</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">offsetAdjustment</span> <span class="o">=</span> <span class="n">itemHorizontalCenter</span> <span class="o">-</span> <span class="n">horizontalCenter</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">proposedContentOffset</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">offsetAdjustment</span><span class="p">,</span> <span class="n">proposedContentOffset</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当前item放大</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="n">NSArray</span> <span class="o">*</span><span class="p">)</span><span class="nf">layoutAttributesForElementsInRect:</span><span class="p">(</span><span class="n">CGRect</span><span class="p">)</span><span class="nv">rect</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">NSArray</span> <span class="o">*</span><span class="n">array</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">layoutAttributesForElementsInRect:</span><span class="n">rect</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">CGRect</span> <span class="n">visibleRect</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">visibleRect</span><span class="p">.</span><span class="n">origin</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">collectionView</span><span class="p">.</span><span class="n">contentOffset</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">visibleRect</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">collectionView</span><span class="p">.</span><span class="n">bounds</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">UICollectionViewLayoutAttributes</span><span class="o">*</span> <span class="n">attributes</span> <span class="k">in</span> <span class="n">array</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">CGRectIntersectsRect</span><span class="p">(</span><span class="n">attributes</span><span class="p">.</span><span class="n">frame</span><span class="p">,</span> <span class="n">rect</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">CGFloat</span> <span class="n">distance</span> <span class="o">=</span> <span class="n">CGRectGetMidX</span><span class="p">(</span><span class="n">visibleRect</span><span class="p">)</span> <span class="o">-</span> <span class="n">attributes</span><span class="p">.</span><span class="n">center</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">CGFloat</span> <span class="n">normalizedDistance</span> <span class="o">=</span> <span class="n">distance</span> <span class="o">/</span> <span class="n">ACTIVE_DISTANCE</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">ABS</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ACTIVE_DISTANCE</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">CGFloat</span> <span class="n">zoom</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">ZOOM_FACTOR</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ABS</span><span class="p">(</span><span class="n">normalizedDistance</span><span class="p">));</span>
+</span><span class='line'>                <span class="n">attributes</span><span class="p">.</span><span class="n">transform3D</span> <span class="o">=</span> <span class="n">CATransform3DMakeScale</span><span class="p">(</span><span class="n">zoom</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">attributes</span><span class="p">.</span><span class="n">zIndex</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">array</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于个别UICollectionViewLayoutAttributes进行调整，以达到满足设计需求是UICollectionView使用中的一种思路。在根据位置提供不同layout属性的时候，需要记得让-shouldInvalidateLayoutForBoundsChange:返回YES，这样当边界改变的时候，-invalidateLayout会自动被发送，才能让layout得到刷新。</p>
+
+<h3>CircleLayout——完全自定义的Layout，添加删除item，以及手势识别</h3>
+
+<p>CircleLayout的例子稍微复杂一些，cell分布在圆周上，点击cell的话会将其从collectionView中移出，点击空白处会加入一个cell，加入和移出都有动画效果。</p>
+
+<p>这放在以前的话估计够写一阵子了，而得益于UICollectionView，基本只需要100来行代码就可以搞定这一切，非常cheap。通过CircleLayout的实现，可以完整地看到自定义的layout的编写流程，非常具有学习和借鉴的意义。</p>
+
+<p><img src="http://www.onevcat.com/wp-content/uploads/2012/06/QQ20120630-5.png" alt="CircleLayout" /></p>
+
+<p>首先，布局准备中定义了一些之后计算所需要用到的参数。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">prepareLayout</span>
+</span><span class='line'><span class="p">{</span>   <span class="c1">//和init相似，必须call super的prepareLayout以保证初始化正确</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">super</span> <span class="n">prepareLayout</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">CGSize</span> <span class="n">size</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">collectionView</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">_cellCount</span> <span class="o">=</span> <span class="p">[[</span><span class="n">self</span> <span class="n">collectionView</span><span class="p">]</span> <span class="nl">numberOfItemsInSection:</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">_center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">size</span><span class="p">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">size</span><span class="p">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_radius</span> <span class="o">=</span> <span class="n">MIN</span><span class="p">(</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.5</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其实对于一个size不变的collectionView来说，除了_cellCount之外的中心和半径的定义也可以扔到init里去做，但是显然在prepareLayout里做的话具有更大的灵活性。因为每次重新给出layout时都会调用prepareLayout，这样在以后如果有collectionView大小变化的需求时也可以自动适应变化。</p>
+
+<p>然后，按照UICollectionViewLayout子类的要求，重载了所需要的方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//整个collectionView的内容大小就是collectionView的大小（没有滚动）</span>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="n">CGSize</span><span class="p">)</span><span class="nf">collectionViewContentSize</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="n">self</span> <span class="n">collectionView</span><span class="p">].</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//通过所在的indexPath确定位置。</span>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="p">)</span><span class="nf">layoutAttributesForItemAtIndexPath:</span><span class="p">(</span><span class="n">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">path</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UICollectionViewLayoutAttributes</span><span class="o">*</span> <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">UICollectionViewLayoutAttributes</span> <span class="nl">layoutAttributesForCellWithIndexPath:</span><span class="n">path</span><span class="p">];</span> <span class="c1">//生成空白的attributes对象，其中只记录了类型是cell以及对应的位置是indexPath</span>
+</span><span class='line'>    <span class="c1">//配置attributes到圆周上</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="n">ITEM_SIZE</span><span class="p">,</span> <span class="n">ITEM_SIZE</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="p">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">_center</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">_radius</span> <span class="o">*</span> <span class="n">cosf</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">path</span><span class="p">.</span><span class="n">item</span> <span class="o">*</span> <span class="n">M_PI</span> <span class="o">/</span> <span class="n">_cellCount</span><span class="p">),</span> <span class="n">_center</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">_radius</span> <span class="o">*</span> <span class="n">sinf</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">path</span><span class="p">.</span><span class="n">item</span> <span class="o">*</span> <span class="n">M_PI</span> <span class="o">/</span> <span class="n">_cellCount</span><span class="p">));</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//用来在一开始给出一套UICollectionViewLayoutAttributes</span>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="n">NSArray</span><span class="o">*</span><span class="p">)</span><span class="nf">layoutAttributesForElementsInRect:</span><span class="p">(</span><span class="n">CGRect</span><span class="p">)</span><span class="nv">rect</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">NSMutableArray</span><span class="o">*</span> <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="n">NSInteger</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">self</span><span class="p">.</span><span class="n">cellCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//这里利用了-layoutAttributesForItemAtIndexPath:来获取attributes</span>
+</span><span class='line'>        <span class="n">NSIndexPath</span><span class="o">*</span> <span class="n">indexPath</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSIndexPath</span> <span class="nl">indexPathForItem:</span><span class="n">i</span> <span class="nl">inSection:</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">attributes</span> <span class="nl">addObject:</span><span class="p">[</span><span class="n">self</span> <span class="nl">layoutAttributesForItemAtIndexPath:</span><span class="n">indexPath</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在已经得到了一个circle layout。为了实现cell的添加和删除，需要为collectionView加上手势识别，这个很简单，在ViewController中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">UITapGestureRecognizer</span><span class="o">*</span> <span class="n">tapRecognizer</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UITapGestureRecognizer</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">handleTapGesture:</span><span class="p">)];</span>
+</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">collectionView</span> <span class="nl">addGestureRecognizer:</span><span class="n">tapRecognizer</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对应的处理方法handleTapGesture:为</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">handleTapGesture:</span><span class="p">(</span><span class="n">UITapGestureRecognizer</span> <span class="o">*</span><span class="p">)</span><span class="nv">sender</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">sender</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateEnded</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">CGPoint</span> <span class="n">initialPinchPoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">sender</span> <span class="nl">locationInView:</span><span class="n">self</span><span class="p">.</span><span class="n">collectionView</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">NSIndexPath</span><span class="o">*</span> <span class="n">tappedCellPath</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">collectionView</span> <span class="nl">indexPathForItemAtPoint:</span><span class="n">initialPinchPoint</span><span class="p">];</span> <span class="c1">//获取点击处的cell的indexPath</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">tappedCellPath</span><span class="o">!=</span><span class="nb">nil</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//点击处没有cell</span>
+</span><span class='line'>            <span class="n">self</span><span class="p">.</span><span class="n">cellCount</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">cellCount</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">collectionView</span> <span class="nl">performBatchUpdates:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">collectionView</span> <span class="nl">deleteItemsAtIndexPaths:</span><span class="p">[</span><span class="n">NSArray</span> <span class="nl">arrayWithObject:</span><span class="n">tappedCellPath</span><span class="p">]];</span>
+</span><span class='line'>            <span class="p">}</span> <span class="nl">completion:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">self</span><span class="p">.</span><span class="n">cellCount</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">cellCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">collectionView</span> <span class="nl">performBatchUpdates:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">collectionView</span> <span class="nl">insertItemsAtIndexPaths:</span><span class="p">[</span><span class="n">NSArray</span> <span class="nl">arrayWithObject:</span><span class="p">[</span><span class="n">NSIndexPath</span> <span class="nl">indexPathForItem:</span><span class="mi">0</span> <span class="nl">inSection:</span><span class="mi">0</span><span class="p">]]];</span>
+</span><span class='line'>            <span class="p">}</span> <span class="nl">completion:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>performBatchUpdates:completion: 再次展示了block的强大的一面..这个方法可以用来对collectionView中的元素进行批量的插入，删除，移动等操作，同时将触发collectionView所对应的layout的对应的动画。相应的动画由layout中的下列四个方法来定义：</p>
+
+<ul>
+<li>initialLayoutAttributesForAppearingItemAtIndexPath:</li>
+<li>initialLayoutAttributesForAppearingDecorationElementOfKind:atIndexPath:</li>
+<li>finalLayoutAttributesForDisappearingItemAtIndexPath:</li>
+<li>finalLayoutAttributesForDisappearingDecorationElementOfKind:atIndexPath:</li>
+</ul>
+
+
+<blockquote><p>更正：正式版中API发生了变化（而且不止一次变化
+initialLayoutAttributesForInsertedItemAtIndexPath:在正式版中已经被废除。现在在insert或者delete之前，prepareForCollectionViewUpdates:会被调用，可以使用这个方法来完成添加/删除的布局。关于更多这方面的内容以及新的示例demo，可以参看<a href="http://markpospesel.wordpress.com/2012/10/25/fixing-circlelayout/">这篇博文</a>（需要翻墙）。新的示例demo在Github上也有，<a href="https://github.com/mpospese/CircleLayout">链接</a></p></blockquote>
+
+<p>在CircleLayout中，实现了cell的动画。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//插入前，cell在圆心位置，全透明</span>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="p">)</span><span class="nf">initialLayoutAttributesForInsertedItemAtIndexPath:</span><span class="p">(</span><span class="n">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">itemIndexPath</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UICollectionViewLayoutAttributes</span><span class="o">*</span> <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">layoutAttributesForItemAtIndexPath:</span><span class="n">itemIndexPath</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="p">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="p">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">_center</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">_center</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//删除时，cell在圆心位置，全透明，且只有原来的1/10大</span>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="n">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="p">)</span><span class="nf">finalLayoutAttributesForDeletedItemAtIndexPath:</span><span class="p">(</span><span class="n">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">itemIndexPath</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">UICollectionViewLayoutAttributes</span><span class="o">*</span> <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">layoutAttributesForItemAtIndexPath:</span><span class="n">itemIndexPath</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="p">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="p">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">_center</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">_center</span><span class="p">.</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="p">.</span><span class="n">transform3D</span> <span class="o">=</span> <span class="n">CATransform3DMakeScale</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在插入或删除时，将分别以插入前和删除后的attributes和普通状态下的attributes为基准，进行UIView的动画过渡。而这一切并没有很多代码要写，几乎是free的，感谢苹果…</p>
+
+<hr />
+
+<h2>布局之间的切换</h2>
+
+<p>有时候可能需要不同的布局，Apple也提供了方便的布局间切换的方法。直接更改collectionView的collectionViewLayout属性可以立即切换布局。而如果通过setCollectionViewLayout:animated:，则可以在切换布局的同时，使用动画来过渡。对于每一个cell，都将有对应的UIView动画进行对应，又是一个接近free的特性。</p>
+
+<p>对于我自己来说，UICollectionView可能是我转向iOS 6 SDK的最具有吸引力的特性之一，因为UIKit团队的努力和CoreAnimation的成熟，使得创建一个漂亮优雅的UI变的越来越简单了。可以断言说UICollectionView在今后的iOS开发中，一定会成为和UITableView一样的强大和最常用的类之一。在iOS 6还未正式上市前，先对其特性进行一些学习，以期尽快能使用新特性来简化开发流程，可以说是非常值得的。</p>
 </div>
 
 </article>
