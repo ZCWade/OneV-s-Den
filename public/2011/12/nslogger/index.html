@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Log的艺术，顺带赞NSLogger 写代码易，调程序难。不论是多么资深的程序员，都不可能在毛线球一般的代码中弄清到底发生了什么，特别是当在程序在N多个线程中来回跳转和涉及到难以理解的内存操作的时候，我们不可避免地需要log的帮助来整理思路，确认到底发生了什么。而这时候，输出log的好坏和时机， &hellip;">
+	<meta name="description" content="Dec 8th, 2011 Log的艺术，顺带赞NSLogger 写代码易，调程序难。不论是多么资深的程序员，都不可能在毛线球一般的代码中弄清到底发生了什么，特别是当在程序在N多个线程中来回跳转和涉及到难以理解的内存操作的时候，我们不可避免地需要log的帮助来整理思路，确认到底发生了什么。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,6 +91,21 @@
 			
 			<div class="mid-col-container">
 				<div id="content" class="inner"><article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-12-08T00:00:00+09:00" data-updated="true" itemprop="datePublished">Dec 8<span>th</span>, 2011</time></div>
+	</div>
 	<h1 class="title" itemprop="name">Log的艺术，顺带赞NSLogger</h1>
 	<div class="entry-content" itemprop="articleBody"><p><p style="text-align: justify;"><a href="http://www.onevcat.com/wp-content/uploads/2011/12/nslogger.png"><img class="aligncenter size-full wp-image-404" title="nslogger" src="http://www.onevcat.com/wp-content/uploads/2011/12/nslogger.png" alt="" width="840" height="196" /></a>写代码易，调程序难。不论是多么资深的程序员，都不可能在毛线球一般的代码中弄清到底发生了什么，特别是当在程序在N多个线程中来回跳转和涉及到难以理解的内存操作的时候，我们不可避免地需要log的帮助来整理思路，确认到底发生了什么。而这时候，输出log的好坏和时机，往往决定了花在调试上的时间。<!--more--></p>
 <p style="text-align: justify;">其实某种程度上来说，log是一门艺术，而从输出log上往往也能判断程序员的水平。新手往往都很可爱，NSLog(@&#8221;Hello World&#8221;)会是不变的模式。不得不承认这样的输出如果在恰当的时候也能一击致命，但是它所能带给我们的信息量实在太少了。水平再高一点的程序员大概会在关键事件的时候在保证代码通用性的前提下使用诸如<a title="Objective-C中的Debug表达式" href="http://www.onevcat.com/2011/12/debug-2/">__func__</a>之类的东西监测程序流程。高级程序员在log方面就会显得大巧若拙，也许会把整个代码流的行为都进行log，而不漏掉任何一个细节，包括所有的内部状态、各种事件、异常等，完全受掌控的代码和预期中的程序行为是他们成功的关键。而传说中的大牛级人物可能把更多的注意力放在线程，网络等时序上可能出错的地方，无谓的内存释放或是某个超时的网络请求都不会遗漏。</p>

@@ -4,10 +4,9 @@ title: "WWDC 2013 Session笔记 - UIKit Dynamics入门"
 date: 2013-06-15 15:11
 comments: true
 categories: 能工巧匠集
-published: false
 ---
 
-这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看[这篇总览](http://onevcat.com/2013/06/developer-should-know-about-ios7/)。本文仅作为个人记录使用，不公开发布，请不要转载和随意发布，谢谢您的理解合作。
+这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看[这篇总览](http://onevcat.com/2013/06/developer-should-know-about-ios7/)。本文仅作为个人记录使用，也欢迎在[许可协议](http://creativecommons.org/licenses/by-nc/3.0/deed.zh)范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用[RSS](http://onevcat.com/atom.xml)或[邮件](http://eepurl.com/wNSkj)方式订阅本站，这样您将能在第一时间获取本站信息。
 
 本文涉及到的WWDC2013 Session有
 

@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Mar 24th, 2013 能工巧匠集 MGTwitterEngine中Twitter API 1.1的使用 在iOS5中使用Twitter framework或者在iOS6中使用Social framework来完成Twitter的集成是非常简单和轻松的， &hellip;">
+	<meta name="description" content="Apr 29th, 2013 能工巧匠集 iOS中使用blend改变图片颜色 最近对Core Animation和Core Graphics的内容东西比较感兴趣，自己之前也在这块相对薄弱，趁此机会也想补习一下这块的内容，所以之后几篇可能都会是对CA和CG学习的记录的文章。 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,6 +92,233 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-29T16:30:00+09:00" data-updated="true" itemprop="datePublished">Apr 29<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/04/using-blending-in-ios/" itemprop="url">iOS中使用blend改变图片颜色</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/blend_title.png" alt="使用Blend处理图片颜色" /></p>
+
+<p>最近对<code>Core Animation</code>和<code>Core Graphics</code>的内容东西比较感兴趣，自己之前也在这块相对薄弱，趁此机会也想补习一下这块的内容，所以之后几篇可能都会是对CA和CG学习的记录的文章。</p>
+
+<p>在应用里一个很常见的需求是主题变换：同样的图标，同样的素材，但是需要按照用户喜爱变为不同的颜色。在iOS5和6的SDK里部分标准控件引入了<code>tintColor</code>，来满足个性化界面的需求，但是Apple在这方面还远远做的不够。一是现在用默认控件根本难以做出界面优秀的应用，二是<code>tintColor</code>所覆盖的并不够全面，在很多情况下开发者都无法使用其来完成个性化定义。解决办法是什么？最简单当然是拜托设计师大大出图，想要蓝色主题？那好，开PS盖个蓝色图层出一套蓝色的UI；又想加粉色UI，那好，再出一套粉色的图然后导入Xcode。代码上的话根据颜色需求使用image-blue或者image-pink这样的名字来加载图片。</p>
+
+<p>如果有一丁点重构的意识，就会知道这不是一个很好的解决方案。工程中存在大量的冗余和重复（就算你要狡辩这些图片颜色不同不算重复，你也会在内心里知道这种狡辩是多么无力），这是非常致命的。想象一下如果你有10套主题界面，先不论应用的体积会膨胀到多少，光是想做一点修改就会痛苦万分，比如希望改一下某个按钮的形状，很好，设计师大大请重复地修改10遍，并出10套UI，然后一系列的重命名，文件移动和导入…一场灾难。</p>
+
+<p>当然有其他办法，因为说白了就是tint不同的颜色到图片上而已，如果我们能实现改变UIImage的颜色，那我们就只需要一套UI，然后用代码来改变UI的颜色就可以了，生活有木有一下光明起来呀。嗯，让我们先从一张图片开始吧～下面是一张带有alpha通道的图片，原始颜色是纯的灰色（当然什么颜色都可以，只不过我这个人现在暂时比较喜欢灰色而已）。</p>
+
+
+		
+		<a href="/2013/04/using-blending-in-ios/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-28T18:01:00+09:00" data-updated="true" itemprop="datePublished">Apr 28<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/nan-ji-bei-dou-ji/'>南箕北斗集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/04/itc-special-characters/" itemprop="url">苹果应用描述中不能使用特殊字符的对应方法</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/itc-special-character.png" alt="就是不让你用就是不让你用～" /></p>
+
+<p>虽然很早Apple就说过从5月1日开始就不再允许UDID以及没有对iPhone5优化的应用上架，但是这次iTunes Connect的对于描述字符的限制还是让很多开发者措手不及。毕竟事先完全没有和大家打过招呼，Apple想要统一应用市场的风格和体验的心态可以理解，但是在开发者难得还有一点自由发挥的应用描述的地方突然作出这样的限制，确实不太厚道。相关的新闻报道可以参看<a href="http://www.cnbeta.com/articles/234799.htm">这里</a></p>
+
+<p>但是，难道我们真的没法使用更漂亮的描述了么？答案是，有办法！解决办法就一句话，<strong>直接使用<code>字符值引用</code>来写iTC的描述就可以了～</strong></p>
+
+<p>比如，想使用<code>★</code>这个字符，在描述中将<code>★</code>的地方都换成<code>&amp;#9733;</code>就可以了。</p>
+
+<p>一句废话，对于字符转换，当然也有在线将特殊字符转换为字符值引用的服务：<a href="http://yasu.asuka.net/orkut/conv.html">传送门</a></p>
+
+<p>最后，祝大家五一快乐，假期好心情～ :)</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-13T01:22:00+09:00" data-updated="true" itemprop="datePublished">Apr 13<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/hu-yan-luan-yu-ji/'>胡言乱语集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/04/ios-interview/" itemprop="url">上级向的十个iOS面试问题</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/welcome-to-xcode.png" alt="Welcome to Xcode" /></p>
+
+<p>不管对于招聘和应聘来说，面试都是很重要的一个环节，特别对于开发者来说，面试中的技术问题环节不仅是企业对应聘者技能和积累的考察，也是一个开发者自我检验的好机会。对于iOS和Mac开发来说，因为本事还算比较新，企业对于这方面的开发者需求也比较大，所以面试时的要求可能并不是很高，一般能知道一些Cocoa和OC的基本知识也就认为可以了。但是对于一个希望拥有技术力基础的企业的iOS或者Mac开发来说，两到三个顶尖的熟练技术人员，带领一些还较为初级的开发者，共同完成项目应该是比较常见的构成。</p>
+
+<p>Cocoa特别是CocoaTouch的开发，上手可以说十分容易，但是背后隐藏的细节和原理却很丰富。一方面对于基础不够熟练和清晰（比如从一个AppDelegate开始用代码构建ViewController，或者清晰地说明栈和堆之类的概念），另一方面对于更进阶的开发知之甚少（比如多线程、网络异步处理或者Core开头的各种框架等等）。这些内容十分重要，但是可能现在一般的iOS开发者或多或少都在这些问题上存在薄弱。在这里我整理了一份面向于较高层级的iOS开发者的面试题目的问题清单，列出了十个应聘Leader级别的高级Cocoa/CocoaTouch开发工程师所应该掌握和理解的技术。这份列表没有提供标准答案，因为这些问题本身就没有标准答案。随每个人对这些内容的认识的不同和理解的差异，可以有不一样的答案。但是最基本地，如果面对的是一名资深的Cocoa开发者，至少期望能得到的答案都是“接触过”，并且能结合自己的经验说个七七八八，达到互相能明白意图和方法的地步。能够在其中两三个领域有不错的见解和具体的阐述的话，那是更好。这种对于知识覆盖面和深度的考察很能真实反映出开发者的技术水平。如果清单里的很大部分内容都是完全没接触过和没听过的话，那可能距离资深Cocoa开发这样一个阶段还尚有距离了。</p>
+
+<p>那么，面试开始。</p>
+
+
+		
+		<a href="/2013/04/ios-interview/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-06T11:54:00+09:00" data-updated="true" itemprop="datePublished">Apr 6<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/04/our-money-app/" itemprop="url">两个人一起记账吧～ Our Money</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="https://itunes.apple.com/cn/app/our-money/id562520527?ls=1&amp;mt=8"><img src="http://img.onevcat.com/2013/ourmoney-banner.jpg" alt="image" /></a></p>
+
+<p>Our Money是一款能够协助多人在云端记账的iOS应用，可以帮助您简单地记录和整理日常开销，您可以邀请您的朋友和家人与您一起记账，免去每日汇报总结之苦。</p>
+
+<ul>
+<li><a href="https://itunes.apple.com/cn/app/our-money/id562520527?ls=1&amp;mt=8">App Store地址</a></li>
+<li><a href="http://ourmoney.onevcat.com">Our Money app的首页</a></li>
+</ul>
+
+
+<p>大概但凡从按月领生活费开始花钱以来，都会兴起记账的念头，至于是否能够坚持，就各凭本事了。说到自己，则是多次付诸行动，然后不了了之。从一开始记在小本本上自己用计算器加加减减，到建个Excel文档自动求和，再到手机上的记账应用，时代在进步，咱的手段也在进步，却总还觉得没有找到最合适的工具。尤其是用手机记账以来，有的软件，每次对非得给一笔开销定义出两层的分类，让我头疼不已，家庭小帐非得整成个公司帐簿，改动标签也颇为麻烦；有的软件，记录条目倒是简单，但其他诸如统计等功能却也一起被简化了。不过，最让我郁闷的是，记账总成为我一个人的事情，谁让是用我的手机在记呢。</p>
+
+<p>现在，终于等到了一款操作简单但是功能齐全，尤其是，<strong>可以多人共同记账的应用</strong>。这款叫做Our Money 的应用，最大的亮点当然就在于“Our”。它可以实现多人一起记账，只要人手一个应用，就可以和家人一起记录家庭开销，和朋友一起整理出游费用，不同的帐本可以选择和不同的人分享，每个人都能参与，条目更新实时同步，再不用一个人负责所有的帐目。</p>
+
+<p>好啦，废话不多说，让我们一起来体验一下这个软件吧。<a href="https://itunes.apple.com/cn/app/our-money/id562520527?ls=1&amp;mt=8">下载应用</a>并打开，用邮箱注册用户，就可以开始记账啦。请记住你的邮箱是你邀请别人或者别人邀请你共同记账的标识哦～</p>
+
+
+		
+		<a href="/2013/04/our-money-app/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-01T23:47:00+09:00" data-updated="true" itemprop="datePublished">Apr 1<span>st</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/hu-yan-luan-yu-ji/'>胡言乱语集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/04/half-year-in-japan/" itemprop="url">赴日半年的一些杂感</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://i758.photobucket.com/albums/xx224/onevcat/OneV-s-Den/half-year-in-japan/2013-03-09125056.jpg" alt="樱花之国" /></p>
+
+<p>来日本已经足足有半年了，在这半年里见识了许多，也经历了许多。学生生涯的结束和职场生涯的开始，在这样的转变中积极投入到新的生活中去，大概也算是自己努力的一种方式。今天到公司很早，有机会整理一下这半年的一些体会和感想吧。</p>
+
+<h2>关于日本</h2>
+
+<p>其实日本对于中国和中国人来说，一直是个又爱又恨的国家。爱大抵是因为日本既有着无数的中国文化元素输入，同时又有着一大堆类似ACG的输出。前者拉近了中国与日本的距离，后者让世界有了解日本的窗口。而恨，基本都来源于七十多年前的那场战争。中国人的这种仇恨其实也并非与生俱来，而日本人也确实很难理解这种仇恨，我想这大抵和两个国家国民所受到的教育和舆论的导向不无关系。说到教育和舆论，中国的洗脑教育和言论管制估计在全球知名大国中是无出其右的。包括我在内，从小接受的就是长期而持续的仇恨教育灌输，所有能接触到的历史书籍中也都是宣扬两国民族仇恨的，我想这对于国人于日本的理解上造成了很大偏差。加上当代中国走了一些弯路，导致普遍性的国民信仰丢失和是非观的扭曲，导致了这种本不该存在的误解又进一步加深。</p>
+
+<p>相反地，在日本不管是电视新闻还是报纸，我都极少见到有针对中国的宣传。其实基本上电视新闻都很少会报道日本国外的消息。经常见到的都是本地哪个居民楼发生了火灾，或者谁家走失的猫狗被发现并寻找失主这样的消息。而唯一有的政治节目的形式一般是一大堆人坐成个圆桌讨论的形式，即使这样还是会请来不同方面的人，更像是一种讨论。比如之前说到钓鱼岛的问题，人员构成是两个主持+两个日本政界+两个中国人+一个美国人这样的组合，一群人都站在自己的利益角度吵得不亦乐乎。这在国内现在的请“砖家”出来唠叨教导大众的媒体模式下，应该是不可能出现的。</p>
+
+<p>但是同时，日本国民对于政治的不关心远远超出了我的想象，但是却正是一个这样对政治不关心的国家，却有着整个亚洲最民主的制度，这是一个很奇怪的现象。选举前几乎每天在车站都会有议员拿个喇叭宣扬自己党派和个人的理念思想，但路人匆匆都无人理睬（我想如果有人停下来和他辩论的话他也许会很开心）；到现在选举已经尘埃落定后也每周会有不同的政治家到处演说。在中国，就算在北京，你也绝不可能看到国家财政部或者人事部的部长在做街头演说，也没有可能直面总书记或者国家主席，但是这些事情我却都在日本经历了，而且是作为一个外国人在不经意间就都经历了。中日两国在政治上的差距，还很大很大，而中国想要走的民主道路（希望如此），也还很长很长。</p>
+
+
+		
+		<a href="/2013/04/half-year-in-japan/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -457,243 +684,6 @@ if (Time.timeScale == 0 ){
 <p style="text-align: justify;"><!--:-->
 		
 		<a href="/2012/11/memory-in-unity3d/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-29T00:00:00+09:00" data-updated="true" itemprop="datePublished">Oct 29<span>th</span>, 2012</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2012/10/perl-json-utf/" itemprop="url">Perl中JSON的解析和utf-8乱码的解决</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><!--:zh--><p style="text-align: justify;">最近在做一个带有网络通讯和同步功能的app，需要自己写一些后台的东西。因为是半路入门，所以从事开发以来就没有做过后台相关的工作，属于绝对的小白菜鸟。而因为公司在入职前给新员工提过学习Perl的要求，所以还算是稍微看过一些。这次的后台也直接就用Perl来写了。</p></p>
-
-<p><h3 style="text-align: justify;">基本使用</h3>
-<p style="text-align: justify;">和app的通讯，很大程度上依赖了JSON，一来是熟悉，二来是iOS现在解析JSON也十分方便。iOS客户端的话JSON的解析和生成都是没什么问题的：iOS5中加入了<a href="http://developer.apple.com/library/ios/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html">NSJSONSerialization</a>类来提供相关功能，如果希望支持更早的系统版本的话，相关的开源代码也有很多，也简单易用，比如<a href="http://stig.github.com/json-framework/">SBJson</a>或者<a href="https://github.com/johnezang/JSONKit">JSONKit</a>。同样，在Perl里也有不少类似的JSON处理的模块，最有名最早的应该是<a href="http://search.cpan.org/~makamaka/JSON-2.53/lib/JSON.pm">JSON</a>模块了，同时也简单易用，应该可以满足大部分情况下的需求了。</p>
-<p style="text-align: justify;"><!--:-->
-		
-		<a href="/2012/10/perl-json-utf/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-09-27T00:00:00+09:00" data-updated="true" itemprop="datePublished">Sep 27<span>th</span>, 2012</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/sui-sui-nian/'>碎碎念</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2012/09/see-you-my-country/" itemprop="url">再见，祖国</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><!--:zh--><p style="text-align: justify;">这篇日志发送的时候，我应该已经在离开中国的飞机上了，也有可能已经到达异国他乡了。这是一次不知道归期的旅途，也是一次充满未知的探索，从现在开始，祝自己好运。</p>
-<p style="text-align: justify;">我在中国待了二十六载春秋，对这片土地有着深厚的感情。无论何时何地，无论此去经年，这个经历了太多磨难和挫折并且面临着巨大挑战的国家，始终是我魂牵梦萦的地方。虽然还有各种问题，虽然不足和缺点明显到让人无力吐槽，但是这个国家是我的祖国。对于自己的国家，一个人是没有任何理由和立场去厌恶的。</p>
-<p style="text-align: justify;">记得本科入学式的时候，校长有这样一句话：“你们来到这里，是因为祖国选择了你们”。而讽刺的是，在四年或者七年后，我们中有一大批人选择了离开祖国，而且可能永远不会再回来。学校很尴尬的恢复成了最初成立时的“留美预备学校”的性质。确实，在这100年的时间里，似乎很多东西都回到了起点…</p>
-<p style="text-align: justify;">到达之后可能会消失一段时间了，因为网络和通讯以及生活的安定都会需要一段时间。之后的blog风格依然会以iOS开发的技术的入门介绍为主，当然因为在国外一切都很新鲜，也许国外生活的介绍和感想的比例会稍微高一些。也许工作会相当忙，但是我仍然希望能有时间做一些工作之外的自己的事情，因为毕竟工作只是工作，它的目的不是代替生活，而是服务生活的～</p>
-<p style="text-align: justify;">那么，祖国，再见。</p><!--:--><!--:en-->&nbsp;</p>
-
-<p><!--:--><!--:ja-->&nbsp;</p>
-
-<p><!--:--></p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-09-20T00:00:00+09:00" data-updated="true" itemprop="datePublished">Sep 20<span>th</span>, 2012</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2012/09/autoayout/" itemprop="url">WWDC 2012 Session笔记——202, 228, 232 AutoLayout（自动布局）入门</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://www.onevcat.com/wp-content/uploads/2012/09/QQ20120920-8.png" alt="" /></p>
-
-<p>这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看<a href="http://www.onevcat.com/tag/wwdc/">这里</a>。如果您是首次来到本站，也许您会有兴趣通过<a href="http://onevcat.com/atom.xml">RSS</a>，或者通过页面左侧的邮件订阅的方式订阅本站。</p>
-
-<p>AutoLayout在去年的WWDC上被引入Cocoa，而在今年的WWDC上，Apple不惜花费了三个Session的前所未见的篇幅来详细地向开发者讲解AutoLayout在iOS上的应用，是由起原因的：iPhone5的屏幕将变为4寸，开发者即将面临为不同尺寸屏幕进行应用适配的工作。Android平台开发中最令人诟病的适配工作的厄运现在似乎也将降临在iOS开发者的头上。基于这样的情况，Apple大力推广使用AutoLayout的方法来进行UI布局，以一举消除适配的烦恼。AutoLayout将是自Interface Builder和StoryBoard之后UI制作上又一次重要的变化，也必然是之后iOS开发的趋势，因此这个专题很值得学习。</p>
-
-<h2>AutoLayout是什么？</h2>
-
-<p>使用一句Apple的官方定义的话</p>
-
-<blockquote><p>AutoLayout是一种基于约束的，描述性的布局系统。
-Auto Layout Is a Constraint-Based, Descriptive Layout System.</p></blockquote>
-
-<p>关键词：</p>
-
-<ul>
-<li>基于约束 － 和以往定义frame的位置和尺寸不同，AutoLayout的位置确定是以所谓相对位置的约束来定义的，比如<em>x坐标为superView的中心，y坐标为屏幕底部上方10像素</em>等</li>
-<li>描述性 － 约束的定义和各个view的关系使用接近自然语言或者可视化语言（稍后会提到）的方法来进行描述</li>
-<li>布局系统 － 即字面意思，用来负责界面的各个元素的位置。</li>
-</ul>
-
-
-
-		
-		<a href="/2012/09/autoayout/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-28T00:00:00+09:00" data-updated="true" itemprop="datePublished">Aug 28<span>th</span>, 2012</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2012/08/advanced-collection-view/" itemprop="url">WWDC 2012 Session笔记——219 Advanced Collection Views and Building Custom Layouts</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-3.png"><img src="http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-3.png" title="uicollectionview-struct" alt="" /></a></p>
-
-<p>这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看<a href="http://www.onevcat.com/tag/wwdc/">这里</a>。如果您是首次来到本站，也许您会有兴趣通过<a href="http://onevcat.com/atom.xml">RSS</a>，或者通过页面左侧的邮件订阅的方式订阅本站。</p>
-
-<p>在上一篇<a href="http://www.onevcat.com/2012/06/introducing-collection-views/">UICollectionView的入门介绍</a>中，大概地对iOS6新加入的强大的UICollectionView进行了一些说明。在这篇博文中，将结合WWDC2012 Session219：Advanced Collection View的内容，对Collection View进行一个深入的使用探讨，并给出一个自定义的Demo。</p>
-
-<h2>UICollectionView的结构回顾</h2>
-
-<p>首先回顾一下Collection View的构成，我们能看到的有三个部分：</p>
-
-<ul>
-<li>Cells</li>
-<li>Supplementary Views 追加视图 （类似Header或者Footer）</li>
-<li>Decoration Views 装饰视图 （用作背景展示）</li>
-</ul>
-
-
-<p>而在表面下，由两个方面对UICollectionView进行支持。其中之一和tableView一样，即提供数据的UICollectionViewDataSource以及处理用户交互的UICollectionViewDelegate。另一方面，对于cell的样式和组织方式，由于collectionView比tableView要复杂得多，因此没有按照类似于tableView的style的方式来定义，而是专门使用了一个类来对collectionView的布局和行为进行描述，这就是UICollectionViewLayout。</p>
-
-<p>这次的笔记将把重点放在UICollectionViewLayout上，因为这不仅是collectionView和tableView的最重要求的区别，也是整个UICollectionView的精髓所在。</p>
-
-
-		
-		<a href="/2012/08/advanced-collection-view/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-11T00:00:00+09:00" data-updated="true" itemprop="datePublished">Aug 11<span>th</span>, 2012</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/hu-yan-luan-yu-ji/'>胡言乱语集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2012/08/not-a-studen/" itemprop="url">学生时代的终焉</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><!--:zh--><p style="text-align: justify;"><a href="http://www.onevcat.com/wp-content/uploads/2012/08/me.jpg"><img class="aligncenter size-full wp-image-973" title="student" src="http://www.onevcat.com/wp-content/uploads/2012/08/me.jpg" alt="" width="838" height="256" data-pinit="registered" /></a></p>
-<p style="text-align: justify;">距离研究生毕业，已经过去一个月了。在毕业季的离愁和从学生身份的转变的怅惘渐渐淡去时，大概是时候对我的整个的大学生涯做一个小结了。很多事情的记忆已经在时间的冲蚀中变得模糊了，但是也有一些事情比其他的琐事更深地印刻在了记忆之中，也许简单的梳理和回忆，无法把这七年刻画的细致入微，但是作为轮廓的勾勒和回顾，却已然绰绰有余了。（写完之后终于发现又被写成标准流水账了，这个从小学开始的写作文的毛病在不写博客两个月之后再次复发了哎…）</p></p>
-
-<p><h3 style="text-align: justify;">悲剧的开始</h3>
-<p style="text-align: justify;">大学本科加上研究生，七年时间，说长不长，说短却也不短。在经历了中学时代的辉煌之后，我终于还是在大学里找到了自己真正的位置。如果大学不在清华，如果不在清华里可谓最变态的电子系，如果不在清华里可谓最变态的电子系中最变态的班的话，也许我的大学生活会完全不一样吧。</p>
-<p style="text-align: justify;">这里有在央视热门节目露过脸的高考状元，</p>
-<p style="text-align: justify;">这里有“百度一下”能检出几万条结果的全省第一，</p>
-<p style="text-align: justify;">这里有奥数好几块金牌的超级达人，</p>
-<p style="text-align: justify;">这里有中学带了五个社团还能考到第一的变态，</p>
-<p style="text-align: justify;">这里有之后叱咤清华被老师们认可为几十年难遇的特奖得主和学生会主席。</p>
-<p style="text-align: justify;">当然，这里还有我，一个基本是以倒数一二的成绩分到这个班的可怜的差生。虽然说来之前已经被打过预防针，但是我真的不知道，这七年，会这么开始。</p>
-<p style="text-align: justify;"><!--:-->
-		
-		<a href="/2012/08/not-a-studen/" class="more-link">继续阅读</a>
 	</div>
 
 </article>
