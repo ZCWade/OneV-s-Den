@@ -198,7 +198,7 @@ prepareLayout将在CollectionView进行排版的时候被调用。首先当然�
 
 ![带有弹性效果的collecitonView](http://img.onevcat.com/2013/spring-collection-view-over-ios7.gif)
 
-当然，通过调节`damping`，`frequency`和scrollResistance的系数等参数，可以得到弹性不同的效果，比如更多的震荡或者更大的幅度等等。
+当然，通过调节`damping`，`frequency`和`scrollResistance`的系数等参数，可以得到弹性不同的效果，比如更多的震荡或者更大的幅度等等。
 
 这个layout实现起来非常简单，我顺便封装了一下放到了Github上，大家有需要的话可以[点击这里下载](https://github.com/onevcat/VVSpringCollectionViewFlowLayout)并直接使用。
 			

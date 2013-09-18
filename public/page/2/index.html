@@ -7,7 +7,8 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Apr 29th, 2013 能工巧匠集 iOS中使用blend改变图片颜色 最近对Core Animation和Core Graphics的内容东西比较感兴趣，自己之前也在这块相对薄弱，趁此机会也想补习一下这块的内容，所以之后几篇可能都会是对CA和CG学习的记录的文章。 &hellip;">
+	<meta name="description" content="Apr 6th, 2013 能工巧匠集 两个人一起记账吧～ Our Money Our Money是一款能够协助多人在云端记账的iOS应用，可以帮助您简单地记录和整理日常开销，您可以邀请您的朋友和家人与您一起记账，免去每日汇报总结之苦。 App Store地址
+Our Money app的首页 &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,137 +93,6 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-29T16:30:00+09:00" data-updated="true" itemprop="datePublished">Apr 29<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/04/using-blending-in-ios/" itemprop="url">iOS中使用blend改变图片颜色</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://img.onevcat.com/2013/blend_title.png" alt="使用Blend处理图片颜色" /></p>
-
-<p>最近对<code>Core Animation</code>和<code>Core Graphics</code>的内容东西比较感兴趣，自己之前也在这块相对薄弱，趁此机会也想补习一下这块的内容，所以之后几篇可能都会是对CA和CG学习的记录的文章。</p>
-
-<p>在应用里一个很常见的需求是主题变换：同样的图标，同样的素材，但是需要按照用户喜爱变为不同的颜色。在iOS5和6的SDK里部分标准控件引入了<code>tintColor</code>，来满足个性化界面的需求，但是Apple在这方面还远远做的不够。一是现在用默认控件根本难以做出界面优秀的应用，二是<code>tintColor</code>所覆盖的并不够全面，在很多情况下开发者都无法使用其来完成个性化定义。解决办法是什么？最简单当然是拜托设计师大大出图，想要蓝色主题？那好，开PS盖个蓝色图层出一套蓝色的UI；又想加粉色UI，那好，再出一套粉色的图然后导入Xcode。代码上的话根据颜色需求使用image-blue或者image-pink这样的名字来加载图片。</p>
-
-<p>如果有一丁点重构的意识，就会知道这不是一个很好的解决方案。工程中存在大量的冗余和重复（就算你要狡辩这些图片颜色不同不算重复，你也会在内心里知道这种狡辩是多么无力），这是非常致命的。想象一下如果你有10套主题界面，先不论应用的体积会膨胀到多少，光是想做一点修改就会痛苦万分，比如希望改一下某个按钮的形状，很好，设计师大大请重复地修改10遍，并出10套UI，然后一系列的重命名，文件移动和导入…一场灾难。</p>
-
-<p>当然有其他办法，因为说白了就是tint不同的颜色到图片上而已，如果我们能实现改变UIImage的颜色，那我们就只需要一套UI，然后用代码来改变UI的颜色就可以了，生活有木有一下光明起来呀。嗯，让我们先从一张图片开始吧～下面是一张带有alpha通道的图片，原始颜色是纯的灰色（当然什么颜色都可以，只不过我这个人现在暂时比较喜欢灰色而已）。</p>
-
-
-		
-		<a href="/2013/04/using-blending-in-ios/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-28T18:01:00+09:00" data-updated="true" itemprop="datePublished">Apr 28<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/nan-ji-bei-dou-ji/'>南箕北斗集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/04/itc-special-characters/" itemprop="url">苹果应用描述中不能使用特殊字符的对应方法</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://img.onevcat.com/2013/itc-special-character.png" alt="就是不让你用就是不让你用～" /></p>
-
-<p>虽然很早Apple就说过从5月1日开始就不再允许UDID以及没有对iPhone5优化的应用上架，但是这次iTunes Connect的对于描述字符的限制还是让很多开发者措手不及。毕竟事先完全没有和大家打过招呼，Apple想要统一应用市场的风格和体验的心态可以理解，但是在开发者难得还有一点自由发挥的应用描述的地方突然作出这样的限制，确实不太厚道。相关的新闻报道可以参看<a href="http://www.cnbeta.com/articles/234799.htm">这里</a></p>
-
-<p>但是，难道我们真的没法使用更漂亮的描述了么？答案是，有办法！解决办法就一句话，<strong>直接使用<code>字符值引用</code>来写iTC的描述就可以了～</strong></p>
-
-<p>比如，想使用<code>★</code>这个字符，在描述中将<code>★</code>的地方都换成<code>&amp;#9733;</code>就可以了。</p>
-
-<p>一句废话，对于字符转换，当然也有在线将特殊字符转换为字符值引用的服务：<a href="http://yasu.asuka.net/orkut/conv.html">传送门</a></p>
-
-<p>最后，祝大家五一快乐，假期好心情～ :)</p>
-
-		
-		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-13T01:22:00+09:00" data-updated="true" itemprop="datePublished">Apr 13<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/hu-yan-luan-yu-ji/'>胡言乱语集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/04/ios-interview/" itemprop="url">上级向的十个iOS面试问题</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://img.onevcat.com/2013/welcome-to-xcode.png" alt="Welcome to Xcode" /></p>
-
-<p>不管对于招聘和应聘来说，面试都是很重要的一个环节，特别对于开发者来说，面试中的技术问题环节不仅是企业对应聘者技能和积累的考察，也是一个开发者自我检验的好机会。对于iOS和Mac开发来说，因为本事还算比较新，企业对于这方面的开发者需求也比较大，所以面试时的要求可能并不是很高，一般能知道一些Cocoa和OC的基本知识也就认为可以了。但是对于一个希望拥有技术力基础的企业的iOS或者Mac开发来说，两到三个顶尖的熟练技术人员，带领一些还较为初级的开发者，共同完成项目应该是比较常见的构成。</p>
-
-<p>Cocoa特别是CocoaTouch的开发，上手可以说十分容易，但是背后隐藏的细节和原理却很丰富。一方面对于基础不够熟练和清晰（比如从一个AppDelegate开始用代码构建ViewController，或者清晰地说明栈和堆之类的概念），另一方面对于更进阶的开发知之甚少（比如多线程、网络异步处理或者Core开头的各种框架等等）。这些内容十分重要，但是可能现在一般的iOS开发者或多或少都在这些问题上存在薄弱。在这里我整理了一份面向于较高层级的iOS开发者的面试题目的问题清单，列出了十个应聘Leader级别的高级Cocoa/CocoaTouch开发工程师所应该掌握和理解的技术。这份列表没有提供标准答案，因为这些问题本身就没有标准答案。随每个人对这些内容的认识的不同和理解的差异，可以有不一样的答案。但是最基本地，如果面对的是一名资深的Cocoa开发者，至少期望能得到的答案都是“接触过”，并且能结合自己的经验说个七七八八，达到互相能明白意图和方法的地步。能够在其中两三个领域有不错的见解和具体的阐述的话，那是更好。这种对于知识覆盖面和深度的考察很能真实反映出开发者的技术水平。如果清单里的很大部分内容都是完全没接触过和没听过的话，那可能距离资深Cocoa开发这样一个阶段还尚有距离了。</p>
-
-<p>那么，面试开始。</p>
-
-
-		
-		<a href="/2013/04/ios-interview/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -684,6 +554,143 @@ if (Time.timeScale == 0 ){
 <p style="text-align: justify;"><!--:-->
 		
 		<a href="/2012/11/memory-in-unity3d/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-29T00:00:00+09:00" data-updated="true" itemprop="datePublished">Oct 29<span>th</span>, 2012</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2012/10/perl-json-utf/" itemprop="url">Perl中JSON的解析和utf-8乱码的解决</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><!--:zh--><p style="text-align: justify;">最近在做一个带有网络通讯和同步功能的app，需要自己写一些后台的东西。因为是半路入门，所以从事开发以来就没有做过后台相关的工作，属于绝对的小白菜鸟。而因为公司在入职前给新员工提过学习Perl的要求，所以还算是稍微看过一些。这次的后台也直接就用Perl来写了。</p></p>
+
+<p><h3 style="text-align: justify;">基本使用</h3>
+<p style="text-align: justify;">和app的通讯，很大程度上依赖了JSON，一来是熟悉，二来是iOS现在解析JSON也十分方便。iOS客户端的话JSON的解析和生成都是没什么问题的：iOS5中加入了<a href="http://developer.apple.com/library/ios/#documentation/Foundation/Reference/NSJSONSerialization_Class/Reference/Reference.html">NSJSONSerialization</a>类来提供相关功能，如果希望支持更早的系统版本的话，相关的开源代码也有很多，也简单易用，比如<a href="http://stig.github.com/json-framework/">SBJson</a>或者<a href="https://github.com/johnezang/JSONKit">JSONKit</a>。同样，在Perl里也有不少类似的JSON处理的模块，最有名最早的应该是<a href="http://search.cpan.org/~makamaka/JSON-2.53/lib/JSON.pm">JSON</a>模块了，同时也简单易用，应该可以满足大部分情况下的需求了。</p>
+<p style="text-align: justify;"><!--:-->
+		
+		<a href="/2012/10/perl-json-utf/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-27T00:00:00+09:00" data-updated="true" itemprop="datePublished">Sep 27<span>th</span>, 2012</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/sui-sui-nian/'>碎碎念</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2012/09/see-you-my-country/" itemprop="url">再见，祖国</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><!--:zh--><p style="text-align: justify;">这篇日志发送的时候，我应该已经在离开中国的飞机上了，也有可能已经到达异国他乡了。这是一次不知道归期的旅途，也是一次充满未知的探索，从现在开始，祝自己好运。</p>
+<p style="text-align: justify;">我在中国待了二十六载春秋，对这片土地有着深厚的感情。无论何时何地，无论此去经年，这个经历了太多磨难和挫折并且面临着巨大挑战的国家，始终是我魂牵梦萦的地方。虽然还有各种问题，虽然不足和缺点明显到让人无力吐槽，但是这个国家是我的祖国。对于自己的国家，一个人是没有任何理由和立场去厌恶的。</p>
+<p style="text-align: justify;">记得本科入学式的时候，校长有这样一句话：“你们来到这里，是因为祖国选择了你们”。而讽刺的是，在四年或者七年后，我们中有一大批人选择了离开祖国，而且可能永远不会再回来。学校很尴尬的恢复成了最初成立时的“留美预备学校”的性质。确实，在这100年的时间里，似乎很多东西都回到了起点…</p>
+<p style="text-align: justify;">到达之后可能会消失一段时间了，因为网络和通讯以及生活的安定都会需要一段时间。之后的blog风格依然会以iOS开发的技术的入门介绍为主，当然因为在国外一切都很新鲜，也许国外生活的介绍和感想的比例会稍微高一些。也许工作会相当忙，但是我仍然希望能有时间做一些工作之外的自己的事情，因为毕竟工作只是工作，它的目的不是代替生活，而是服务生活的～</p>
+<p style="text-align: justify;">那么，祖国，再见。</p><!--:--><!--:en-->&nbsp;</p>
+
+<p><!--:--><!--:ja-->&nbsp;</p>
+
+<p><!--:--></p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-20T00:00:00+09:00" data-updated="true" itemprop="datePublished">Sep 20<span>th</span>, 2012</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2012/09/autoayout/" itemprop="url">WWDC 2012 Session笔记——202, 228, 232 AutoLayout（自动布局）入门</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://www.onevcat.com/wp-content/uploads/2012/09/QQ20120920-8.png" alt="" /></p>
+
+<p>这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看<a href="http://www.onevcat.com/tag/wwdc/">这里</a>。如果您是首次来到本站，也许您会有兴趣通过<a href="http://onevcat.com/atom.xml">RSS</a>，或者通过页面左侧的邮件订阅的方式订阅本站。</p>
+
+<p>AutoLayout在去年的WWDC上被引入Cocoa，而在今年的WWDC上，Apple不惜花费了三个Session的前所未见的篇幅来详细地向开发者讲解AutoLayout在iOS上的应用，是由起原因的：iPhone5的屏幕将变为4寸，开发者即将面临为不同尺寸屏幕进行应用适配的工作。Android平台开发中最令人诟病的适配工作的厄运现在似乎也将降临在iOS开发者的头上。基于这样的情况，Apple大力推广使用AutoLayout的方法来进行UI布局，以一举消除适配的烦恼。AutoLayout将是自Interface Builder和StoryBoard之后UI制作上又一次重要的变化，也必然是之后iOS开发的趋势，因此这个专题很值得学习。</p>
+
+<h2>AutoLayout是什么？</h2>
+
+<p>使用一句Apple的官方定义的话</p>
+
+<blockquote><p>AutoLayout是一种基于约束的，描述性的布局系统。
+Auto Layout Is a Constraint-Based, Descriptive Layout System.</p></blockquote>
+
+<p>关键词：</p>
+
+<ul>
+<li>基于约束 － 和以往定义frame的位置和尺寸不同，AutoLayout的位置确定是以所谓相对位置的约束来定义的，比如<em>x坐标为superView的中心，y坐标为屏幕底部上方10像素</em>等</li>
+<li>描述性 － 约束的定义和各个view的关系使用接近自然语言或者可视化语言（稍后会提到）的方法来进行描述</li>
+<li>布局系统 － 即字面意思，用来负责界面的各个元素的位置。</li>
+</ul>
+
+
+
+		
+		<a href="/2012/09/autoayout/" class="more-link">继续阅读</a>
 	</div>
 
 </article>

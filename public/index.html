@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Sep 1st, 2013 能工巧匠集 WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作 这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看这篇总览。本文仅作为个人记录使用，也欢迎在许可协议范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。 &hellip;">
+	<meta name="description" content="Aug 31st, 2013 能工巧匠集 猫都能学会的Unity3D Shader入门指南（二） 关于本系列 这是Unity3D Shader入门指南系列的第二篇，本系列面向的对象是新接触Shader开发的Unity3D使用者，因为我本身自己也是Shader初学者，因此可能会存在错误或者疏漏， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -108,62 +108,6 @@
   
 
 
-<time datetime="2013-09-01T23:03:00+09:00" data-updated="true" itemprop="datePublished">Sep 1<span>st</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/09/spring-list-like-ios7-message/" itemprop="url">WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 206 Getting Started with UIKit Dynamics</li>
-<li>Session 217 Exploring Scroll Views in iOS7</li>
-</ul>
-
-
-<p>UIScrollView可以说是UIKit中最重要的类之一了，包括UITableView和UICollectionView等重要的数据容器类都是UIScrollView的子类。在历年的WWDC上，UIScrollView和相关的API都有专门的主题进行介绍，也可以看出这个类的使用和变化之快。今年也不例外，因为iOS7完全重新定义了UI，这使得UIScrollView里原来不太会使用的一些用法和实现的效果在新的系统中得到了很好的表现。另外，由于引入了UIKit Dynamics，我们还可以结合ScrollView做出一些以前不太可能或者需要花费很大力气来实现的效果，包括带有重力的swipe或者是类似新的信息app中的带有弹簧效果聊天泡泡等。如果您还不太了解iOS7中信息app的效果，这里有一张gif图可以帮您大概了解一下：</p>
-
-<p><img src="http://img.onevcat.com/2013/ios7-message-app-spring.gif" alt="iOS7中信息app的弹簧效果" /></p>
-
-<p>这次笔记的内容主要就是实现一个这样的效果。为了避免重复造轮子，我对这个效果进行了一些简单的封装，并连同这篇笔记的demo一起扔在了Github上，有需要的童鞋可以<a href="https://github.com/onevcat/VVSpringCollectionViewFlowLayout">到这里</a>自取。</p>
-
-<p>iOS7的SDK中Apple最大的野心其实是想用SpriteKit来结束iOS平台游戏开发（至少是2D游戏开发）的乱战，统一游戏开发的方式并建立良性社区。而UIKit Dynamics，个人猜测Apple在花费力气为SpriteKit开发了物理引擎的同时，发现在UIKit中也可以使用，并能得到不错的效果，于是顺便革新了一下设计理念，在UI设计中引入了不少物理的概念。在iOS系统中，最为典型的应用是锁屏界面打开相机时中途放弃后的重力下坠+反弹的效果，另一个就是信息应用中的加入弹性的消息列表了。弹性列表在我自己上手试过以后觉得表现形式确实很生动，可以消除原来列表那种冷冰冰的感觉，是有可能在今后的设计中被大量使用的，因此决定学上一学。</p>
-
-<p>首先我们需要知道要如何实现这样一种效果，我们会用到哪些东西。毋庸置疑，如果不使用UIKit Dynamics的话，自己从头开始来完成会是一件非常费力的事情，你可能需要实现一套位置计算和物理模拟来使效果看起来真实滑润。而UIKit Dynamics中已经给我们提供了现成的弹簧效果，可以用<code>UIAttachmentBehavior</code>进行实现。另外，在说到弹性效果的时候，我们其实是在描述一个列表中的各个cell之间的关系，对于传统的UITableView来说，描述UITableViewCell之间的关系是比较复杂的（因为Apple已经把绝大多数工作做了，包括计算cell位置和位移等。使用越简单，定制就会越麻烦在绝大多数情况下都是真理）。而UICollectionView则通过layout来完成cell之间位置关系的描述，给了开发者较大的空间来实现布局。另外，UIKit Dynamics为UICollectionView做了很多方便的Catagory，可以很容易地“指导”UICollectionView利用加入物理特性计算后的结果，在实现弹性效果的时候，UICollectionView是我们不二的选择。</p>
-
-<p>如果您在阅读这篇笔记的时候遇到困难的话，建议您可以看看我之前的一些笔记，包括今年的<a href="http://onevcat.com/2013/06/uikit-dynamics-started/">UIKit Dynamics的介绍</a>和去年的<a href="http://onevcat.com/2012/06/introducing-collection-views/">UICollectionView介绍</a>。</p>
-
-
-		
-		<a href="/2013/09/spring-list-like-ios7-message/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
 <time datetime="2013-08-31T22:18:00+09:00" data-updated="true" itemprop="datePublished">Aug 31<span>st</span>, 2013</time></div>
 		<div class="tags">
 
@@ -189,75 +133,6 @@
 
 		
 		<a href="/2013/08/shader-tutorial-2/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-17T19:16:00+09:00" data-updated="true" itemprop="datePublished">Aug 17<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/08/ios7-background-multitask/" itemprop="url">WWDC 2013 Session笔记 - iOS7中的多任务</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://img.onevcat.com/2013/ios7-multitasking.jpg" alt="iOS7的后台多任务特性" /></p>
-
-<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 204 What&#8217;s New with Multitasking</li>
-<li>Session 705 What’s New in Foundation Networking</li>
-</ul>
-
-
-<h2>iOS7以前的Multitasking</h2>
-
-<p>iOS的多任务是在iOS4的时候被引入的，在此之前iOS的app都是按下Home键就被干掉了。iOS4虽然引入了后台和多任务，但是实际上是伪多任务，一般的app后台并不能执行自己的代码，只有少数几类服务在通过注册后可以真正在后台运行，并且在提交到AppStore的时候也会被严格审核是否有越权行为，这种限制主要是出于对于设备的续航和安全两方面进行的考虑。之后经过iOS5和6的逐渐发展，后台能运行的服务的种类虽然出现了增加，但是iOS后台的本质并没有变化。在iOS7之前，系统所接受的应用多任务可以大致分为几种：</p>
-
-<ul>
-<li>后台完成某些花费时间的特定任务</li>
-<li>后台播放音乐等</li>
-<li>位置服务</li>
-<li>IP电话（VoIP）</li>
-<li>Newsstand</li>
-</ul>
-
-
-<p>在WWDC 2013的keynote上，iOS7的后台多任务改进被专门拿出来向开发者进行了介绍，到底iOS7里多任务方面有什么新的特性可以利用，如何使用呢？简单来说，iOS7在后台特性方面有很大改进，不仅改变了以往的一些后台任务处理方式，还加入了全新的后台模式，本文将针对iOS7中新的后台特性进行一些学习和记录。大体来说，iOS7后台的变化在于以下四点：</p>
-
-<ul>
-<li>改变了后台任务的运行方式</li>
-<li>增加了后台获取（Background Fetch）</li>
-<li>增加了推送唤醒（静默推送，Silent Remote Notifications）</li>
-<li>增加了后台传输（￼Background Transfer Service）</li>
-</ul>
-
-
-
-		
-		<a href="/2013/08/ios7-background-multitask/" class="more-link">继续阅读</a>
 	</div>
 
 </article>
@@ -385,60 +260,6 @@
 
 		
 		
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-16T18:13:00+09:00" data-updated="true" itemprop="datePublished">Jun 16<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/06/sprite-kit-start/" itemprop="url">WWDC 2013 Session笔记 - SpriteKit快速入门和新时代iOS游戏开发指南</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://img.onevcat.com/2013/spritekit-intro.png" alt="SpriteKit，iOS/Mac游戏制作的新纪元" /></p>
-
-<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 502 Introduction to Sprite Kit</li>
-<li>Session 503 Designing Games with Sprite Kit</li>
-</ul>
-
-
-<p>SpriteKit的加入绝对是iOS 7/OSX 10.9的SDK最大的亮点。从此以后官方SDK也可以方便地进行游戏制作了。</p>
-
-<p>如果你在看这篇帖子，那我估计你应该稍微知道一些iOS平台上2D游戏开发的东西，比如cocos2d，那很好，因为SpriteKit的很多概念其实和cocos2d非常类似，你应该能很快掌握。如果上面这张图你看着眼熟，或者自己动手实践过，那更好，因为这篇文章的内容就是通过使用SpriteKit来一步一步带你重新实践一遍这个经典教程。如果你既不知道cocos2d，更没有使用游戏引擎开发iOS游戏的经验，只是想一窥游戏开发的天地，那现在，SpriteKit将是一个非常好的入口，因为是iOS SDK自带的框架，因此思想和用法上和现有的其他框架是统一的，这极大地降低了学习的难度和门槛。</p>
-
-<h3>什么是SpriteKit</h3>
-
-<p>首先要知道什么是<code>Sprite</code>。Sprite的中文译名就是精灵，在游戏开发中，精灵指的是以图像方式呈现在屏幕上的一个图像。这个图像也许可以移动，用户可以与其交互，也有可能仅只是游戏的一个静止的背景图。塔防游戏中敌方源源不断用来的每个小兵都是一个精灵，我方防御塔发出的炮弹也是精灵。可以说精灵构成了游戏的绝大部分主体视觉内容，而一个2D引擎的主要工作，就是高效地组织，管理和渲染这些精灵。SpriteKit是在iOS7 SDK中Apple新加入的一个2D游戏引擎框架，在SpriteKit出现之前，iOS开发平台上已经出现了像cocos2d这样的比较成熟的2D引擎解决方案。SpriteKit展现出的是Apple将Xcode和iOS/Mac SDK打造成游戏引擎的野心，但是同时也确实与IDE有着更好的集成，减少了开发者的工作。</p>
-
-<h3>Hello SpriteKit</h3>
-
-<p>废话不多说，本文直接上实例教程来说明SpriteKit的基本用法。</p>
-
-
-		
-		<a href="/2013/06/sprite-kit-start/" class="more-link">继续阅读</a>
 	</div>
 
 </article>
@@ -655,6 +476,137 @@
 
 		
 		<a href="/2013/05/talk-about-warning/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-29T16:30:00+09:00" data-updated="true" itemprop="datePublished">Apr 29<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/04/using-blending-in-ios/" itemprop="url">iOS中使用blend改变图片颜色</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/blend_title.png" alt="使用Blend处理图片颜色" /></p>
+
+<p>最近对<code>Core Animation</code>和<code>Core Graphics</code>的内容东西比较感兴趣，自己之前也在这块相对薄弱，趁此机会也想补习一下这块的内容，所以之后几篇可能都会是对CA和CG学习的记录的文章。</p>
+
+<p>在应用里一个很常见的需求是主题变换：同样的图标，同样的素材，但是需要按照用户喜爱变为不同的颜色。在iOS5和6的SDK里部分标准控件引入了<code>tintColor</code>，来满足个性化界面的需求，但是Apple在这方面还远远做的不够。一是现在用默认控件根本难以做出界面优秀的应用，二是<code>tintColor</code>所覆盖的并不够全面，在很多情况下开发者都无法使用其来完成个性化定义。解决办法是什么？最简单当然是拜托设计师大大出图，想要蓝色主题？那好，开PS盖个蓝色图层出一套蓝色的UI；又想加粉色UI，那好，再出一套粉色的图然后导入Xcode。代码上的话根据颜色需求使用image-blue或者image-pink这样的名字来加载图片。</p>
+
+<p>如果有一丁点重构的意识，就会知道这不是一个很好的解决方案。工程中存在大量的冗余和重复（就算你要狡辩这些图片颜色不同不算重复，你也会在内心里知道这种狡辩是多么无力），这是非常致命的。想象一下如果你有10套主题界面，先不论应用的体积会膨胀到多少，光是想做一点修改就会痛苦万分，比如希望改一下某个按钮的形状，很好，设计师大大请重复地修改10遍，并出10套UI，然后一系列的重命名，文件移动和导入…一场灾难。</p>
+
+<p>当然有其他办法，因为说白了就是tint不同的颜色到图片上而已，如果我们能实现改变UIImage的颜色，那我们就只需要一套UI，然后用代码来改变UI的颜色就可以了，生活有木有一下光明起来呀。嗯，让我们先从一张图片开始吧～下面是一张带有alpha通道的图片，原始颜色是纯的灰色（当然什么颜色都可以，只不过我这个人现在暂时比较喜欢灰色而已）。</p>
+
+
+		
+		<a href="/2013/04/using-blending-in-ios/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-28T18:01:00+09:00" data-updated="true" itemprop="datePublished">Apr 28<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/nan-ji-bei-dou-ji/'>南箕北斗集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/04/itc-special-characters/" itemprop="url">苹果应用描述中不能使用特殊字符的对应方法</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/itc-special-character.png" alt="就是不让你用就是不让你用～" /></p>
+
+<p>虽然很早Apple就说过从5月1日开始就不再允许UDID以及没有对iPhone5优化的应用上架，但是这次iTunes Connect的对于描述字符的限制还是让很多开发者措手不及。毕竟事先完全没有和大家打过招呼，Apple想要统一应用市场的风格和体验的心态可以理解，但是在开发者难得还有一点自由发挥的应用描述的地方突然作出这样的限制，确实不太厚道。相关的新闻报道可以参看<a href="http://www.cnbeta.com/articles/234799.htm">这里</a></p>
+
+<p>但是，难道我们真的没法使用更漂亮的描述了么？答案是，有办法！解决办法就一句话，<strong>直接使用<code>字符值引用</code>来写iTC的描述就可以了～</strong></p>
+
+<p>比如，想使用<code>★</code>这个字符，在描述中将<code>★</code>的地方都换成<code>&amp;#9733;</code>就可以了。</p>
+
+<p>一句废话，对于字符转换，当然也有在线将特殊字符转换为字符值引用的服务：<a href="http://yasu.asuka.net/orkut/conv.html">传送门</a></p>
+
+<p>最后，祝大家五一快乐，假期好心情～ :)</p>
+
+		
+		
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-13T01:22:00+09:00" data-updated="true" itemprop="datePublished">Apr 13<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/hu-yan-luan-yu-ji/'>胡言乱语集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/04/ios-interview/" itemprop="url">上级向的十个iOS面试问题</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/welcome-to-xcode.png" alt="Welcome to Xcode" /></p>
+
+<p>不管对于招聘和应聘来说，面试都是很重要的一个环节，特别对于开发者来说，面试中的技术问题环节不仅是企业对应聘者技能和积累的考察，也是一个开发者自我检验的好机会。对于iOS和Mac开发来说，因为本事还算比较新，企业对于这方面的开发者需求也比较大，所以面试时的要求可能并不是很高，一般能知道一些Cocoa和OC的基本知识也就认为可以了。但是对于一个希望拥有技术力基础的企业的iOS或者Mac开发来说，两到三个顶尖的熟练技术人员，带领一些还较为初级的开发者，共同完成项目应该是比较常见的构成。</p>
+
+<p>Cocoa特别是CocoaTouch的开发，上手可以说十分容易，但是背后隐藏的细节和原理却很丰富。一方面对于基础不够熟练和清晰（比如从一个AppDelegate开始用代码构建ViewController，或者清晰地说明栈和堆之类的概念），另一方面对于更进阶的开发知之甚少（比如多线程、网络异步处理或者Core开头的各种框架等等）。这些内容十分重要，但是可能现在一般的iOS开发者或多或少都在这些问题上存在薄弱。在这里我整理了一份面向于较高层级的iOS开发者的面试题目的问题清单，列出了十个应聘Leader级别的高级Cocoa/CocoaTouch开发工程师所应该掌握和理解的技术。这份列表没有提供标准答案，因为这些问题本身就没有标准答案。随每个人对这些内容的认识的不同和理解的差异，可以有不一样的答案。但是最基本地，如果面对的是一名资深的Cocoa开发者，至少期望能得到的答案都是“接触过”，并且能结合自己的经验说个七七八八，达到互相能明白意图和方法的地步。能够在其中两三个领域有不错的见解和具体的阐述的话，那是更好。这种对于知识覆盖面和深度的考察很能真实反映出开发者的技术水平。如果清单里的很大部分内容都是完全没接触过和没听过的话，那可能距离资深Cocoa开发这样一个阶段还尚有距离了。</p>
+
+<p>那么，面试开始。</p>
+
+
+		
+		<a href="/2013/04/ios-interview/" class="more-link">继续阅读</a>
 	</div>
 
 </article>

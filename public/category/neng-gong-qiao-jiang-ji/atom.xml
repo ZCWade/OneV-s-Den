@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 能工巧匠集 | OneV's Den]]></title>
   <link href="http://onevcat.com/category/neng-gong-qiao-jiang-ji/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2013-09-19T00:13:28+09:00</updated>
+  <updated>2013-09-19T08:15:56+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -12,233 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作]]></title>
-    <link href="http://onevcat.com/2013/09/spring-list-like-ios7-message/"/>
-    <updated>2013-09-01T23:03:00+09:00</updated>
-    <id>http://onevcat.com/2013/09/spring-list-like-ios7-message</id>
-    <content type="html"><![CDATA[<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 206 Getting Started with UIKit Dynamics</li>
-<li>Session 217 Exploring Scroll Views in iOS7</li>
-</ul>
-
-
-<p>UIScrollView可以说是UIKit中最重要的类之一了，包括UITableView和UICollectionView等重要的数据容器类都是UIScrollView的子类。在历年的WWDC上，UIScrollView和相关的API都有专门的主题进行介绍，也可以看出这个类的使用和变化之快。今年也不例外，因为iOS7完全重新定义了UI，这使得UIScrollView里原来不太会使用的一些用法和实现的效果在新的系统中得到了很好的表现。另外，由于引入了UIKit Dynamics，我们还可以结合ScrollView做出一些以前不太可能或者需要花费很大力气来实现的效果，包括带有重力的swipe或者是类似新的信息app中的带有弹簧效果聊天泡泡等。如果您还不太了解iOS7中信息app的效果，这里有一张gif图可以帮您大概了解一下：</p>
-
-<p><img src="http://img.onevcat.com/2013/ios7-message-app-spring.gif" alt="iOS7中信息app的弹簧效果" /></p>
-
-<p>这次笔记的内容主要就是实现一个这样的效果。为了避免重复造轮子，我对这个效果进行了一些简单的封装，并连同这篇笔记的demo一起扔在了Github上，有需要的童鞋可以<a href="https://github.com/onevcat/VVSpringCollectionViewFlowLayout">到这里</a>自取。</p>
-
-<p>iOS7的SDK中Apple最大的野心其实是想用SpriteKit来结束iOS平台游戏开发（至少是2D游戏开发）的乱战，统一游戏开发的方式并建立良性社区。而UIKit Dynamics，个人猜测Apple在花费力气为SpriteKit开发了物理引擎的同时，发现在UIKit中也可以使用，并能得到不错的效果，于是顺便革新了一下设计理念，在UI设计中引入了不少物理的概念。在iOS系统中，最为典型的应用是锁屏界面打开相机时中途放弃后的重力下坠+反弹的效果，另一个就是信息应用中的加入弹性的消息列表了。弹性列表在我自己上手试过以后觉得表现形式确实很生动，可以消除原来列表那种冷冰冰的感觉，是有可能在今后的设计中被大量使用的，因此决定学上一学。</p>
-
-<p>首先我们需要知道要如何实现这样一种效果，我们会用到哪些东西。毋庸置疑，如果不使用UIKit Dynamics的话，自己从头开始来完成会是一件非常费力的事情，你可能需要实现一套位置计算和物理模拟来使效果看起来真实滑润。而UIKit Dynamics中已经给我们提供了现成的弹簧效果，可以用<code>UIAttachmentBehavior</code>进行实现。另外，在说到弹性效果的时候，我们其实是在描述一个列表中的各个cell之间的关系，对于传统的UITableView来说，描述UITableViewCell之间的关系是比较复杂的（因为Apple已经把绝大多数工作做了，包括计算cell位置和位移等。使用越简单，定制就会越麻烦在绝大多数情况下都是真理）。而UICollectionView则通过layout来完成cell之间位置关系的描述，给了开发者较大的空间来实现布局。另外，UIKit Dynamics为UICollectionView做了很多方便的Catagory，可以很容易地“指导”UICollectionView利用加入物理特性计算后的结果，在实现弹性效果的时候，UICollectionView是我们不二的选择。</p>
-
-<p>如果您在阅读这篇笔记的时候遇到困难的话，建议您可以看看我之前的一些笔记，包括今年的<a href="http://onevcat.com/2013/06/uikit-dynamics-started/">UIKit Dynamics的介绍</a>和去年的<a href="http://onevcat.com/2012/06/introducing-collection-views/">UICollectionView介绍</a>。</p>
-
-<!--more-->
-
-
-<p>话不多说，我们开工。首先准备一个UICollectionViewFlowLayout的子类（在这里叫做<code>VVSpringCollectionViewFlowLayout</code>），然后在ViewController中用这个layout实现一个简单的collectionView：</p>
-
-<p>```objc
-//ViewController.m</p>
-
-<p>@interface ViewController ()&lt;UICollectionViewDataSource, UICollectionViewDelegate>
-@property (nonatomic, strong) VVSpringCollectionViewFlowLayout *layout;
-@end</p>
-
-<p>static NSString *reuseId = @"collectionViewCellReuseId";</p>
-
-<p>@implementation ViewController
-- (void)viewDidLoad
-{</p>
-
-<pre><code>[super viewDidLoad];
-// Do any additional setup after loading the view, typically from a nib.
-
-self.layout = [[VVSpringCollectionViewFlowLayout alloc] init];
-self.layout.itemSize = CGSizeMake(self.view.frame.size.width, 44);
-UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:self.layout];
-
-collectionView.backgroundColor = [UIColor clearColor];
-
-[collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:reuseId];
-
-collectionView.dataSource = self;
-[self.view insertSubview:collectionView atIndex:0];
-</code></pre>
-
-<p>}</p>
-
-<h1>pragma mark - UICollectionViewDataSource</h1>
-
-<ul>
-<li><p>(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-  return 50;
-}</p></li>
-<li><p>(UICollectionViewCell <em>)collectionView:(UICollectionView </em>)collectionView cellForItemAtIndexPath:(NSIndexPath <em>)indexPath
-{
-  UICollectionViewCell </em>cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseId forIndexPath:indexPath];</p>
-
-<p>  //Just give a random color to the cell. See https://gist.github.com/kylefox/1689973
-  cell.contentView.backgroundColor = [UIColor randomColor];
-  return cell;
-}
-@end
-```</p></li>
-</ul>
-
-
-<p>这部分没什么可以多说的，现在我们有一个标准的FlowLayout的UICollectionView了。通过使用UICollectionViewFlowLayout的子类来作为开始的layout，我们可以节省下所有的初始cell位置计算的代码，在上面代码的情况下，这个collectionView的表现和一个普通的tableView并没有太大不同。接下来我们着重来看看要如何实现弹性的layout。对于弹性效果，我们需要的是连接一个item和一个锚点间弹性连接的<code>UIAttachmentBehavior</code>，并能在滚动时设置新的锚点位置。我们在scroll的时候，只要使用UIKit Dynamics的计算结果，替代掉原来的位置更新计算（其实就是简单的scrollView的contentOffset的改变），就可以模拟出弹性的效果了。</p>
-
-<p>首先在<code>-prepareLayout</code>中为cell添加<code>UIAttachmentBehavior</code>。</p>
-
-<p>```objc
-//VVSpringCollectionViewFlowLayout.m
-@interface VVSpringCollectionViewFlowLayout()
-@property (nonatomic, strong) UIDynamicAnimator *animator;
-@end</p>
-
-<p>@implementation VVSpringCollectionViewFlowLayout
-//...</p>
-
-<p>-(void)prepareLayout {</p>
-
-<pre><code>[super prepareLayout];
-
-if (!_animator) {
-    _animator = [[UIDynamicAnimator alloc] initWithCollectionViewLayout:self];
-    CGSize contentSize = [self collectionViewContentSize];
-    NSArray *items = [super layoutAttributesForElementsInRect:CGRectMake(0, 0, contentSize.width, contentSize.height)];
-
-    for (UICollectionViewLayoutAttributes *item in items) {
-        UIAttachmentBehavior *spring = [[UIAttachmentBehavior alloc] initWithItem:item attachedToAnchor:item.center];
-
-        spring.length = 0;
-        spring.damping = 0.5;
-        spring.frequency = 0.8;
-
-        [_animator addBehavior:spring];
-    }
-}
-</code></pre>
-
-<p>}
-@end
-```</p>
-
-<p>prepareLayout将在CollectionView进行排版的时候被调用。首先当然是call一下super的prepareLayout，你肯定不会想要全都要自己进行设置的。接下来，如果是第一次调用这个方法的话，先初始化一个UIDynamicAnimator实例，来负责之后的动画效果。iOS7 SDK中，UIDynamicAnimator类专门有一个针对UICollectionView的Category，以使UICollectionView能够轻易地利用UIKit Dynamics的结果。在<code>UIDynamicAnimator.h</code>中能够找到这个Category：</p>
-
-<p>```objc
-@interface UIDynamicAnimator (UICollectionViewAdditions)</p>
-
-<p>// When you initialize a dynamic animator with this method, you should only associate collection view layout attributes with your behaviors.
-// The animator will employ thecollection view layout’s content size coordinate system.
-- (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout*)layout;</p>
-
-<p>// The three convenience methods returning layout attributes (if associated to behaviors in the animator) if the animator was configured with collection view layout
-- (UICollectionViewLayoutAttributes<em>)layoutAttributesForCellAtIndexPath:(NSIndexPath</em>)indexPath;
-- (UICollectionViewLayoutAttributes<em>)layoutAttributesForSupplementaryViewOfKind:(NSString </em>)kind atIndexPath:(NSIndexPath <em>)indexPath;
-- (UICollectionViewLayoutAttributes</em>)layoutAttributesForDecorationViewOfKind:(NSString<em>)decorationViewKind atIndexPath:(NSIndexPath </em>)indexPath;</p>
-
-<p>@end
-```</p>
-
-<p>于是通过<code>-initWithCollectionViewLayout:</code>进行初始化后，这个UIDynamicAnimator实例便和我们的layout进行了绑定，之后这个layout对应的attributes都应该由绑定的UIDynamicAnimator的实例给出。就像下面这样：</p>
-
-<p>```objc
-//VVSpringCollectionViewFlowLayout.m
-@implementation VVSpringCollectionViewFlowLayout</p>
-
-<p>//...</p>
-
-<p>-(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {</p>
-
-<pre><code>return [_animator itemsInRect:rect];
-</code></pre>
-
-<p>}</p>
-
-<p>-(UICollectionViewLayoutAttributes <em>)layoutAttributesForItemAtIndexPath:(NSIndexPath </em>)indexPath {</p>
-
-<pre><code>return [_animator layoutAttributesForCellAtIndexPath:indexPath];
-</code></pre>
-
-<p>}
-@end
-```</p>
-
-<p>让我们回到<code>-prepareLayout</code>方法中，在创建了UIDynamicAnimator实例后，我们对于这个layout中的每个attributes对应的点，都创建并添加一个添加一个<code>UIAttachmentBehavior</code>（在iOS7 SDK中，UICollectionViewLayoutAttributes已经实现了UIDynamicItem接口，可以直接参与UIKit Dynamic的计算中去）。创建时我们希望collectionView的每个cell就保持在原位，因此我们设定了锚点为当前attribute本身的center。</p>
-
-<p>接下来我们考虑滑动时的弹性效果的实现。在系统的信息app中，我们可以看到弹性效果有两个特点：</p>
-
-<ul>
-<li>随着滑动的速度增大，初始的拉伸和压缩的幅度将变大</li>
-<li>随着cell距离屏幕触摸位置越远，拉伸和压缩的幅度</li>
-</ul>
-
-
-<p>对于考虑到这两方面的特点，我们所期望的滑动时的各cell锚点的变化应该是类似这样的：</p>
-
-<p><img src="http://img.onevcat.com/2013/spring-list-ios7.png" alt="向上拖动时的锚点变化示意" /></p>
-
-<p>现在我们来实现这个锚点的变化。既然都是滑动，我们是不是可以考虑在UIScrollView的<code>–scrollViewDidScroll:</code>委托方法中来设定新的Behavior锚点值呢？理论上来说当然是可以的，但是如果这样的话我们大概就不得不面临着将刚才的layout实例设置为collectionView的delegate这样一个事实。但是我们都知道layout应该做的事情是给collectionView提供必要的布局信息，而不应该负责去处理它的委托事件。处理collectionView的回调更恰当地应该由处于collectionView的controller层级的类来完成，而不应该由一个给collectionView提供数据和信息的类来响应。在<code>UICollectionViewLayout</code>中，我们有一个叫做<code>-shouldInvalidateLayoutForBoundsChange:</code>的方法，每次layout的bounds发生变化的时候，collectionView都会询问这个方法是否需要为这个新的边界和更新layout。一般情况下只要layout没有根据边界不同而发生变化的话，这个方法直接不做处理地返回NO，表示保持现在的layout即可，而每次bounds改变时这个方法都会被调用的特点正好可以满足我们更新锚点的需求，因此我们可以在这里面完成锚点的更新。</p>
-
-<p>```objc
-//VVSpringCollectionViewFlowLayout.m
-@implementation VVSpringCollectionViewFlowLayout</p>
-
-<p>//...</p>
-
-<p>-(BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {</p>
-
-<pre><code>UIScrollView *scrollView = self.collectionView;
-CGFloat scrollDelta = newBounds.origin.y - scrollView.bounds.origin.y;
-
-//Get the touch point
-CGPoint touchLocation = [scrollView.panGestureRecognizer locationInView:scrollView];
-
-for (UIAttachmentBehavior *spring in _animator.behaviors) {
-    CGPoint anchorPoint = spring.anchorPoint;
-
-    CGFloat distanceFromTouch = fabsf(touchLocation.y - anchorPoint.y);
-    CGFloat scrollResistance = distanceFromTouch / 500;
-
-    UICollectionViewLayoutAttributes *item = [spring.items firstObject];
-    CGPoint center = item.center;
-
-    //In case the added value bigger than the scrollDelta, which leads an unreasonable effect
-    center.y += (scrollDelta &gt; 0) ? MIN(scrollDelta, scrollDelta * scrollResistance)
-                                  : MAX(scrollDelta, scrollDelta * scrollResistance);
-    item.center = center;
-
-    [_animator updateItemUsingCurrentState:item];
-}
-return NO;
-</code></pre>
-
-<p>}</p>
-
-<p>@end
-```</p>
-
-<p>首先我们计算了这次scroll的距离<code>scrollDelta</code>，为了得到每个item与触摸点的之间的距离，我们当然还需要知道触摸点的坐标<code>touchLocation</code>。接下来，可以根据距离对每个锚点进行设置了：简单地计算了原来锚点与触摸点之间的距离<code>distanceFromTouch</code>，并由此计算一个系数。接下来，对于当前的item，我们获取其当前锚点位置，然后将其根据<code>scrollDelta</code>的数值和刚才计算的系数，重新设定锚点的位置。最后我们需要告诉UIDynamicAnimator我们已经完成了对冒点的更新，现在可以开始更新物理计算，并随时准备collectionView来取LayoutAttributes的数据了。</p>
-
-<p>也许你还没有缓过神来？但是我们确实已经做完了，让我们来看看实际的效果吧：</p>
-
-<p><img src="http://img.onevcat.com/2013/spring-collection-view-over-ios7.gif" alt="带有弹性效果的collecitonView" /></p>
-
-<p>当然，通过调节<code>damping</code>，<code>frequency</code>和scrollResistance的系数等参数，可以得到弹性不同的效果，比如更多的震荡或者更大的幅度等等。</p>
-
-<p>这个layout实现起来非常简单，我顺便封装了一下放到了Github上，大家有需要的话可以<a href="https://github.com/onevcat/VVSpringCollectionViewFlowLayout">点击这里下载</a>并直接使用。</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[猫都能学会的Unity3D Shader入门指南（二）]]></title>
@@ -500,307 +273,6 @@ if(dot(v.normal, sn.xyz) &gt;= lerp(1,-1, (_Snow * 2) / 3)) {
 <p><img src="http://img.onevcat.com/2013/shader-tutorial2-snow-vert.jpg" alt="image" /></p>
 
 <p>这节就到这里吧。本节中实现的Shader可以<a href="https://gist.github.com/onevcat/6396814">在这里找到完整版本</a>进行参考，希望大家周末愉快～</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的多任务]]></title>
-    <link href="http://onevcat.com/2013/08/ios7-background-multitask/"/>
-    <updated>2013-08-17T19:16:00+09:00</updated>
-    <id>http://onevcat.com/2013/08/ios7-background-multitask</id>
-    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios7-multitasking.jpg" alt="iOS7的后台多任务特性" /></p>
-
-<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 204 What's New with Multitasking</li>
-<li>Session 705 What’s New in Foundation Networking</li>
-</ul>
-
-
-<h2>iOS7以前的Multitasking</h2>
-
-<p>iOS的多任务是在iOS4的时候被引入的，在此之前iOS的app都是按下Home键就被干掉了。iOS4虽然引入了后台和多任务，但是实际上是伪多任务，一般的app后台并不能执行自己的代码，只有少数几类服务在通过注册后可以真正在后台运行，并且在提交到AppStore的时候也会被严格审核是否有越权行为，这种限制主要是出于对于设备的续航和安全两方面进行的考虑。之后经过iOS5和6的逐渐发展，后台能运行的服务的种类虽然出现了增加，但是iOS后台的本质并没有变化。在iOS7之前，系统所接受的应用多任务可以大致分为几种：</p>
-
-<ul>
-<li>后台完成某些花费时间的特定任务</li>
-<li>后台播放音乐等</li>
-<li>位置服务</li>
-<li>IP电话（VoIP）</li>
-<li>Newsstand</li>
-</ul>
-
-
-<p>在WWDC 2013的keynote上，iOS7的后台多任务改进被专门拿出来向开发者进行了介绍，到底iOS7里多任务方面有什么新的特性可以利用，如何使用呢？简单来说，iOS7在后台特性方面有很大改进，不仅改变了以往的一些后台任务处理方式，还加入了全新的后台模式，本文将针对iOS7中新的后台特性进行一些学习和记录。大体来说，iOS7后台的变化在于以下四点：</p>
-
-<ul>
-<li>改变了后台任务的运行方式</li>
-<li>增加了后台获取（Background Fetch）</li>
-<li>增加了推送唤醒（静默推送，Silent Remote Notifications）</li>
-<li>增加了后台传输（￼Background Transfer Service）</li>
-</ul>
-
-
-<!--more-->
-
-
-<h2>iOS7的多任务</h2>
-
-<h3>后台任务</h3>
-
-<p>首先看看后台任务的变化，先说这方面的改变，而不是直接介绍新的API，是因为这个改变很典型地代表了iOS7在后台任务管理和能耗控制上的大体思路。从上古时期开始（其实也就4.0），UIApplication提供了<code>-beginBackgroundTaskWithExpirationHandler:</code>方法来使app在被切到后台后仍然能保持运行一段时间，app可以用这个方法来确保一些很重很慢的工作可以在急不可耐的用户将你的应用扔到后台后还能完成，比如编码视频，上传下载某些重要文件或者是完成某些数据库操作等，虽然时间不长，但在大多数情况下勉强够用。如果你之前没有使用过这个API的话，它使用起来大概是长这个样子的：</p>
-
-<p>```objc
-- (void) doUpdate</p>
-
-<pre><code>dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-    [self beginBackgroundUpdateTask];
-
-    NSURLResponse * response = nil;
-    NSError  * error = nil;
-    NSData * responseData = [NSURLConnection sendSynchronousRequest: request returningResponse: &amp;response error: &amp;error];
-
-    // Do something with the result
-
-    [self endBackgroundUpdateTask];
-});
-</code></pre>
-
-<p>}</p>
-
-<ul>
-<li><p>(void) beginBackgroundUpdateTask
-{
-  self.backgroundUpdateTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:<sup>{</sup></p>
-
-<pre><code>  [self endBackgroundUpdateTask];
-</code></pre>
-
-<p>  }];
-}</p></li>
-<li><p>(void) endBackgroundUpdateTask
-{
-  [[UIApplication sharedApplication] endBackgroundTask: self.backgroundUpdateTask];
-  self.backgroundUpdateTask = UIBackgroundTaskInvalid;
-} <br/>
-```</p></li>
-</ul>
-
-
-<p>在<code>beginBackgroundTaskWithExpirationHandler:</code>里写一个超时处理（系统只给app分配了一定时间来进行后台任务，超时之前会调用这个block），然后进行开始进行后台任务处理，在任务结束或者过期的时候call一下<code>endBackgroundTask:</code>使之与begin方法配对（否则你的app在后台任务超时的时候会被杀掉）。同时，你可以使用UIApplication实例的backgroundTimeRemaining属性来获取剩余的后台执行时间。</p>
-
-<p>具体的执行时间来说，在iOS6和之前的系统中，系统在用户退出应用后，如果应用正在执行后台任务的话，系统会保持活跃状态直到后台任务完成或者是超时以后，才会进入真正的低功耗休眠状态。</p>
-
-<p><img src="http://img.onevcat.com/2013/ios-multitask-ios6.png" alt="iOS6之前的后台任务处理" /></p>
-
-<p>而在iOS7中，后台任务的处理方式发生了改变。系统将在用户锁屏后尽快让设备进入休眠状态，以节省电力，这时后台任务是被暂停的。之后在设备在特定时间进行系统应用的操作被唤醒（比如检查邮件或者接到来电等）时，之前暂停的后台任务将一起进行。就是说，系统不会专门为第三方的应用保持设备处于活动状态。如下图示</p>
-
-<p><img src="http://img.onevcat.com/2013/ios-multitask-ios7.png" alt="iOS7的后台任务处理" /></p>
-
-<p>这个变化在不减少应用的后台任务时间长度的情况下，给设备带来了更多的休眠时间，从而延长了续航。对于开发者来说，这个改变更多的是系统层级的变化，对于非网络传输的任务来说，保持原来的用法即可，新系统将会按照新的唤醒方式进行处理；而对于原来在后台做网络传输的应用来说，苹果建议在iOS7中使用<code>NSURLSession</code>，创建后台的session并进行网络传输，这样可以很容易地利用更好的后台传输API，而不必受限于原来的时长，关于这个具体的我们一会儿再说。</p>
-
-<h3>后台获取（Background Fetch）</h3>
-
-<p>现在的应用无法在后台获取信息，比如社交类应用，用户一定需要在打开应用之后才能进行网络连接，获取新的消息条目，然后才能将新内容呈现给用户。说实话这个体验并不是很好，用户在打开应用后必定会有一段时间的等待，每次皆是如此。iOS7中新加入的后台获取就是用来解决这个不足的：后台获取干的事情就是在用户打开应用之前就使app有机会执行代码来获取数据，刷新UI。这样在用户打开应用的时候，最新的内容将已然呈现在用户眼前，而省去了所有的加载过程。想想看，没有加载的网络体验的世界，会是怎样一种感觉。这已经不是smooth，而是真的amazing了。</p>
-
-<p>那具体应该怎么做呢？一步一步来：</p>
-
-<h4>启用后台获取</h4>
-
-<p>首先是修改应用的Info.plist，在<code>UIBackgroundModes</code>中加入fetch，即可告诉系统应用需要后台获取的权限。另外一种更简单的方式，得益于Xcode5的Capabilities特性（参见可以参见我之前的一篇<a href="http://onevcat.com/2013/06/new-in-xcode5-and-objc/">WWDC2013笔记 Xcode5和ObjC新特性</a>），现在甚至都不需要去手动修改Info.plist来进行添加了，打开Capabilities页面下的Background Modes选项，并勾选Background fetch选项即可（如下图）。</p>
-
-<p><img src="http://img.onevcat.com/2013/ios7-multitask-background-fetch.png" alt="在Capabilities中开启Background Modes" /></p>
-
-<p>笔者写这篇文章的时候iOS7还没有上市，也没有相关的审核资料，所以不知道如果只是在这里打开了fetch选项，但却没有实现的话，应用会不会无法通过审核。但是依照苹果一贯的做法来看，如果声明了需要某项后台权限，但是结果却没有相关实现的话，被拒掉的可能性还是比较大的。因此大家尽量不要拿上线产品进行实验，而应当是在demo项目里研究明白以后再到上线产品中进行实装。</p>
-
-<h4>设定获取间隔</h4>
-
-<p>对应用的UIApplication实例设置获取间隔，一般在应用启动的时候调用以下代码即可：</p>
-
-<p><code>objc
-[[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
-</code></p>
-
-<p>如果不对最小后台获取间隔进行设定的话，系统将使用默认值<code>UIApplicationBackgroundFetchIntervalNever</code>，也就是永远不进行后台获取。当然，<code>-setMinimumBackgroundFetchInterval:</code>方法接受的是NSTimeInterval，因此你也可以手动指定一个以秒为单位的最小获取间隔。需要注意的是，我们都已经知道iOS是一个非常霸道为我独尊的系统，因此自然也不可能让一介区区第三方应用来控制系统行为。这里所指定的时间间隔只是代表了“在上一次获取或者关闭应用之后，在这一段时间内一定不会去做后台获取”，而真正具体到什么时候会进行后台获取，那<del>完全是要看系统娘的心情的</del>我们是无从得知的。系统将根据你的设定，选择比如接收邮件的时候顺便为你的应用获取一下，或者也有可能专门为你的应用唤醒一下设备。作为开发者，我们应该做的是为用户的电池考虑，尽可能地选择合适自己应用的后台获取间隔。设置为UIApplicationBackgroundFetchIntervalMinimum的话，系统会尽可能多尽可能快地为你的应用进行后台获取，但是比如对于一个天气应用，可能对实时的数据并不会那么关心，就完全不必设置为UIApplicationBackgroundFetchIntervalMinimum，也许1小时会是一个更好的选择。新的Mac OSX 10.9上已经出现了功耗监测，用于让用户确定什么应用是能耗大户，有理由相信同样的东西也可能出现在iOS上。如果不想让用户因为你的应用是耗电大户而怒删的话，从现在开始注意一下应用的能耗还是蛮有必要的（做绿色环保低碳的iOS app，从今天开始～）。</p>
-
-<h4>实现后台获取代码并通知系统</h4>
-
-<p>在完成了前两步后，只需要在AppDelegate里实现<code>-application:performFetchWithCompletionHandler:</code>就行了。系统将会在执行fetch的时候调用这个方法，然后开发者需要做的是在这个方法里完成获取的工作，然后刷新UI，并通知系统获取结束，以便系统尽快回到休眠状态。获取数据这是应用相关的内容，在此不做赘述，应用在前台能完成的工作在这里都能做，唯一的限制是系统不会给你很长时间来做fetch，一般会小于一分钟，而且fetch在绝大多数情况下将和别的应用共用网络连接。这些时间对于fetch一些简单数据来说是足够的了，比如微博的新条目（大图除外），接下来一小时的天气情况等。如果涉及到较大文件的传输的话，用后台获取的API就不合适了，而应该使用另一个新的文件传输的API，我们稍后再说。类似前面提到的后台任务完成时必须通知系统一样，在在获取完成后，也必须通知系统获取完成，方法是调用<code>-application:performFetchWithCompletionHandler:</code>的handler。这个CompletionHandler接收一个<code>UIBackgroundFetchResult</code>作为参数，可供选择的结果有<code>UIBackgroundFetchResultNewData</code>,<code>UIBackgroundFetchResultNoData</code>,<code>UIBackgroundFetchResultFailed</code>三种，分别表示获取到了新数据（此时系统将对现在的UI状态截图并更新App Switcher中你的应用的截屏），没有新数据，以及获取失败。写一个简单的例子吧：</p>
-
-<p>```objc
-//File: YourAppDelegate.m
--(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (<sup>)(UIBackgroundFetchResult))completionHandler</sup>
-{</p>
-
-<pre><code>UINavigationController *navigationController = (UINavigationController*)self.window.rootViewController;
-
-id fetchViewController = navigationController.topViewController;
-if ([fetchViewController respondsToSelector:@selector(fetchDataResult:)]) {
-    [fetchViewController fetchDataResult:^(NSError *error, NSArray *results){
-        if (!error) {
-            if (results.count != 0) {
-                //Update UI with results.
-                //Tell system all done.
-                completionHandler(UIBackgroundFetchResultNewData);
-            } else {
-                completionHandler(UIBackgroundFetchResultNoData);
-            }
-        } else {
-            completionHandler(UIBackgroundFetchResultFailed);
-        }
-    }];
-} else {
-    completionHandler(UIBackgroundFetchResultFailed);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>当然，实际情况中会比这要复杂得多，用户当前的ViewController是否合适做获取，获取后的数据如何处理都需要考虑。另外要说明的是上面的代码在获取成功后直接在appDelegate里更新UI，这只是为了能在同一处进行说明，但却是不正确的结构。比较好的做法是将获取和更新UI的业务逻辑都放到fetchViewController里，然后向其发送获取消息的时候将completionHandler作为参数传入，并在fetchViewController里完成获取结束的报告。</p>
-
-<p>另一个比较神奇的地方是系统将追踪用户的使用习惯，并根据对每个应用的使用时刻给一个合理的fetch时间。比如系统将记录你在每天早上9点上班的电车上，中午12点半吃饭时，以及22点睡觉前会刷一下微博，只要这个习惯持续个三四天，系统便会将应用的后台获取时刻调节为9点，12点和22点前一点。这样在每次你打开应用都直接有最新内容的同时，也节省了电量和流量。</p>
-
-<h4>后台获取的调试</h4>
-
-<p>既然是系统决定的fetch，那我们要如何测试写的代码呢？难道是将应用退到后台，然后安心等待系统进行后台获取么？当然不是...Xcode5为我们提供了两种方法来测试后台获取的代码。一种是从后台获取中启动应用，另一种是当应用在后台时模拟一次后台推送。</p>
-
-<p>对于前者，我们可以新建一个Scheme来专门调试从后台启动。点击Xcode5的Product->Scheme->Edit Scheme(或者直接使用快捷键<code>⌘&lt;</code>)。在编辑Scheme的窗口中点Duplicate Scheme按钮复制一个当前方案，然后在新Scheme的option中将Background Fetch打上勾。从这个Scheme来运行应用的时候，应用将不会直接启动切入前台，而是调用后台获取部分代码并更新UI，这样再点击图标进入应用时，你应该可以看到最新的数据和更新好的UI了。</p>
-
-<p><img src="http://img.onevcat.com/2013/ios7-back-fetch-scheme.png" alt="更改Scheme的选项为从后台获取事件中启动" /></p>
-
-<p>另一种是当应用在后台时，模拟一次后台获取。这个比较简单，在app调试运行时，点击Xcode5的Debug菜单中的Simulate Background Fetch，即可模拟完成一次获取调用。</p>
-
-<h3>推送唤醒（Remote Notifications）</h3>
-
-<p>远程推送（￼￼Remote Push Notifications）可以说是增加用户留存率的不二法则，在iOS6和之前，推送的类型是很单一的，无非就是显示标题内容，指定声音等。用户通过解锁进入你的应用后，appDelegate中通过推送打开应用的回调将被调用，然后你再获取数据，进行显示。这和没有后台获取时的打开应用后再获取数据刷新的问题是一样的。在iOS7中这个行为发生了一些改变，我们有机会使设备在接收到远端推送后让系统唤醒设备和我们的后台应用，并先执行一段代码来准备数据和UI，然后再提示用户有推送。这时用户如果解锁设备进入应用后将不会再有任何加载过程，新的内容将直接得到呈现。</p>
-
-<p>实装的方法和刚才的后台获取比较类似，还是一步步来：</p>
-
-<h4>启用推送唤醒</h4>
-
-<p>和上面的后台获取类似，更改Info.plist，在<code>UIBackgroundModes</code>下加入<code>remote-notification</code>即可开启，当然同样的更简单直接的办法是使用Capabilities。</p>
-
-<h4>更改推送的payload</h4>
-
-<p>在iOS7中，如果想要使用推送来唤醒应用运行代码的话，需要在payload中加入<code>content-available</code>，并设置为1。</p>
-
-<p><code>javascript
-aps {     content-available: 1     alert: {...}   }
-</code>￼￼</p>
-
-<h4>实现推送唤醒代码并通知系统</h4>
-
-<p>最后在appDelegate中实现<code>￼-application:didReceiveRemoteNotification:fetchCompletionHandle:</code>。这部分内容和上面的后台获取部分完全一样，在此不再重复。</p>
-
-<h4>一些限制和应用的例子</h4>
-
-<p>因为一旦推送成功，用户的设备将被唤醒，因此这类推送不可能不受到限制。Apple将限制此类推送的频率，当频率超过一定限制后，带有content-available标志的推送将会被阻塞，以保证用户设备不被频繁唤醒。按照Apple的说法，这个频率在一小时内个位数次的推送的话不会有太大问题。</p>
-
-<p>Apple给出了几个典型的应用情景，比如一个电视节目类的应用，当用户标记某些剧目为喜爱时，当这些剧有更新时，可以给用户发送静默的唤醒推送通知，客户端在接到通知后检查更新并开始后台下载（注意后台下载的部分绝对不应该在推送回调中做，而是应该使用新的后台传输服务，后面详细介绍）。下载完成后发送一个本地推送告知用户新的内容已经准备完毕。这样在用户注意到推送并打开应用的时候，所有必要的内容已经下载完毕，UI也将切换至用户喜爱的剧目，用户只需要点击播放即可开始真正使用应用，这绝对是无比顺畅和优秀的体验。另一种应用情景是文件同步类，比如用户标记了一些文件为需要随时同步，这样用户在其他设备或网页服务上更改了这些文件时，可以发送静默推送然后使用后台传输来保持这些文件随时是最新。</p>
-
-<p>如果您是一路看下来的话，不难发现其实后台获取和静默推送在很多方面是很类似的，特别是实现和处理的方式，但是它们适用的情景是完全不同的。后台获取更多地使用在泛数据模式下，也即用户对特定数据并不是很关心，数据应该被更新的时间也不是很确定，典型的有社交类应用和天气类应用；而静默推送或者是推送唤醒更多地应该是用户感兴趣的内容发生更新时被使用，比如消息类应用和内容型服务等。根据不同的应用情景，选择合适的后台策略（或者混合使用两者），以带给用户绝佳体验，这是Apple所期望iOS7开发者做到的。</p>
-
-<h3>后台传输（￼Background Transfer Service）</h3>
-
-<p>iOS6和之前，iOS应用在大块数据的下载这一块限制是比较多的：只有应用在前台时能保持下载（用户按Home键切到后台或者是等到设备自动休眠都可能中止下载），在后台只有很短的最多十分钟时间可以保持网络连接。如果想要完成一个较大数据的下载，用户将不得不打开你的app并且基本无所事事。很多这种时候，用户会想要是在下载的时候能切到别的应用刷刷微博或者玩玩游戏，然后再切回来的就已经下载完成了的话，该有多好。iOS7中，这可以实现了。iOS7引入了后台传输的相关方式，用来保证应用退出后数据下载或者上传能继续进行。这种传输是由iOS系统进行管理的，没有时间限制，也不要求应用运行在前台。</p>
-
-<p>想要实现后台传输，就必须使用iOS7的新的网络连接的类，NSURLSession。这是iOS7中引入用以替代陈旧的NSURLConnection的类，著名的AFNetworking甚至不惜从底层开始完全重写以适配iOS7和NSURLSession（参见<a href="https://github.com/AFNetworking/AFNetworking/wiki/AFNetworking-2.0-Migration-Guide">这里</a>），NSURLSession的重要性可见一斑。在这里我主要只介绍NSURLSession在后台传输中的一些使用，关于这个类的其他用法和对原有NSURLConnection的加强，只做稍微带过而不展开，有兴趣深入挖掘和使用的童鞋可以参看Apple的文档（或者更简单的方式是使用AFNetworking来处理网络相关内容，而不是直接和CFNetwork框架打交道）。</p>
-
-<h4>步骤和例子</h4>
-
-<p>后台传输的的实现也十分简单，简单说分为三个步骤：创建后台传输用的NSURLSession对象；向这个对象中加入对应的传输的NSURLSessionTask，并开始传输；在实现appDelegate里实现<code>-application:handleEventsForBackgroundURLSession:completionHandler:</code>方法，以刷新UI及通知系统传输结束。接下来结合代码来看一看实际的用法吧～</p>
-
-<p>首先我们需要一个用于后台下载的session：</p>
-
-<p>```objc
-- (NSURLSession *)backgroundSession
-{</p>
-
-<pre><code>//Use dispatch_once_t to create only one background session. If you want more than one session, do with different identifier
-static NSURLSession *session = nil;
-static dispatch_once_t onceToken;
-dispatch_once(&amp;onceToken, ^{
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.yourcompany.appId.BackgroundSession"];
-    session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-});
-return session;
-</code></pre>
-
-<p>}
-```
-这里创建并配置了NSURLSession，将其指定为后台session并设定delegate。</p>
-
-<p>接下来向其中加入对应的传输用的NSURLSessionTask，并启动下载。</p>
-
-<p>```objc
-//@property (nonatomic) NSURLSession <em>session;
-//@property (nonatomic) NSURLSessionDownloadTask </em>downloadTask;</p>
-
-<ul>
-<li><p>(NSURLSession *)backgroundSession
-{
-  //...
-}</p></li>
-<li><p>(void) beginDownload
-{
-  NSURL <em>downloadURL = [NSURL URLWithString:DownloadURLString];
-  NSURLRequest </em>request = [NSURLRequest requestWithURL:downloadURL];
-  self.session = [self backgroundSession];
-  self.downloadTask = [self.session downloadTaskWithRequest:request];
-  [self.downloadTask resume];
-}
-```</p></li>
-</ul>
-
-
-<p>最后一步是在appDelegate中实现<code>-application:handleEventsForBackgroundURLSession:completionHandler:</code></p>
-
-<p>```objc
-//AppDelegate.m
-- (void)application:(UIApplication <em>)application handleEventsForBackgroundURLSession:(NSString </em>)identifier
-  completionHandler:(void (<sup>)())completionHandler</sup>
-{</p>
-
-<pre><code>//Check if all transfers are done, and update UI
-//Then tell system background transfer over, so it can take new snapshot to show in App Switcher
-completionHandler();
-
-//You can also pop up a local notification to remind the user
-//...
-</code></pre>
-
-<p>}
-```</p>
-
-<p>NSURLSession和对应的NSURLSessionTask有以下重要的delegate方法可以使用：</p>
-
-<p>```objc
-- (void)URLSession:(NSURLSession <em>)session downloadTask:(NSURLSessionDownloadTask </em>)downloadTask</p>
-
-<pre><code>                          didFinishDownloadingToURL:(NSURL *)location;
-</code></pre>
-
-<ul>
-<li>(void)URLSession:(NSURLSession <em>)session task:(NSURLSessionTask </em>)task
-
-<pre><code>                     didCompleteWithError:(NSError *)error;
-</code></pre>
-
-<p>```</p></li>
-</ul>
-
-
-<p>一旦后台传输的状态发生变化（包括正常结束和失败）的时候，应用将被唤醒并运行appDelegate中的回调，接下来NSURLSessionTask的委托方法将在后台被调用。虽然上面的例子中直接在appDelegate中call了completionHandler，但是实际上更好的选择是在appDelegate中暂时持有completionHandler，然后在NSURLSessionTask的delegate方法中检查是否确实完成了传输并更新UI后，再调用completionHandler。另外，你的应用到现在为止只是在后台运行，想要提醒用户传输完成的话，也许你还需要在这个时候发送一个本地推送（记住在这个时候你的应用是可以执行代码的，虽然是在后台），这样用户可以注意到你的应用的变化并回到应用，并开始已经准备好数据和界面。</p>
-
-<h4>一些限制</h4>
-
-<p>首先，后台传输只会通过wifi来进行，用户大概也不会开心蜂窝数据的流量被后台流量用掉。后台下载的时间与以前的关闭应用后X分钟的模式不一样，而是为了节省电力变为离散式的下载，并与其他后台任务并发（比如接收邮件等）。另外还需要注意的是，对于下载后的内容不要忘记写到应用的目录下（一般来说这种可以重复获得的内容应该放到cache目录下），否则如果由于应用完全退出的情况导致没有保存到可再次访问的路径的话，那可就白做工了。</p>
-
-<p>后台传输非常适合用于文件，照片或者追加游戏内容关卡等的下载，如果配合后台获取或者静默推送的话，相信可以完全很多很有趣，并且以前被限制而无法实现的功能。</p>
 ]]></content>
   </entry>
   
@@ -1371,6 +843,320 @@ return self;
 <h3>总结</h3>
 
 <p>总之就是一套全新的UI交互的视觉体验和效果，但是并非处处适用。在合适的地方使用可以增加体验，但是也会有其他方式更适合的情况。所以拉上你的设计师好基友去开拓新的大陆吧…</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WWDC 2013 Session笔记 - Xcode5和ObjC新特性]]></title>
+    <link href="http://onevcat.com/2013/06/new-in-xcode5-and-objc/"/>
+    <updated>2013-06-13T10:05:00+09:00</updated>
+    <id>http://onevcat.com/2013/06/new-in-xcode5-and-objc</id>
+    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/xcode5-title.png" alt="Welcome to Xcode 5" /></p>
+
+<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
+
+<p>本文涉及到的WWDC2013 Session有</p>
+
+<ul>
+<li>Session 400 What's New in Xcode 5</li>
+<li>Session 401 Xcode Core Concepts</li>
+<li>Session 407 Debugging with Xcode</li>
+<li>Session 404 Advances in Objective-C</li>
+</ul>
+
+
+<p>等Tools模块下的内容</p>
+
+<p>随着iOS7 SDK的beta放出，以及Xcode 5 DP版本的到来，很多为iOS7开发应用的方式已经逐渐浮现。可以豪不夸张地讲，由于iOS7的UI发生了重大变革，此次的升级不同于以往，我们将会迎来iOS开发诞生以来最剧烈的变动，如何拥抱变化，快速适应新的世界和平台，值得每个Cocoa和CocoaTouch开发者研究。工欲善其事，必先利其器。想做iOS7的开发，就必须切换到Xcode5和新的ObjC体系（包括新引入的语法和编译器），在这里我简要地对新添加或重大变化的功能做一个小结。</p>
+
+<h2>说说新的Xcode</h2>
+
+<p>Xcode4刚出的时候存在茫茫多似乎无穷无尽的bug（如果是一路走来的同仁可能对此还记忆犹新），好消息是这次Xcode5 DP版本似乎相当稳定，如果你遇到了开启新Xcode就报错强退的话，多半原因是因为你在使用为Xcode4制作的插件，不同版本的Xcode是共用同一个文件夹下的插件的，请将<code>~/Library/Application Support/Developer/Shared/Xcode/Plug-ins</code>目录下的内容清理一下，应该就能顺利进入Xcode5了。</p>
+
+<!-- more -->
+
+
+<p>Xcode 5现在使用了ARC，取代了原来的垃圾回收（Garbage collection）机制，因此不论从启动速度和使用速度上来说都比之前快了不少。现在大部分的AppStore提交应用也都使用了ARC，新SDK中加入的系统框架也全都是ARC的了。另外，在Xcode5中新建工程也不再提供是否使用ARC的选项（虽然也还是可以在Build Setting中关掉）。如果你还在使用手动内存管理的话，现在是时候抛弃release什么的了，如果你还在迷茫应该应该怎么使用ARC，可以参看一下去年这个时候我发的一篇<a href="http://onevcat.com/2012/06/arc-hand-by-hand/">ARC的教程文章</a>。</p>
+
+<h3>界面变化</h3>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-header.png" alt="Xcode5减小了顶栏宽度" /></p>
+
+<p>首先值得称赞的是顶部工具栏的变化，新版中贯彻了精简的原则，将顶栏砍掉了30%左右的宽度，对于小屏幕来说绝对是福音。另外，在外观上界面也向平面和简洁的方向迈进了一大步，可算是对iOS7的遥相呼应吧。</p>
+
+<h3>更易用的版本管理</h3>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-sourcecontrol.png" alt="image" /></p>
+
+<p>虽然在Xcode 4里就集成了版本管理的内容，但是一直被藏的很深，很多时候开发者不得不打开Organizer才能找到对应操作的地方。与之相比，Xcode5为版本管理留出了专门的一个<code>Source Control</code>菜单，从此以后妈妈再也不用担心我找不到git放哪儿了。集成的版本管理可以方便地完成大部分初级功能，包括Check Out，Pull，Commit，Push，Merge等，特别是在建立仓库和检出仓库时十分方便。但是在遇到稍微复杂的git操作时还是感到力不从心（比如rebase或摘樱桃的时候），这点上毕竟Xcode并不是一个版本管理app，而最基本的几个操作在日常工作中也算能快速地应付绝大部分情况（在不将工程文件添加到版本管理的情况下）。</p>
+
+<p>值得称赞的是在编辑代码的时候，可以直接对某一行进行blame了，在该行点击右键选Show Blame for Line，就能看到最后改动的人的信息。另外，Version Editor（View->Version Editor）也除了之前就有的版本对比之外，还新加了Blame和Log两种视图。在对代码历史追溯这块，Xcode5现在已经做的足够好了.</p>
+
+<p>结论是，虽然有所进步，但是Xcode的内置版本管理仍然不堪大任，命令行或者一个专业的git管理工具还是必要的。</p>
+
+<h3>方便的工程配置</h3>
+
+<p>与版本管理的强化相比较，工程配置方面也进行了很多加强，简化了之前开发者的需要做的一些配置工作。首先是在Build Setting的General里，加入了Team的设置，只要填写对应的Apple ID和应用Bundle ID，Xcode就将自动去寻找对应的Provisioning Profile，并使用合适的Provisioning来进行应用打包。因为有了自动配置和将集成的版本管理放到了菜单栏中，Organizer的地位被大大削弱了。至少我现在在Organizer中没有找到本机的证书管理和Provisioning Profile管理的地方，唯一开Organizer的理由大概就是应用打包发布时了。想想从远古时代的Application Loader一步一步走到现在，Xcode可以说在简化流程，帮助开发者快速发布应用方面做了很大努力。</p>
+
+<p>另一个重要改进是在Build选项中加入了<code>Capabilities</code>标签，如下图</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-capabilities.png" alt="Xcode5的Capabilities" /></p>
+
+<p>想想看以前为app配置iCloud要花的步骤吧：到Apple Developer里找到应用的ID，打开对应的app的iCloud功能，生成对应的Provisioning文件，回到Xcode创建一个Entitlements文件，定义Key-Value Store，Ubiquity Containers和Keychain Groups，然后你才能开始为应用创建UIDocument并且继续开发。哦天啊…作为学习来说做一次还能接受，但是如果每次开发应用都要来一遍这个过程，只能用枯燥乏味四个字来形容了。于是，正如你所看到的，现在你需要做的是，点一下iCloud的开关，然后…开始编程吧～轻松惬意。同样的方法也适用于Apple提供的其他服务，包括打开和配置GameCenter，Passbook，IAP，Maps，Keychain，后台模式和Data Protection，当然还有iOS7新加入的Inter-app Audio。这些小开关做的事情都很简单，但确实十分贴心。</p>
+
+<h3>资源管理，Asset Catalog和Image Slicing</h3>
+
+<p>资源目录(Asset Catalog)和图像切片(Image Slicing)是Xcode5新加入的功能。资源目录可以方便开发者管理工程中使用的图片素材，利用开发中的命名规则（比如高清图的@2x，图标的Icon，Splash的Default等），来筛选和分类图片。建立一个资源目录十分简单，如果是老版本导入的工程，在工程设置中图标或者splash图的设置中点击<code>Use Asset Catalog</code>，Xcode将建立新的资源目录；如果是直接使用Xcode 5建立的工程的话，那么资源目录应该已经默认躺在工程中了。</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-asset-catalog.png" alt="添加一个Asset Catalog" /></p>
+
+<p>添加资源目录后，在工程中会新加一个.xcassets后缀的目录用以整理和存放图片，该文件夹中存放了图片和对应的json文件来保存图片信息。为了能够使用资源目录的特性，以及更好的前向兼容性，建议将所有的图片资源都加入资源目录中：在工程中选择.xcassets文件，然后在资源目录中点击加号即可添加图片。另外，直接从工程外的Finder中将图片拖动到Xcode的资源目录界面中，也将把拖进来的图片拷贝并添加到资源目录中。对的，不再会有讨厌的弹窗出来，问你要拷贝还是要引用了。</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-add-ac.png" alt="在Asset Catalog中添加图片" /></p>
+
+<p>Asset Catalog的意义在于为工程中的图片提供了一个存储信息的地方，不仅可以描述资源对应的设备，资源的版本和更新信息等，更重要的在于可以为Image Slicing服务。所谓Image Slicing，相当于一个可视化的<code>resizableImageWithCapInsets:resizingMode:</code>，可以用于指定在图片缩放时用来填充的像素。在资源目录中选择要slicing的图片，点击图片界面右下方的Show Slicing按钮，在想要设定切片的图片上点击<code>Start Slicing</code>，将出现左中右（或者上中下）三条可以拖动的指示线，通过拖动它们来设定实际的缩放范围。</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-slicing.png" alt="设定Image Slicing" /></p>
+
+<p>在左侧线（或者上方线）和中间线之间的像素将在缩放时被填充，在中间线和右侧线（或者下方线）之间的像素将被隐藏。比如上面的例子，实际运行中如果对这张图片进行拉伸的话，会是下面的样子：</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-slicing-image.png" alt="拉升Image Slicing后的图片" /></p>
+
+<p>Image Slicing可以帮助开发者用可视化的方式完成resizable image，之后通过拖拖线就可以完成sliced image，而不必再写代码，也不用再一次次尝试输入的insets合不合适了。slicing可缩放的图片大量用于UI中可以节省打包的占用空间，而在Xcode 5中引入和加强图片资源管理的目的，很大一部分是为了配合SpriteKit将游戏引擎加入到SDK中，并将Xcode逐渐打造为一个全面的IDE工具。</p>
+
+<h3>新的调试和辅助功能</h3>
+
+<p>这应该是Xcode5最值得称赞的改进了，在调试中现在在编辑框内鼠标悬浮在变量名上，Xcode将会根据类型进行猜测，并输出最合适的结果以帮助观察。就像这样：</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-debug-mouseover.png" alt="鼠标悬浮就可以出现变量结果" /></p>
+
+<p>以前版本的Xcode虽然也有鼠标悬浮提示，但是想从中找到想要的value确实还是比较麻烦的事情，很多时候我们不得不参考下面Variables View的值或者直接p或者po它们，现在如果只是需要知道变量情况的话，在断到代码后一路用鼠标跟着代码走一遍，就差不多了然于胸了。如果你认为鼠标悬停只能打打字符串或者数字的话你就错了，数组，字典什么的也不在话下，更过分的是设计图像的也能很好地显示，只需要点击预览按钮，就像这样：</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-debug-image.png" alt="直接悬停显示图片" /></p>
+
+<p>Xcode5集成了一个Debug面板，用来实现一个简单的Profiler，可以在调试时直接看到应用的CPU消耗，内存使用等情况（其他的还有iCloud情况，功耗和图形性能等）。在Debug运行时Cmd+6即可切换到该Debug界面。监测的内容简单明了，CPU使用用来检查是否有高占用或者尖峰（特别是主线程中），内存检测用来检查内存使用和释放的情况是否符合预期。</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-debug-profiler.png" alt="Debug的Profiler面板" /></p>
+
+<p>如果养成开发过程的调试中就一直打开这个Profiler面板的话（至少我从之后会坚持这个做法了），相信是有助于在开发过程中就迅速的监测到潜在的问题，并迅速解决的。当然，对于明显的问题可以在Debug面板中发现后立即寻找对应代码解决，但是如果比较复杂的问题，想要知道详细情况的话，还是要使用Instruments，在Debug面板中提供了一个“Profile In Instruments”按钮，可以快速跳转到Instruments。</p>
+
+<p>最后，Xcode在注释式文档方面也有进步，现在如下格式的注释将在Xcode中直接被检测到并集成进代码提示中了：</p>
+
+<p><code>objc
+/**
+ * Setup a recorder for a specified file path. After setting it, you can use the other control method to control the shared recorder.
+ *
+ * @param talkingPath An NSString indicates in which path the recording should be created
+ * @returns YES if recorder setup correctly, NO if there is an error
+ */
+- (BOOL)recordWithFilePath:(NSString *)talkingPath;
+</code></p>
+
+<p>得到的结果是这样的</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-comment-doc.png" alt="Xcode对代码注释的解析" /></p>
+
+<p>以及Quick Help中会有详细信息</p>
+
+<p><img src="http://img.onevcat.com/2013/xcode5-quickhelp.png" alt="在Quick Help中显示详细文档" /></p>
+
+<p>Xcode现在可以识别Javadoc格式（类似于上面例子）的注释文档，可用的标识符除了上面的<code>@param</code>和<code>@return</code>外，还有例如<code>@see</code>，<code>@discussion</code>等，关于Javadoc的更多格式规则，可以参考<a href="http://en.wikipedia.org/wiki/Javadoc">Wiki</a>。</p>
+
+<h2>关于Objective-C，Modules和Autolinking</h2>
+
+<p>OC自从Apple接手后，一直在不断改进。随着移动开发带来的OC开发者井喷式增加，客观上也要求Apple需要提供各种良好特性来支持这样一个庞大的开发者社区。iOS4时代的GCD，iOS5时代的ARC，iOS6时代的各种简化，每年我们都能看到OC在成为一种先进语言上的努力。基于SmallTalk和runtime，本身是C的超集，如此“根正苗红”的一门语言，在今年也迎来的新的变化。</p>
+
+<p>今年OC的最大变化就是加入了Modules和Autolinking。</p>
+
+<h3>什么是Modules呢</h3>
+
+<p>在了解Modules之前我们需要先了解一下OC的import机制。<code>#import &lt;FrameworkFoo/HeaderBar.h&gt;</code>，我相信每个开发者都写过这样的代码，用来引用其他的头文件。熟悉C或者C++的童鞋可能会知道，在C和C++里是没有#import的，只有#include（虽然GCC现在为C和C++做了特殊处理使得imoprt可以被编译），用来包含头文件。#include做的事情其实就是简单的复制粘贴，将目标.h文件中的内容一字不落地拷贝到当前文件中，并替换掉这句include，而#import实质上做的事情和#include是一样的，只不过OC为了避免重复引用可能带来的编译错误（这种情况在引用关系复杂的时候很可能发生，比如B和C都引用了A，D又同时引用了B和C，这样A中定义的东西就在D中被定义了两次，重复了），而加入了#import，从而保证每个头文件只会被引用一次。</p>
+
+<blockquote><p>如果想深究，import的实现是通过#ifndef一个标志进行判断，然后在引入后#define这个标志，来避免重复引用的</p></blockquote>
+
+<p>实质上import也还是拷贝粘贴，这样就带来一个问题：当引用关系很复杂，或者一个头文件被非常多的实现文件引用时，编译时引用所占的代码量就会大幅上升（因为被引用的头文件在各个地方都被copy了一遍）。为了解决这个问题，C系语言引入了预编译头文件（PreCompiled Header），将公用的头文件放入预编译头文件中预先进行编译，然后在真正编译工程时再将预先编译好的产物加入到所有待编译的Source中去，来加快编译速度。比如iOS开发中Supporting Files组内的.pch文件就是一个预编译头文件，默认情况下，它引用了UIKit和Foundation两个头文件--这是在iOS开发中基本每个实现文件都会用到的东西。</p>
+
+<p>于是理论上说，想要提高编译速度，可以把所有头文件引用都放到pch中。但是这样面临的问题是在工程中随处可用本来不应该能访问的东西，而编译器也无法准确给出错误或者警告，无形中增加了出错的可能性。</p>
+
+<p>于是Modules诞生了。Modules相当于将框架进行了封装，然后加入在实际编译之时加入了一个用来存放已编译添加过的Modules列表。如果在编译的文件中引用到某个Modules的话，将首先在这个列表内查找，找到的话说明已经被加载过则直接使用已有的，如果没有找到，则把引用的头文件编译后加入到这个表中。这样被引用到的Modules只会被编译一次，但是在开发时又不会被意外使用到，从而同时解决了编译时间和引用泛滥两方面的问题。</p>
+
+<p>稍微追根问底，Modules是什么？其实无非是对框架进行了如下封装，拿UIKit为例：</p>
+
+<p>```objc
+framework module UIKit {</p>
+
+<pre><code>umbrella header "UIKit.h"
+module * {export *}
+link framework "UIKit"
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这个Module定义了首要头文件（UIKit.h），需要导出的子modules（所有），以及需要link的框架名称（UIKit）。需要指出的是，现在Module还不支持第三方的框架，所以只有SDK内置的框架能够从这个特性中受益。另外，在C++的源代码中，Modules也是被禁用的。</p>
+
+<h3>好了，说了那么多，这玩意儿怎么用呢</h3>
+
+<p>关于普通开发者使用的这个新特性的方法，Apple在LLVM5.0（也就是Xcode5带的最新的编译器前端中）引入了一个新的编译符号<code>@import</code>，使用@符号将告诉编译器去使用Modules的引用形式，从而获取好处，比如想引用MessageUI，可以写成</p>
+
+<p><code>objc
+@import MessageUI;
+</code></p>
+
+<p>在使用上，这将等价于以前的<code>#import &lt;MessageUI/MessageUI.h&gt;</code>，但是将使用Modules的特性。如果只想使用某个特性的.h文件，比如<code>#import &lt;MessageUI/MFMailComposeViewController.h&gt;</code>，对应写作</p>
+
+<p><code>objc
+@import MessageUI.MFMailComposeViewController;
+</code>
+当然，如果对于以前的工程，想要使用新的Modules特性，如果要把所有头文件都这样一个一个改成<code>@import</code>的话，会是很大的一个工作量。Apple自然也考虑到了这一点，于是对于原来的代码，只要使用的是iOS7或者MacOS10.9的SDK，在Build Settings中将Enable Modules(C and Objective-C)打开，然后保持原来的<code>#import</code>写法就行了。是的，不需要任何代码上的改变，编译器会在编译的时候自动地把可能的地方换成Modules的写法去编译的。</p>
+
+<p>Autolinking是Modules的附赠小惊喜，因为在module定义的时候指定来link framework，所以在编译module时LLVM会将所涉及到的框架自动帮你写到link里去，不再需要到编译设置里去添加了。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[开发者所需要知道的iOS7 SDK新特性]]></title>
+    <link href="http://onevcat.com/2013/06/developer-should-know-about-ios7/"/>
+    <updated>2013-06-11T07:43:00+09:00</updated>
+    <id>http://onevcat.com/2013/06/developer-should-know-about-ios7</id>
+    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios-7-logo.png" alt="iOS 7" /></p>
+
+<p>春风又绿加州岸，物是人非又一年。WWDC 2013 keynote落下帷幕，新的iOS开发旅程也由此开启。在iOS7界面重大变革的背后，开发者们需要知道的又有哪些呢。同去年一样，我会先简单纵览地介绍iOS7中我个人认为开发者需要着重关注和学习的内容，之后再陆续对自己感兴趣章节进行探索。计划继承类似<a href="http://onevcat.com/2012/06/%E5%BC%80%E5%8F%91%E8%80%85%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84ios6-sdk%E6%96%B0%E7%89%B9%E6%80%A7/">WWDC2012的笔记</a>的形式，希望对国内开发者有所帮助。</p>
+
+<p>相关笔记整理如下：</p>
+
+<ul>
+<li>总览 <a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">开发者所需要知道的iOS7 SDK新特性</a></li>
+<li>工具 <a href="http://onevcat.com/2013/06/new-in-xcode5-and-objc/">WWDC2013笔记 Xcode5和ObjC新特性</a> http://onevcat.com/2013/06/new-in-xcode5-and-objc/</li>
+<li>UIKit动力学 <a href="http://onevcat.com/2013/06/uikit-dynamics-started/">WWDC2013笔记 UIKit力学模型入门</a> http://onevcat.com/2013/06/uikit-dynamics-started/</li>
+<li>SpriteKit入门 <a href="http://onevcat.com/2013/06/sprite-kit-start/">WWDC2013笔记 SpriteKit快速入门和新时代iOS游戏开发指南</a> http://onevcat.com/2013/06/sprite-kit-start/</li>
+<li>后台应用运行和多任务新特性 <a href="http://onevcat.com/2013/08/ios7-background-multitask/">WWDC2013笔记 iOS7中的多任务</a> http://onevcat.com/2013/08/ios7-background-multitask/</li>
+<li>iOS7中弹簧式列表的制作 <a href="http://onevcat.com/2013/09/spring-list-like-ios7-message">WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作</a> http://onevcat.com/2013/09/spring-list-like-ios7-message</li>
+</ul>
+
+
+<hr />
+
+<h3>UI相关</h3>
+
+<h4>全新UI设计</h4>
+
+<p>iOS7最大的变化莫过于UI设计，也许你会说UI设计“这是设计师大大们应该关注的事情，不关开发者的事，我们只需要替换图片就行了”。那你就错了。UI的变化必然带来使用习惯和方式的转变，如何运用iOS7的UI，如何是自己的应用更切合新的系统，都是需要考虑的事情。另外值得注意的是，使用iOS7 SDK（现在只有Xcode5预览版提供）打包的应用在iOS7上运行时将会自动使用iOS7的新界面，所以原有应用可能需要对新界面进行重大调整。具体的iOS7中所使用的UI元素的人际交互界面文档，可以从<a href="https://developer.apple.com/library/prerelease/ios/design/index.html#//apple_ref/doc/uid/TP40013289">这里</a>找到（应该是需要开发者账号才能看）。</p>
+
+<!--more-->
+
+
+<p>简单总结来说，以现在上手体验看来新的UI变化改进有如下几点：</p>
+
+<ul>
+<li>状态栏，导航栏和应用实际展示内容不再界限：系统自带的应用都不再区分状态栏和navigation bar，而是用统一的颜色力求简洁。这也算是一种趋势。</li>
+<li>BarItem的按钮全部文字化：这点做的相当坚决，所有的导航和工具条按钮都取消了拟物化，原来的文字（比如“Edit”，“Done”之类）改为了简单的文字，原来的图标（比如新建或者删除）也做了简化。</li>
+<li>程序打开加入了动画：从主界面到图标所在位置的一个放大，同时显示应用的载入界面。</li>
+</ul>
+
+
+<p>自己实验了几个现有的AppStore应用在iOS7上的运行情况：</p>
+
+<ul>
+<li><a href="https://itunes.apple.com/app/id533469911?mt=8">Pomodoro Do</a>： 这是我自己开发的应用，运行正常，但是因为不是iOS7 SDK打包，所以在UI上使用了之前系统的，问题是导航栏Tint颜色丢失，导致很难看，需要尽快更新。</li>
+<li>Facebook：因为使用了图片自定义导航栏，而没有直接使用系统提供的材质，所以没什么问题。</li>
+<li>面包旅行：直接Crash，无法打开，原因未知。</li>
+</ul>
+
+
+<p>这次UI大改可以说是一次对敏捷开发的检验，原来的应用（特别是拟物化用得比较重的应用）虽然也能运行，但是很多UI自定义的地方需要更改不说，还容易让用户产生一种“来到了另一个世界”的感觉，同时可以看到也有部分应用无法运行。而对于苹果的封闭系统和只升不降的特性，开发者以及其应用必须要尽快适应这个新系统，这对于迭代快速，还在继续维护的应用来说会是一个机会。相信谁先能适应新的UI，谁就将在iOS7上占到先机。</p>
+
+<h4>UIKit的力学模型（UIKit Dynamics）</h4>
+
+<p>这个专题的相关笔记</p>
+
+<blockquote><p>UIKit动力学 <a href="http://onevcat.com/2013/06/uikit-dynamics-started/">WWDC2013笔记 UIKit力学模型入门</a> http://onevcat.com/2013/06/uikit-dynamics-started/</p></blockquote>
+
+<p>新增了<code>UIDynamicItem</code>委托，用来为UIView制定力学模型行为，当然其他任何对象都能通过实现这组接口来定义动力学行为，只不过在UIKit中可能应用最多。所谓动力学行为，是指将现实世界的我们常见的力学行为或者特性引入到UI中，比如重力等。通过实现UIDynamicItem，UIKit现在支持如下行为：</p>
+
+<ul>
+<li>UIAttachmentBehavior 连接两个实现了UIDynamicItem的物体（以下简称动力物体），一个物体移动时，另一个跟随移动</li>
+<li>UICollisionBehavior 指定边界，使两个动力物体可以进行碰撞</li>
+<li>UIGravityBehavior 顾名思义，为动力物体增加重力模拟</li>
+<li>UIPushBehavior 为动力物体施加持续的力</li>
+<li>UISnapBehavior 为动力物体指定一个附着点，想象一下类似挂一幅画在图钉上的感觉</li>
+</ul>
+
+
+<p>如果有开发游戏的童鞋可能会觉得这些很多都是做游戏时候的需求，一种box2d之类的2D物理引擎的既视感跃然而出。没错的亲，动态UI，加上之后要介绍的Sprite Kit，极大的扩展了使用UIKit进行游戏开发的可能性。另外要注意UIDynamicItem不仅适用于UIKit，任何对象都可以实现接口来获得动态物体的一些特性，所以说用来做一些3D的或者其他奇怪有趣的事情也不是没有可能。如果觉得Cocos2D+box2d这样的组合使用起来不方便的话，现在动态UIKit+SpriteKit给出了新的选择。</p>
+
+<h3>游戏方面</h3>
+
+<p>这个专题的相关笔记</p>
+
+<blockquote><p>SpriteKit入门 <a href="http://onevcat.com/2013/06/sprite-kit-start/">WWDC2013笔记 SpriteKit快速入门和新时代iOS游戏开发指南</a> http://onevcat.com/2013/06/sprite-kit-start/</p></blockquote>
+
+<p>iOS7 SDK极大加强了直接使用iOS SDK制作和分发游戏的体验，最主要的是引入了专门的游戏制作框架。</p>
+
+<h4>Sprite Kit Framework</h4>
+
+<p>这是个人认为iOS7 SDK最大的亮点，也是最重要的部分，iOS SDK终于有自己的精灵系统了。Sprite Kit Framework使用硬件加速的动画系统来表现2D和2.5D的游戏，它提供了制作游戏所需要的大部分的工具，包括图像渲染，动画系统，声音播放以及图像模拟的物理引擎。可以说这个框架是iOS SDK自带了一个较完备的2D游戏引擎，力图让开发者专注于更高层的实现和内容。和大多数游戏引擎一样，Sprite Kit内的内容都按照场景（Scene）来分开组织，一个场景可以包括贴图对象，视频，形状，粒子效果甚至是CoreImage滤镜等等。相对于现有的2D引擎来说，由于Sprite Kit是在系统层级进行的优化，渲染时间等都由框架决定，因此应该会有比较高的效率。</p>
+
+<p>另外，Xcode还提供了创建粒子系统和贴图Atlas的工具。使用Xcode来管理粒子效果和贴图atlas，可以迅速在Sprite Kit中反应出来。</p>
+
+<h4>Game Controller Framework</h4>
+
+<p>为Made-for-iPhone/iPod/iPad (MFi) game controller设计的硬件的对应的框架，可以让用户用来连接和控制专门的游戏硬件。参考WWDC 2013开场视频中开始的赛车演示。现在想到的是，也许这货不仅可以用于游戏…或者苹果之后会扩展其应用，因为使用普及率很高的iPhone作为物联网的入口，似乎会是很有前途的事情。</p>
+
+<h4>GameCenter改进</h4>
+
+<p>GameCenter一直是苹果的败笔...虽然每年都在改进，但是一直没看到大的起色。今年也不例外，都是些小改动，不提也罢。</p>
+
+<h3>多任务强化</h3>
+
+<p>这个专题的相关笔记</p>
+
+<blockquote><p>后台应用运行和多任务新特性 <a href="http://onevcat.com/2013/08/ios7-background-multitask/">WWDC2013笔记 iOS7中的多任务</a> http://onevcat.com/2013/08/ios7-background-multitask/</p></blockquote>
+
+<ul>
+<li>经常需要下载新内容的应用现在可以通过设置<code>UIBackgroundModes</code>为<code>fetch</code>来实现后台下载内容了，需要在AppDelegate里实现<code>setMinimumBackgroundFetchInterval:</code>以及<code>application:performFetchWithCompletionHandler:</code>来处理完成的下载，这个为后台运行代码提供了又一种选择。不过考虑到Apple如果继续严格审核的话，可能只有杂志报刊类应用能够取得这个权限吧。另外需要注意开发者仅只能指定一个最小间隔，最后下没下估计就得看系统娘的心情了。</li>
+<li>同样是后台下载，以前只能推送提醒用户进入应用下载，现在可以接到推送并在后台下载。UIBackgroundModes设为remote-notification，并实现<code>application:didReceiveRemoteNotification:fetchCompletionHandler:</code></li>
+</ul>
+
+
+<p>为后台下载，开发者必须使用一个新的类<code>NSURLSession</code>，其实就是在NSURLConnection上加了个后台处理，使用类似，API十分简单，不再赘述。</p>
+
+<h3>AirDrop</h3>
+
+<p>这个是iOS7的重头新功能，用户可以用它来分享照片，文档，链接，或者其他数据给附近的设备。但是不需要特别的实现，被集成在了标准的UIActivityViewController里，并没有单独的大块API提供。数据的话，可以通过实现UIActivityItemSource接口后进行发送。大概苹果也不愿意看到超出他们控制的文件分享功能吧，毕竟这和iOS设计的初衷不一样。如果你不使用UIActivityViewController的话，可能是无法在应用里实装AirDrop功能了。</p>
+
+<p>另外，结合自定义的应用文件类型，可以容易地实现在后台接收到特定文件后使用自己的应用打开，也算是增加用户留存和回访的一个办法。但是这样做现在看来比较讨厌的是会有将所有文件都注册为可以打开的应用（比如Evernote或者Dropbox之类），导致接收到AirDrop发送的内容的时候会弹出很长一排选项，体验较差，只能说希望Apple以后能改进吧</p>
+
+<h3>地图</h3>
+
+<p>Apple在继续在地图应用上的探索，MapKit的改进也乏善可陈。我一直相信地图类应用的瓶颈一定在于数据，但是对于数据源的建立并不是一年两年能够完成的。Google在这一块凭借自己的搜索引擎有着得天独厚的优势，苹果还差的很远很远。看看有哪些新东西吧：</p>
+
+<ul>
+<li>MKMapCamera，可以将一个MKMapCamera对象添加到地图上，在指明位置，角度和方向后将呈现3D的样子…大概可以想象成一个数字版的Google街景..</li>
+<li>MKDirections 获取Apple提供的基于方向的路径，然后可以用来将路径绘制在自己的应用中。这可能对一些小的地图服务提供商产生冲击，但是还是那句话，地图是一个数据的世界，在拥有完备数据之前，Apple不是Google的对手。这个状况至少会持续好几年（也有可能是永远）。</li>
+<li>MKGeodesicPolyline 创建一个随地球曲率的线，并附加到地图上，完成一些视觉效果。</li>
+<li>MKMapSnapshotter 使用其拍摄基于地图的照片，也许各类签到类应用会用到</li>
+<li>改变了overlay物件的渲染方式</li>
+</ul>
+
+
+<h3>Inter-App Audio 应用间的音频</h3>
+
+<p>AudioUnit框架中加入了在同一台设备不同应用之间发送MIDI指令和传送音频的能力。比如在一个应用中使用AudioUnit录音，然后在另一个应用中打开以处理等。在音源应用中声明一个AURemoteIO实例来标为Inter-App可用，在目标应用中使用新的发现接口来发现并获取音频。</p>
+
+<p>想法很好，也算是在应用内共享迈出了一步，不过我对现在使用AudioUnit这样的低层级框架的应用数量表示不乐观。也许今后会有一些为更高层级设计的共享API提供给开发者使用。毕竟要从AudioUnit开始处理音频对于大多数开发者来说并不是一件很容易的事情。</p>
+
+<h3>点对点连接 Peer-to-Peer Connectivity</h3>
+
+<p>可以看成是AirDrop不能直接使用的补偿，代价是需要自己实现。MultipeerConnectivity框架可以用来发现和连接附近的设备，并传输数据，而这一切并不需要有网络连接。可以看到Apple逐渐在文件共享方面一步步放开限制，但是当然所有这些都还是被限制在sandbox里的。</p>
+
+<h3>Store Kit Framework</h3>
+
+<p>Store Kit在内购方面采用了新的订单系统，这将可以实现对订单的本机验证。这是一次对应内购破解和有可能验证失败导致内购失败的更新，苹果希望藉此减少内购的实现流程，减少出错，同时遏制内购破解泛滥。前者可能没有问题，但是后者的话，因为objc的动态特性，决定了只要有越狱存在，内购破解也是早晚的事情。不过这一点确实方便了没有能力架设验证服务器的小开发者，这方面来说还是很好的。</p>
+
+<h3>最后</h3>
+
+<p>当然还有一些其他小改动，包括MessageUI里添加了附件按钮，Xcode开始支持模块了等等。完整的iOS7新特性列表可以在<a href="https://developer.apple.com/library/prerelease/ios/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1">这里</a>找到（暂时应该也需要开发者账号）。最后一个好消息是，苹果放慢了废弃API的速度，这个版本并没有特别重要的API被标为Deprecated，Cheers。</p>
 ]]></content>
   </entry>
   
