@@ -4,7 +4,6 @@ title: "WWDC 2013 Session笔记 - SpriteKit快速入门和新时代iOS游戏开�
 date: 2013-06-16 18:13
 comments: true
 categories: 
-published: false
 ---
 
 ![SpriteKit，iOS/Mac游戏制作的新纪元](http://img.onevcat.com/2013/spritekit-intro.png)
