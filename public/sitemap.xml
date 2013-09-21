@@ -300,7 +300,7 @@
     </url>
     <url>
         <loc>http://onevcat.com/2013/04/itc-special-characters/</loc>
-        <lastmod>2013-04-28T19:25:47+09:00</lastmod>
+        <lastmod>2013-09-21T08:59:42+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/2013/04/using-blending-in-ios/</loc>
@@ -335,6 +335,10 @@
         <lastmod>2013-08-29T23:43:15+09:00</lastmod>
     </url>
     <url>
+        <loc>http://onevcat.com/2013/08/ios7-background-multitask/</loc>
+        <lastmod>2013-09-21T09:01:36+09:00</lastmod>
+    </url>
+    <url>
         <loc>http://onevcat.com/2013/08/shader-tutorial-2/</loc>
         <lastmod>2013-08-31T22:18:53+09:00</lastmod>
     </url>
@@ -344,11 +348,11 @@
     </url>
     <url>
         <loc>http://onevcat.com/blog/archives/</loc>
-        <lastmod>2013-09-19T17:12:47+09:00</lastmod>
+        <lastmod>2013-09-21T09:01:36+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/</loc>
-        <lastmod>2013-09-19T17:12:47+09:00</lastmod>
+        <lastmod>2013-09-21T09:01:36+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/robots.txt</loc>
@@ -356,7 +360,7 @@
     </url>
     <url>
         <loc>http://onevcat.com/showcase/coinpush/</loc>
-        <lastmod>2013-09-19T17:12:47+09:00</lastmod>
+        <lastmod>2013-09-21T09:01:36+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/showcase/</loc>
@@ -368,15 +372,15 @@
     </url>
     <url>
         <loc>http://onevcat.com/showcase/pomodoro_do/</loc>
-        <lastmod>2013-09-19T17:12:47+09:00</lastmod>
+        <lastmod>2013-09-21T09:01:36+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/showcase/quizkingdom/</loc>
-        <lastmod>2013-09-19T17:12:47+09:00</lastmod>
+        <lastmod>2013-09-21T09:01:36+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/showcase/texaspokerking/</loc>
-        <lastmod>2013-09-19T17:12:47+09:00</lastmod>
+        <lastmod>2013-09-21T09:01:36+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/showcase/volume-recorder/</loc>
@@ -384,6 +388,6 @@
     </url>
     <url>
         <loc>http://onevcat.com/showcase/vvbordertimer/</loc>
-        <lastmod>2013-09-19T17:12:47+09:00</lastmod>
+        <lastmod>2013-09-21T09:01:36+09:00</lastmod>
     </url>
 </urlset>

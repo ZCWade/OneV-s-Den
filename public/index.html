@@ -152,6 +152,75 @@
   
 
 
+<time datetime="2013-08-17T19:16:00+09:00" data-updated="true" itemprop="datePublished">Aug 17<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/08/ios7-background-multitask/" itemprop="url">WWDC 2013 Session笔记 - iOS7中的多任务</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/ios7-multitasking.jpg" alt="iOS7的后台多任务特性" /></p>
+
+<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
+
+<p>本文涉及到的WWDC2013 Session有</p>
+
+<ul>
+<li>Session 204 What&#8217;s New with Multitasking</li>
+<li>Session 705 What’s New in Foundation Networking</li>
+</ul>
+
+
+<h2>iOS7以前的Multitasking</h2>
+
+<p>iOS的多任务是在iOS4的时候被引入的，在此之前iOS的app都是按下Home键就被干掉了。iOS4虽然引入了后台和多任务，但是实际上是伪多任务，一般的app后台并不能执行自己的代码，只有少数几类服务在通过注册后可以真正在后台运行，并且在提交到AppStore的时候也会被严格审核是否有越权行为，这种限制主要是出于对于设备的续航和安全两方面进行的考虑。之后经过iOS5和6的逐渐发展，后台能运行的服务的种类虽然出现了增加，但是iOS后台的本质并没有变化。在iOS7之前，系统所接受的应用多任务可以大致分为几种：</p>
+
+<ul>
+<li>后台完成某些花费时间的特定任务</li>
+<li>后台播放音乐等</li>
+<li>位置服务</li>
+<li>IP电话（VoIP）</li>
+<li>Newsstand</li>
+</ul>
+
+
+<p>在WWDC 2013的keynote上，iOS7的后台多任务改进被专门拿出来向开发者进行了介绍，到底iOS7里多任务方面有什么新的特性可以利用，如何使用呢？简单来说，iOS7在后台特性方面有很大改进，不仅改变了以往的一些后台任务处理方式，还加入了全新的后台模式，本文将针对iOS7中新的后台特性进行一些学习和记录。大体来说，iOS7后台的变化在于以下四点：</p>
+
+<ul>
+<li>改变了后台任务的运行方式</li>
+<li>增加了后台获取（Background Fetch）</li>
+<li>增加了推送唤醒（静默推送，Silent Remote Notifications）</li>
+<li>增加了后台传输（￼Background Transfer Service）</li>
+</ul>
+
+
+
+		
+		<a href="/2013/08/ios7-background-multitask/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
 <time datetime="2013-07-23T23:14:00+09:00" data-updated="true" itemprop="datePublished">Jul 23<span>rd</span>, 2013</time></div>
 		<div class="tags">
 
@@ -574,51 +643,6 @@
 
 		
 		<a href="/2013/04/using-blending-in-ios/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-28T18:01:00+09:00" data-updated="true" itemprop="datePublished">Apr 28<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/nan-ji-bei-dou-ji/'>南箕北斗集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/04/itc-special-characters/" itemprop="url">苹果应用描述中不能使用特殊字符的对应方法</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://img.onevcat.com/2013/itc-special-character.png" alt="就是不让你用就是不让你用～" /></p>
-
-<p>虽然很早Apple就说过从5月1日开始就不再允许UDID以及没有对iPhone5优化的应用上架，但是这次iTunes Connect的对于描述字符的限制还是让很多开发者措手不及。毕竟事先完全没有和大家打过招呼，Apple想要统一应用市场的风格和体验的心态可以理解，但是在开发者难得还有一点自由发挥的应用描述的地方突然作出这样的限制，确实不太厚道。相关的新闻报道可以参看<a href="http://www.cnbeta.com/articles/234799.htm">这里</a></p>
-
-<p>但是，难道我们真的没法使用更漂亮的描述了么？答案是，有办法！解决办法就一句话，<strong>直接使用<code>字符值引用</code>来写iTC的描述就可以了～</strong></p>
-
-<p>比如，想使用<code>★</code>这个字符，在描述中将<code>★</code>的地方都换成<code>&amp;#9733;</code>就可以了。</p>
-
-<p>一句废话，对于字符转换，当然也有在线将特殊字符转换为字符值引用的服务：<a href="http://yasu.asuka.net/orkut/conv.html">传送门</a></p>
-
-<p>最后，祝大家五一快乐，假期好心情～ :)</p>
-
-		
-		
 	</div>
 
 </article>
