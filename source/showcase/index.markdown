@@ -7,7 +7,7 @@ published: true
 comments: true
 ---
 
-# [VVDocumenter - Xcode缺失已久的文档插件](http://unirate.onevcat.com/)
+# [VVDocumenter - Xcode缺失已久的文档插件](https://github.com/onevcat/VVDocumenter-Xcode)
 
 `2013年7月21日`
 
