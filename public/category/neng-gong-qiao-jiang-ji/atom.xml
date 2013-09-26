@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 能工巧匠集 | OneV's Den]]></title>
   <link href="http://onevcat.com/category/neng-gong-qiao-jiang-ji/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2013-09-24T14:55:08+09:00</updated>
+  <updated>2013-09-26T22:44:35+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -455,7 +455,7 @@ o.Alpha = c.a;
 <p>}
 ```</p>
 
-<p>和上面相比，加入了一个if…else…的判断。首先看这个条件的不等式的左侧，我们对雪的方向和和输入点的世界法线方向进行点积。<code>WorldNormalVector</code>通过输入的点及这个点的法线值，来计算它在世界坐标中的方向；右侧的lerp函数相信只要对插值有概念的同学都不难理解：当<em>Snow取最小值1时，这个函数将返回1，而</em>Snow取最大值时，返回-1。这样我们就可以通过设定<em>Snow的值来控制积雪的阈值，要是积雪等级</em>Snow是0时，不等式左侧不可能大于右侧，因此完全没有积雪；相反要是_Snow取最大值1时，由于左侧必定大于-1，所以全模型积雪。而随着取中间值的变化，积雪的情况便会有所不同。</p>
+<p>和上面相比，加入了一个if…else…的判断。首先看这个条件的不等式的左侧，我们对雪的方向和和输入点的世界法线方向进行点积。<code>WorldNormalVector</code>通过输入的点及这个点的法线值，来计算它在世界坐标中的方向；右侧的lerp函数相信只要对插值有概念的同学都不难理解：当<em>Snow取最小值0时，这个函数将返回1，而</em>Snow取最大值时，返回-1。这样我们就可以通过设定<em>Snow的值来控制积雪的阈值，要是积雪等级</em>Snow是0时，不等式左侧不可能大于右侧，因此完全没有积雪；相反要是_Snow取最大值1时，由于左侧必定大于-1，所以全模型积雪。而随着取中间值的变化，积雪的情况便会有所不同。</p>
 
 <p>应用这个Shader，并且适当地调节一下积雪等级和颜色，可以得到如下右边的效果。</p>
 
