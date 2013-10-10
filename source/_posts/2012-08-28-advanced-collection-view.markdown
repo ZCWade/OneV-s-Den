@@ -8,7 +8,7 @@ comments: true
 ---
 [![](http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-3.png "uicollectionview-struct")](http://www.onevcat.com/wp-content/uploads/2012/08/QQ20120828-3.png)
 
-这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看[这里](http://www.onevcat.com/tag/wwdc/)。如果您是首次来到本站，也许您会有兴趣通过[RSS](http://onevcat.com/atom.xml)，或者通过页面左侧的邮件订阅的方式订阅本站。
+这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看[这里](http://onevcat.com/2012/06/%E5%BC%80%E5%8F%91%E8%80%85%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84ios6-sdk%E6%96%B0%E7%89%B9%E6%80%A7/)。如果您是首次来到本站，也许您会有兴趣通过[RSS](http://onevcat.com/atom.xml)，或者通过页面左侧的邮件订阅的方式订阅本站。
 
 在上一篇[UICollectionView的入门介绍](http://www.onevcat.com/2012/06/introducing-collection-views/)中，大概地对iOS6新加入的强大的UICollectionView进行了一些说明。在这篇博文中，将结合WWDC2012 Session219：Advanced Collection View的内容，对Collection View进行一个深入的使用探讨，并给出一个自定义的Demo。
 

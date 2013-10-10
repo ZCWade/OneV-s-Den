@@ -8,7 +8,7 @@ comments: true
 ---
 ![](http://www.onevcat.com/wp-content/uploads/2012/06/QQ20120630-7.png "QQ20120630-7")
 
-这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看[这里](http://www.onevcat.com/tag/wwdc/)。如果您是首次来到本站，也许您会有兴趣通过[RSS](http://onevcat.com/atom.xml)，或者通过页面左侧的邮件订阅的方式订阅本站。
+这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看[这里](http://onevcat.com/2012/06/%E5%BC%80%E5%8F%91%E8%80%85%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84ios6-sdk%E6%96%B0%E7%89%B9%E6%80%A7/)。如果您是首次来到本站，也许您会有兴趣通过[RSS](http://onevcat.com/atom.xml)，或者通过页面左侧的邮件订阅的方式订阅本站。
 
 在之前的[iOS6 SDK新特性前瞻](http://www.onevcat.com/2012/06/%E5%BC%80%E5%8F%91%E8%80%85%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84ios6-sdk%E6%96%B0%E7%89%B9%E6%80%A7/)中我曾经提到过UICollectionView，当时只把CollectionView当作是一个现在已有的开源GridView，仔细研究了下WWDC2012相关的Session后发现并不是那么简单。Apple这次真的给广大开发者带来了一个非常powerful的view，其强大程度可以说远超UITableView。接下来的这篇笔记将对应Session 205，作为使用UICollectionView的入门，之后还将完成一篇关于深入使用UICollectionView以及相应的Layout的笔记。
 

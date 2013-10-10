@@ -8,7 +8,7 @@ comments: true
 ---
 ![](http://www.onevcat.com/wp-content/uploads/2012/06/QQ20120624-1.png "QQ20120624-1")
 
-这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看[这里](http://www.onevcat.com/tag/wwdc/)。如果您是首次来到本站，也许您会有兴趣通过[RSS](http://onevcat.com/atom.xml)，或者通过页面左侧的邮件订阅的方式订阅本站。
+这是博主的WWDC2012笔记系列中的一篇，完整的笔记列表可以参看[这里](http://onevcat.com/2012/06/%E5%BC%80%E5%8F%91%E8%80%85%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84ios6-sdk%E6%96%B0%E7%89%B9%E6%80%A7/)。如果您是首次来到本站，也许您会有兴趣通过[RSS](http://onevcat.com/atom.xml)，或者通过页面左侧的邮件订阅的方式订阅本站。
 
 2007年的时候，Objective-C在TIOBE编程语言排名里还排在可怜的第45位，而随着移动互联网的迅速发展和iPhone，iPad等iOS设备的广阔市场前景，Objective-C也迅速崛起，走进了开发者的视野。在最近的TIOBE排名中，Objective-C达到了惊人的第4名，可以说已经成为当今世界上一门非常重要的编程语言。
 
