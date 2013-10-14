@@ -18,6 +18,7 @@ categories: 能工巧匠集
 * SpriteKit入门 [WWDC2013笔记 SpriteKit快速入门和新时代iOS游戏开发指南](http://onevcat.com/2013/06/sprite-kit-start/) http://onevcat.com/2013/06/sprite-kit-start/
 * 后台应用运行和多任务新特性 [WWDC2013笔记 iOS7中的多任务](http://onevcat.com/2013/08/ios7-background-multitask/) http://onevcat.com/2013/08/ios7-background-multitask/
 * iOS7中弹簧式列表的制作 [WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作](http://onevcat.com/2013/09/spring-list-like-ios7-message) http://onevcat.com/2013/09/spring-list-like-ios7-message
+* iOS7中自定义ViewController切换效果 [WWDC 2013 Session笔记 - iOS7中的ViewController切换](http://onevcat.com/2013/10/vc-transition-in-ios7/)
 
 ---
 

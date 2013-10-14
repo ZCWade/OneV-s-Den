@@ -4,7 +4,7 @@
   <title><![CDATA[OneV's Den]]></title>
   <link href="http://onevcat.com/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2013-10-10T12:54:39+09:00</updated>
+  <updated>2013-10-14T11:55:52+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -12,6 +12,683 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的ViewController切换]]></title>
+    <link href="http://onevcat.com/2013/10/vc-transition-in-ios7/"/>
+    <updated>2013-10-11T15:36:00+09:00</updated>
+    <id>http://onevcat.com/2013/10/vc-transition-in-ios7</id>
+    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios-transition-banner.jpg" alt="iOS7中的ViewController切换" /></p>
+
+<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
+
+<p>本文涉及到的WWDC2013 Session有</p>
+
+<ul>
+<li>Session 201 Building User Interfaces for iOS 7</li>
+<li>Session 218 Custom Transitions Using View Controllers</li>
+<li>Session 226 Implementing Engaging UI on iOS</li>
+</ul>
+
+
+<p>毫无疑问，ViewController（在本文中简写为VC）是使用MVC构建Cocoa或者CocoaTouch程序时最重要的一个类，我们的日常工作中一般来说最花费时间和精力的也是在为VC部分编写代码。苹果产品是注重用户体验的，而对细节进行琢磨也是苹果对于开发者一直以来的要求和希望。在用户体验中，VC之间的关系，比如不同VC之间迁移和转换动画效果一直是一个值得不断推敲的重点。在iOS7中，苹果给出了一套完整的VC制作之间迁移效果的方案，可以说是为现在这部分各种不同实现方案指出了一条推荐的统一道路。</p>
+
+<h3>iOS 7 SDK之前的VC切换解决方案</h3>
+
+<p>在深入iOS 7的VC切换效果的新API实现之前，先让我们回顾下现在的一般做法吧。这可以帮助理解为什么iOS7要对VC切换给出新的解决方案，如果您对iOS 5中引入的VC容器比较熟悉的话，可以跳过这节。</p>
+
+<!--more-->
+
+
+<p>在iOS5和iOS6中，除了标准的Push，Tab和PresentModal之外，一般是使用ChildViewController的方式来完成VC之间切换的过渡效果。ChildViewController和自定义的Controller容器是iOS 5 SDK中加入的，可以用来生成自定义的VC容器，简单来说典型的一种用法类似这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//ContainerVC.m</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">addChildViewController:</span><span class="n">toVC</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">fromVC</span> <span class="nl">willMoveToParentViewController:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview:</span><span class="n">toVC</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">__weak</span> <span class="kt">id</span> <span class="n">weakSelf</span> <span class="o">=</span> <span class="n">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">[</span><span class="n">self</span> <span class="nl">transitionFromViewController:</span><span class="n">fromVC</span>
+</span><span class='line'>                  <span class="nl">toViewController:</span><span class="n">toVC</span> <span class="nl">duration:</span><span class="mf">0.3</span>
+</span><span class='line'>                           <span class="nl">options:</span><span class="n">UIViewAnimationOptionTransitionCrossDissolve</span>
+</span><span class='line'>                        <span class="nl">animations:</span><span class="o">^</span><span class="p">{}</span>
+</span><span class='line'>                        <span class="nl">completion:</span><span class="o">^</span><span class="p">(</span><span class="kt">BOOL</span> <span class="n">finished</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">fromVC</span> <span class="n">removeFromSuperView</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">fromVC</span> <span class="n">removeFromParentViewController</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">toVC</span> <span class="nl">didMoveToParentViewController:</span><span class="n">weakSelf</span><span class="p">];</span>
+</span><span class='line'><span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在自己对view进行管理的同时，可以使用transitionFromViewController:toViewController:&#8230;的Animation block中可以实现一些简单的切换效果。去年年初我写的<a href="http://onevcat.com/2012/02/uiviewcontroller/">UIViewController的误用</a>一文中曾经指出类似<code>[viewController.view addSubview:someOtherViewController.view];</code>这样的代码的存在，一般就是误用VC。这个结论适用于非Controller容器，对于自定义的Controller容器来说，向当前view上添加其他VC的view是正确的做法（当然不能忘了也将VC本身通过<code>addChildViewController:</code>方法添加到容器中）。</p>
+
+<p>VC容器的主要目的是解决将不同VC添加到同一个屏幕上的需求，以及可以提供一些简单的自定义切换效果。使用VC容器可以使view的关系正确，使添加的VC能够正确接收到例如屏幕旋转，viewDidLoad:等VC事件，进而进行正确相应。VC容器确实可以解决一部分问题，但是也应该看到，对于自定义切换效果来说，这样的解决还有很多不足。首先是代码高度耦合，VC切换部分的代码直接写在container中，难以分离重用；其次能够提供的切换效果比较有限，只能使用UIView动画来切换，管理起来也略显麻烦。iOS 7提供了一套新的自定义VC切换，就是针对这两个问题的。</p>
+
+<h3>iOS 7 自定义ViewController动画切换</h3>
+
+<h4>自定义动画切换的相关的主要API</h4>
+
+<p>在深入之前，我们先来看看新SDK中有关这部分内容的相关接口以及它们的关系和典型用法。这几个接口和类的名字都比较相似，但是还是能比较好的描述出各自的职能的，一开始的话可能比较迷惑，但是当自己动手实现一两个例子之后，它们之间的关系就会逐渐明晰起来。（相关的内容都定义在UIKit的<a href="https://gist.github.com/onevcat/6944809">UIViewControllerTransitioning.h</a>中了）</p>
+
+<h4>@protocol <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIViewControllerContextTransitioning_protocol/Reference/Reference.html">UIViewControllerContextTransitioning</a></h4>
+
+<p>这个接口用来提供切换上下文给开发者使用，包含了从哪个VC到哪个VC等各类信息，一般不需要开发者自己实现。具体来说，iOS7的自定义切换目的之一就是切换相关代码解耦，在进行VC切换时，做切换效果实现的时候必须要需要切换前后VC的一些信息，<strong>系统在新加入的API的比较的地方都会提供一个实现了该接口的对象</strong>，以供我们使用。</p>
+
+<p><strong>对于切换的动画实现来说</strong>（这里先介绍简单的动画，在后面我会再引入手势驱动的动画），这个接口中最重要的方法有：</p>
+
+<ul>
+<li>-(UIView *)containerView; VC切换所发生的view容器，开发者应该将切出的view移除，将切入的view加入到该view容器中。</li>
+<li>-(UIViewController <em>)viewControllerForKey:(NSString </em>)key; 提供一个key，返回对应的VC。现在的SDK中key的选择只有UITransitionContextFromViewControllerKey和UITransitionContextToViewControllerKey两种，分别表示将要切出和切入的VC。</li>
+<li>-(CGRect)initialFrameForViewController:(UIViewController *)vc; 某个VC的初始位置，可以用来做动画的计算。</li>
+<li>-(CGRect)finalFrameForViewController:(UIViewController *)vc; 与上面的方法对应，得到切换结束时某个VC应在的frame。</li>
+<li>-(void)completeTransition:(BOOL)didComplete; 向这个context报告切换已经完成。</li>
+</ul>
+
+
+<h4>@protocol <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIViewControllerAnimatedTransitioning_Protocol/Reference/Reference.html">UIViewControllerAnimatedTransitioning</a></h4>
+
+<p>这个接口负责切换的具体内容，也即“切换中应该发生什么”。开发者在做自定义切换效果时大部分代码会是用来实现这个接口。它只有两个方法需要我们实现：</p>
+
+<ul>
+<li><p>-(NSTimeInterval)transitionDuration:(id &lt; UIViewControllerContextTransitioning >)transitionContext; 系统给出一个切换上下文，我们根据上下文环境返回这个切换所需要的花费时间（一般就返回动画的时间就好了，SDK会用这个时间来在百分比驱动的切换中进行帧的计算，后面再详细展开）。</p></li>
+<li><p>-(void)animateTransition:(id &lt; UIViewControllerContextTransitioning >)transitionContext; 在进行切换的时候将调用该方法，我们对于切换时的UIView的设置和动画都在这个方法中完成。</p></li>
+</ul>
+
+
+<h4>@protocol <a href="https://developer.apple.com/library/ios/documentation/uikit/reference/UIViewControllerTransitioningDelegate_protocol/Reference/Reference.html">UIViewControllerTransitioningDelegate</a></h4>
+
+<p>这个接口的作用比较简单单一，在需要VC切换的时候系统会像实现了这个接口的对象询问是否需要使用自定义的切换效果。这个接口共有四个类似的方法：</p>
+
+<ul>
+<li><p>-(id&lt; UIViewControllerAnimatedTransitioning >)animationControllerForPresentedController:(UIViewController <em>)presented presentingController:(UIViewController </em>)presenting sourceController:(UIViewController *)source;</p></li>
+<li><p>-(id&lt; UIViewControllerAnimatedTransitioning >)animationControllerForDismissedController:(UIViewController *)dismissed;</p></li>
+<li><p>-(id&lt; UIViewControllerInteractiveTransitioning >)interactionControllerForPresentation:(id &lt; UIViewControllerAnimatedTransitioning >)animator;</p></li>
+<li><p>-(id&lt; UIViewControllerInteractiveTransitioning >)interactionControllerForDismissal:(id &lt; UIViewControllerAnimatedTransitioning >)animator;</p></li>
+</ul>
+
+
+<p>前两个方法是针对动画切换的，我们需要分别在呈现VC和解散VC时，给出一个实现了UIViewControllerAnimatedTransitioning接口的对象（其中包含切换时长和如何切换）。后两个方法涉及交互式切换，之后再说。</p>
+
+<h3>Demo</h3>
+
+<p>还是那句话，一百行的讲解不如一个简单的小Demo，于是..it&#8217;s demo time～ 整个demo的代码我放到了github的<a href="https://github.com/onevcat/VCTransitionDemo">这个页面</a>上，有需要的朋友可以参照着看这篇文章。</p>
+
+<p>我们打算做一个简单的自定义的modalViewController的切换效果。普通的present modal VC的效果大家都已经很熟悉了，这次我们先实现一个自定义的类似的modal present的效果，与普通效果不同的是，我们希望modalVC出现的时候不要那么乏味的就简单从底部出现，而是带有一个弹性效果（这里虽然是弹性，但是仅指使用UIView的模拟动画，而不设计iOS 7的另一个重要特性UIKit Dynamics。用UIKit Dynamics当然也许可以实现更逼真华丽的效果，但是已经超出本文的主题范畴了，因此不在这里展开了。关于UIKit Dynamics，可以参看我之前关于这个主题的<a href="http://onevcat.com/2013/06/uikit-dynamics-started/">一篇介绍</a>）。我们首先实现简单的ModalVC弹出吧..这段非常基础，就交待了一下背景，非初级人士请跳过代码段..</p>
+
+<p>先定义一个ModalVC，以及相应的protocal和delegate方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//ModalViewController.h</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@class</span> <span class="nc">ModalViewController</span>;
+</span><span class='line'><span class="k">@protocol</span> <span class="nc">ModalViewControllerDelegate</span> <span class="o">&lt;</span><span class="n">NSObject</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nl">modalViewControllerDidClickedDismissButton:</span><span class="p">(</span><span class="n">ModalViewController</span> <span class="o">*</span><span class="p">)</span><span class="n">viewController</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">ModalViewController</span> : <span class="nc">UIViewController</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">weak</span><span class="p">)</span> <span class="kt">id</span><span class="o">&lt;</span><span class="n">ModalViewControllerDelegate</span><span class="o">&gt;</span> <span class="n">delegate</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//ModalViewController.m</span>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'>  <span class="c1">// Do any additional setup after loading the view.</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIColor</span> <span class="n">lightGrayColor</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UIButton</span> <span class="o">*</span><span class="n">button</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIButton</span> <span class="nl">buttonWithType:</span><span class="n">UIButtonTypeRoundedRect</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">button</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="mf">80.0</span><span class="p">,</span> <span class="mf">210.0</span><span class="p">,</span> <span class="mf">160.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">button</span> <span class="nl">setTitle:</span><span class="s">@&quot;Dismiss me&quot;</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">button</span> <span class="nl">addTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">buttonClicked:</span><span class="p">)</span> <span class="nl">forControlEvents:</span><span class="n">UIControlEventTouchUpInside</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview:</span><span class="n">button</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">buttonClicked:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">sender</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">delegate</span> <span class="o">&amp;&amp;</span> <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">delegate</span> <span class="nl">respondsToSelector:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">modalViewControllerDidClickedDismissButton:</span><span class="p">)])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">delegate</span> <span class="nl">modalViewControllerDidClickedDismissButton:</span><span class="n">self</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个是很标准的modalViewController的实现方式了。需要多嘴一句的是，在实际使用中有的同学喜欢在-buttonClicked:中直接给self发送dismissViewController的相关方法。在现在的SDK中，如果当前的VC是被显示的话，这个消息会被直接转发到显示它的VC去。但是这并不是一个好的实现，违反了程序设计的哲学，也很容易掉到坑里，具体案例可以参看<a href="http://onevcat.com/2011/11/objective-c%E4%B8%AD%E7%9A%84block/#comment-1052782406">这篇文章的评论</a>。</p>
+
+<p>所以我们用标准的方式来呈现和解散这个VC：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//MainViewController.m</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'>  <span class="c1">// Do any additional setup after loading the view.</span>
+</span><span class='line'>    <span class="n">UIButton</span> <span class="o">*</span><span class="n">button</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIButton</span> <span class="nl">buttonWithType:</span><span class="n">UIButtonTypeRoundedRect</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">button</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="mf">80.0</span><span class="p">,</span> <span class="mf">210.0</span><span class="p">,</span> <span class="mf">160.0</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">button</span> <span class="nl">setTitle:</span><span class="s">@&quot;Click me&quot;</span> <span class="nl">forState:</span><span class="n">UIControlStateNormal</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">button</span> <span class="nl">addTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">buttonClicked:</span><span class="p">)</span> <span class="nl">forControlEvents:</span><span class="n">UIControlEventTouchUpInside</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview:</span><span class="n">button</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">buttonClicked:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">sender</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">ModalViewController</span> <span class="o">*</span><span class="n">mvc</span> <span class="o">=</span>  <span class="p">[[</span><span class="n">ModalViewController</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mvc</span><span class="p">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="n">self</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">presentViewController:</span><span class="n">mvc</span> <span class="nl">animated:</span><span class="n">YES</span> <span class="nl">completion:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">modalViewControllerDidClickedDismissButton:</span><span class="p">(</span><span class="n">ModalViewController</span> <span class="o">*</span><span class="p">)</span><span class="nv">viewController</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">dismissViewControllerAnimated:</span><span class="n">YES</span> <span class="nl">completion:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试一下，没问题，然后我们可以开始实现自定义的切换效果了。首先我们需要一个实现了UIViewControllerAnimatedTransitioning的对象..嗯，新建一个类来实现吧，比如BouncePresentAnimation：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//BouncePresentAnimation.h</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">BouncePresentAnimation</span> : <span class="nc">NSObject</span><span class="o">&lt;</span><span class="n">UIViewControllerAnimatedTransitioning</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//BouncePresentAnimation.m</span>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="n">NSTimeInterval</span><span class="p">)</span><span class="nl">transitionDuration:</span><span class="p">(</span><span class="kt">id</span> <span class="o">&lt;</span><span class="n">UIViewControllerContextTransitioning</span><span class="o">&gt;</span><span class="p">)</span><span class="n">transitionContext</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mf">0.8f</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nl">animateTransition:</span><span class="p">(</span><span class="kt">id</span> <span class="o">&lt;</span><span class="n">UIViewControllerContextTransitioning</span><span class="o">&gt;</span><span class="p">)</span><span class="n">transitionContext</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 1. Get controllers from transition context</span>
+</span><span class='line'>    <span class="n">UIViewController</span> <span class="o">*</span><span class="n">toVC</span> <span class="o">=</span> <span class="p">[</span><span class="n">transitionContext</span> <span class="nl">viewControllerForKey:</span><span class="n">UITransitionContextToViewControllerKey</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 2. Set init frame for toVC</span>
+</span><span class='line'>    <span class="n">CGRect</span> <span class="n">screenBounds</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIScreen</span> <span class="n">mainScreen</span><span class="p">]</span> <span class="n">bounds</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">CGRect</span> <span class="n">finalFrame</span> <span class="o">=</span> <span class="p">[</span><span class="n">transitionContext</span> <span class="nl">finalFrameForViewController:</span><span class="n">toVC</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">toVC</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CGRectOffset</span><span class="p">(</span><span class="n">finalFrame</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">screenBounds</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 3. Add toVC&#39;s view to containerView</span>
+</span><span class='line'>    <span class="n">UIView</span> <span class="o">*</span><span class="n">containerView</span> <span class="o">=</span> <span class="p">[</span><span class="n">transitionContext</span> <span class="n">containerView</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">containerView</span> <span class="nl">addSubview:</span><span class="n">toVC</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// 4. Do animate now</span>
+</span><span class='line'>    <span class="n">NSTimeInterval</span> <span class="n">duration</span> <span class="o">=</span> <span class="p">[</span><span class="n">self</span> <span class="nl">transitionDuration:</span><span class="n">transitionContext</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">UIView</span> <span class="nl">animateWithDuration:</span><span class="n">duration</span>
+</span><span class='line'>                          <span class="nl">delay:</span><span class="mf">0.0</span>
+</span><span class='line'>         <span class="nl">usingSpringWithDamping:</span><span class="mf">0.6</span>
+</span><span class='line'>          <span class="nl">initialSpringVelocity:</span><span class="mf">0.0</span>
+</span><span class='line'>                        <span class="nl">options:</span><span class="n">UIViewAnimationOptionCurveLinear</span>
+</span><span class='line'>                     <span class="nl">animations:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>                         <span class="n">toVC</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">finalFrame</span><span class="p">;</span>
+</span><span class='line'>                     <span class="p">}</span> <span class="nl">completion:</span><span class="o">^</span><span class="p">(</span><span class="kt">BOOL</span> <span class="n">finished</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                         <span class="c1">// 5. Tell context that we completed.</span>
+</span><span class='line'>                         <span class="p">[</span><span class="n">transitionContext</span> <span class="nl">completeTransition:</span><span class="n">YES</span><span class="p">];</span>
+</span><span class='line'>                     <span class="p">}];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解释一下这个实现：</p>
+
+<ol>
+<li>我们首先需要得到参与切换的两个ViewController的信息，使用context的方法拿到它们的参照；</li>
+<li>对于要呈现的VC，我们希望它从屏幕下方出现，因此将初始位置设置到屏幕下边缘；</li>
+<li>将view添加到containerView中；</li>
+<li>开始动画。这里的动画时间长度和切换时间长度一致，都为0.8s。usingSpringWithDamping的UIView动画API是iOS7新加入的，描述了一个模拟弹簧动作的动画曲线，我们在这里只做使用，更多信息可以参看<a href="https://developer.apple.com/library/ios/documentation/uikit/reference/uiview_class/UIView/UIView.html#//apple_ref/occ/clm/UIView/animateWithDuration:delay:usingSpringWithDamping:initialSpringVelocity:options:animations:completion:">相关文档</a>；（顺便多说一句，iOS7中对UIView动画添加了一个很方便的Category，UIViewKeyframeAnimations。使用其中方法可以为UIView动画添加关键帧动画）</li>
+<li>在动画结束后我们必须向context报告VC切换完成，是否成功（在这里的动画切换中，没有失败的可能性，因此直接pass一个YES过去）。系统在接收到这个消息后，将对VC状态进行维护。</li>
+</ol>
+
+
+<p>接下来我们实现一个UIViewControllerTransitioningDelegate，应该就能让它工作了。简单来说，一个比较好的地方是直接在MainViewController中实现这个接口。在MainVC中声明实现这个接口，然后加入或变更为如下代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@interface</span> <span class="nc">MainViewController</span> <span class="p">()</span><span class="o">&lt;</span><span class="n">ModalViewControllerDelegate</span><span class="p">,</span> <span class="n">UIViewControllerTransitioningDelegate</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">BouncePresentAnimation</span> <span class="o">*</span><span class="n">presentAnimation</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">MainViewController</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithNibName:</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">nibNameOrNil</span> <span class="nf">bundle:</span><span class="p">(</span><span class="n">NSBundle</span> <span class="o">*</span><span class="p">)</span><span class="nv">nibBundleOrNil</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">self</span> <span class="o">=</span> <span class="p">[</span><span class="n">super</span> <span class="nl">initWithNibName:</span><span class="n">nibNameOrNil</span> <span class="nl">bundle:</span><span class="n">nibBundleOrNil</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// Custom initialization</span>
+</span><span class='line'>        <span class="n">_presentAnimation</span> <span class="o">=</span> <span class="p">[</span><span class="n">BouncePresentAnimation</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">buttonClicked:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">sender</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//...</span>
+</span><span class='line'>    <span class="n">mvc</span><span class="p">.</span><span class="n">transitioningDelegate</span> <span class="o">=</span> <span class="n">self</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">id</span> <span class="o">&lt;</span><span class="n">UIViewControllerAnimatedTransitioning</span><span class="o">&gt;</span><span class="p">)</span><span class="nf">animationControllerForPresentedController:</span><span class="p">(</span><span class="n">UIViewController</span> <span class="o">*</span><span class="p">)</span><span class="nv">presented</span> <span class="nf">presentingController:</span><span class="p">(</span><span class="n">UIViewController</span> <span class="o">*</span><span class="p">)</span><span class="nv">presenting</span> <span class="nf">sourceController:</span><span class="p">(</span><span class="n">UIViewController</span> <span class="o">*</span><span class="p">)</span><span class="nv">source</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">presentAnimation</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Believe or not, we have done. 跑一下，应该可以得到如下效果：</p>
+
+<p><img src="http://img.onevcat.com/2013/custom-vc-transition-1.gif" alt="BouncePresentAnimation的实际效果" /></p>
+
+<h3>手势驱动的百分比切换</h3>
+
+<p>iOS7引入了一种手势驱动的VC切换的方式（交互式切换）。如果你使用系统的各种应用，在navViewController里push了一个新的VC的话，返回时并不需要点击左上的Back按钮，而是通过从屏幕左侧划向右侧即可完成返回操作。而在这个操作过程中，我们甚至可以撤销我们的手势，以取消这次VC转移。在新版的Safari中，我们甚至可以用相同的手势来完成网页的后退功能（所以很大程度上来说屏幕底部的工具栏成为了摆设）。如果您还不知道或者没太留意过这个改动，不妨现在就拿手边的iOS7这辈试试看，手机浏览的朋友记得切回来哦 :)</p>
+
+<p>我们这就动手在自己的VC切换中实现这个功能吧，首先我们需要在刚才的知识基础上补充一些东西：</p>
+
+<p>首先是UIViewControllerContextTransitioning，刚才提到这个是系统提供的VC切换上下文，如果您深入看了它的头文件描述的话，应该会发现其中有三个关于InteractiveTransition的方法，正是用来处理交互式切换的。但是在初级的实际使用中我们其实可以不太理会它们，而是使用iOS 7 SDK已经给我们准备好的一个现成转为交互式切换而新加的类：UIPercentDrivenInteractiveTransition。</p>
+
+<h4><a href="https://developer.apple.com/library/ios/documentation/uikit/reference/UIPercentDrivenInteractiveTransition_class/Reference/Reference.html">UIPercentDrivenInteractiveTransition</a>是什么</h4>
+
+<p>这是一个实现了UIViewControllerInteractiveTransitioning接口的类，为我们预先实现和提供了一系列便利的方法，可以用一个百分比来控制交互式切换的过程。一般来说我们更多地会使用某些手势来完成交互式的转移（当然用的高级的话用其他的输入..比如声音，iBeacon距离或者甚至面部微笑来做输入驱动也无不可，毕竟想象无极限嘛..），这样使用这个类（一般是其子类）的话就会非常方便。我们在手势识别中只需要告诉这个类的实例当前的状态百分比如何，系统便根据这个百分比和我们之前设定的迁移方式为我们计算当前应该的UI渲染，十分方便。具体的几个重要方法：</p>
+
+<ul>
+<li>-(void)updateInteractiveTransition:(CGFloat)percentComplete 更新百分比，一般通过手势识别的长度之类的来计算一个值，然后进行更新。之后的例子里会看到详细的用法</li>
+<li>-(void)cancelInteractiveTransition 报告交互取消，返回切换前的状态</li>
+<li>–(void)finishInteractiveTransition 报告交互完成，更新到切换后的状态</li>
+</ul>
+
+
+<h4>@protocol <a href="https://developer.apple.com/library/ios/documentation/uikit/reference/UIViewControllerInteractiveTransitioning_protocol/Reference/Reference.html">UIViewControllerInteractiveTransitioning</a></h4>
+
+<p>就如上面提到的，UIPercentDrivenInteractiveTransition只是实现了这个接口的一个类。为了实现交互式切换的功能，我们需要实现这个接口。因为大部分时候我们其实不需要自己来实现这个接口，因此在这篇入门中就不展开说明了，有兴趣的童鞋可以自行钻研。</p>
+
+<p>还有就是上面提到过的UIViewControllerTransitioningDelegate中的返回Interactive实现对象的方法，我们同样会在交互式切换中用到它们。</p>
+
+<h3>继续Demo</h3>
+
+<p>Demo time again。在刚才demo的基础上，这次我们用一个向上划动的手势来吧之前呈现的ModalViewController给dismiss掉～当然是交互式的切换，可以半途取消的那种。</p>
+
+<p>首先新建一个类，继承自UIPercentDrivenInteractiveTransition，这样我们可以省不少事儿。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//SwipeUpInteractiveTransition.h</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">SwipeUpInteractiveTransition</span> : <span class="nc">UIPercentDrivenInteractiveTransition</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">assign</span><span class="p">)</span> <span class="kt">BOOL</span> <span class="n">interacting</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">wireToViewController:</span><span class="p">(</span><span class="n">UIViewController</span><span class="o">*</span><span class="p">)</span><span class="nv">viewController</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//SwipeUpInteractiveTransition.m</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">SwipeUpInteractiveTransition</span><span class="p">()</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">assign</span><span class="p">)</span> <span class="kt">BOOL</span> <span class="n">shouldComplete</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">UIViewController</span> <span class="o">*</span><span class="n">presentingVC</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">SwipeUpInteractiveTransition</span>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">wireToViewController:</span><span class="p">(</span><span class="n">UIViewController</span> <span class="o">*</span><span class="p">)</span><span class="nv">viewController</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">self</span><span class="p">.</span><span class="n">presentingVC</span> <span class="o">=</span> <span class="n">viewController</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span> <span class="nl">prepareGestureRecognizerInView:</span><span class="n">viewController</span><span class="p">.</span><span class="n">view</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">prepareGestureRecognizerInView:</span><span class="p">(</span><span class="n">UIView</span><span class="o">*</span><span class="p">)</span><span class="nv">view</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">UIPanGestureRecognizer</span> <span class="o">*</span><span class="n">gesture</span> <span class="o">=</span> <span class="p">[[</span><span class="n">UIPanGestureRecognizer</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithTarget:</span><span class="n">self</span> <span class="nl">action:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">handleGesture:</span><span class="p">)];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">view</span> <span class="nl">addGestureRecognizer:</span><span class="n">gesture</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nf">completionSpeed</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">self</span><span class="p">.</span><span class="n">percentComplete</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">handleGesture:</span><span class="p">(</span><span class="n">UIPanGestureRecognizer</span> <span class="o">*</span><span class="p">)</span><span class="nv">gestureRecognizer</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">CGPoint</span> <span class="n">translation</span> <span class="o">=</span> <span class="p">[</span><span class="n">gestureRecognizer</span> <span class="nl">translationInView:</span><span class="n">gestureRecognizer</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">superview</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">switch</span> <span class="p">(</span><span class="n">gestureRecognizer</span><span class="p">.</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">UIGestureRecognizerStateBegan:</span>
+</span><span class='line'>            <span class="c1">// 1. Mark the interacting flag. Used when supplying it in delegate.</span>
+</span><span class='line'>            <span class="n">self</span><span class="p">.</span><span class="n">interacting</span> <span class="o">=</span> <span class="n">YES</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">presentingVC</span> <span class="nl">dismissViewControllerAnimated:</span><span class="n">YES</span> <span class="nl">completion:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">UIGestureRecognizerStateChanged:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 2. Calculate the percentage of guesture</span>
+</span><span class='line'>            <span class="n">CGFloat</span> <span class="n">fraction</span> <span class="o">=</span> <span class="n">translation</span><span class="p">.</span><span class="n">y</span> <span class="o">/</span> <span class="mf">400.0</span><span class="p">;</span>
+</span><span class='line'>            <span class="c1">//Limit it between 0 and 1</span>
+</span><span class='line'>            <span class="n">fraction</span> <span class="o">=</span> <span class="n">fminf</span><span class="p">(</span><span class="n">fmaxf</span><span class="p">(</span><span class="n">fraction</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">self</span><span class="p">.</span><span class="n">shouldComplete</span> <span class="o">=</span> <span class="p">(</span><span class="n">fraction</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="p">[</span><span class="n">self</span> <span class="nl">updateInteractiveTransition:</span><span class="n">fraction</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">UIGestureRecognizerStateEnded:</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">UIGestureRecognizerStateCancelled:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// 3. Gesture over. Check if the transition should happen or not</span>
+</span><span class='line'>            <span class="n">self</span><span class="p">.</span><span class="n">interacting</span> <span class="o">=</span> <span class="n">NO</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">self</span><span class="p">.</span><span class="n">shouldComplete</span> <span class="o">||</span> <span class="n">gestureRecognizer</span><span class="p">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">UIGestureRecognizerStateCancelled</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">self</span> <span class="n">cancelInteractiveTransition</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">self</span> <span class="n">finishInteractiveTransition</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有点长，但是做的事情还是比较简单的。</p>
+
+<ol>
+<li>我们设定了一个BOOL变量来表示是否处于切换过程中。这个布尔值将在监测到手势开始时被设置，我们之后会在调用返回这个InteractiveTransition的时候用到。</li>
+<li>计算百分比，我们设定了向下划动400像素或以上为100%，每次手势状态变化时根据当前手势位置计算新的百分比，结果被限制在0～1之间。然后更新InteractiveTransition的百分数。</li>
+<li>手势结束时，把正在切换的标设置回NO，然后进行判断。在2中我们设定了手势距离超过设定一半就认为应该结束手势，否则就应该返回原来状态。在这里使用其进行判断，已决定这次transition是否应该结束。</li>
+</ol>
+
+
+<p>接下来我们需要添加一个向下移动的UIView动画，用来表现dismiss。这个十分简单，和BouncePresentAnimation很相似，写一个NormalDismissAnimation的实现了UIViewControllerAnimatedTransitioning接口的类就可以了，本文里略过不写了，感兴趣的童鞋可以自行查看源码。</p>
+
+<p>最后调整MainViewController的内容，主要修改点有三个地方：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//MainViewController.m</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">MainViewController</span> <span class="p">()</span><span class="o">&lt;</span><span class="n">ModalViewControllerDelegate</span><span class="p">,</span><span class="n">UIViewControllerTransitioningDelegate</span><span class="o">&gt;</span>
+</span><span class='line'><span class="c1">//...</span>
+</span><span class='line'><span class="c1">// 1. Add dismiss animation and transition controller</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">NormalDismissAnimation</span> <span class="o">*</span><span class="n">dismissAnimation</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="n">nonatomic</span><span class="p">,</span> <span class="n">strong</span><span class="p">)</span> <span class="n">SwipeUpInteractiveTransition</span> <span class="o">*</span><span class="n">transitionController</span><span class="p">;</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">MainViewController</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithNibName:</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">nibNameOrNil</span> <span class="nf">bundle:</span><span class="p">(</span><span class="n">NSBundle</span> <span class="o">*</span><span class="p">)</span><span class="nv">nibBundleOrNil</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'>        <span class="n">_dismissAnimation</span> <span class="o">=</span> <span class="p">[</span><span class="n">NormalDismissAnimation</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">_transitionController</span> <span class="o">=</span> <span class="p">[</span><span class="n">SwipeUpInteractiveTransition</span> <span class="n">new</span><span class="p">];</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="nf">buttonClicked:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">sender</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'>  <span class="c1">// 2. Bind current VC to transition controller.</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">transitionController</span> <span class="nl">wireToViewController:</span><span class="n">mvc</span><span class="p">];</span>
+</span><span class='line'>  <span class="c1">//...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 3. Implement the methods to supply proper objects.</span>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">id</span><span class="o">&lt;</span><span class="n">UIViewControllerAnimatedTransitioning</span><span class="o">&gt;</span><span class="p">)</span><span class="nf">animationControllerForDismissedController:</span><span class="p">(</span><span class="n">UIViewController</span> <span class="o">*</span><span class="p">)</span><span class="nv">dismissed</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">dismissAnimation</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">-</span><span class="p">(</span><span class="kt">id</span><span class="o">&lt;</span><span class="n">UIViewControllerInteractiveTransitioning</span><span class="o">&gt;</span><span class="p">)</span><span class="nf">interactionControllerForDismissal:</span><span class="p">(</span><span class="kt">id</span><span class="o">&lt;</span><span class="n">UIViewControllerAnimatedTransitioning</span><span class="o">&gt;</span><span class="p">)</span><span class="nv">animator</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">transitionController</span><span class="p">.</span><span class="n">interacting</span> <span class="o">?</span> <span class="n">self</span><span class="p">.</span><span class="n">transitionController</span> <span class="o">:</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>在其中添加dismiss时候的动画和交互切换Controller</li>
+<li>在初始化modalVC的时候为交互切换的Controller绑定VC</li>
+<li>为UIViewControllerTransitioningDelegate实现dismiss时候的委托方法，包括返回对应的动画以及交互切换Controller</li>
+</ol>
+
+
+<p>完成了，如果向下划动时，效果如下：</p>
+
+<p><img src="http://img.onevcat.com/2013/custom-vc-transition-2.gif" alt="交互驱动的VC转移" /></p>
+
+<h3>关于iOS 7中自定义VC切换的一些总结</h3>
+
+<p>demo中只展示了对于modalVC的present和dismiss的自定义切换效果，当然对与Navigation Controller的Push和Pop切换也是有相应的一套方法的。实现起来和dismiss十分类似，只不过对应UIViewControllerTransitioningDelegate的询问动画和交互的方法换到了UINavigationControllerDelegate中（为了区别push或者pop，看一下这个接口应该能马上知道）。另外一个很好的福利是，对于标准的navController的Pop操作，苹果已经替我们实现了手势驱动返回，我们不用再费心每个去实现一遍了，cheers～</p>
+
+<p>另外，可能你会觉得使用VC容器其提供的transition动画方法来进行VC切换就已经够好够方便了，为什么iOS7中还要引入一套自定义的方式呢。其实从根本来说它们所承担的是两类完全不同的任务：自定义VC容器可以提供自己定义的VC结构，并保证系统的各类方法和通知能够准确传递到合适的VC，它提供的transition方法虽然可以实现一些简单的UIView动画，但是难以重用，可以说是和containerVC完全耦合在一起的；而自定义切换并不改变VC的组织结构，只是负责提供view的效果，因为VC切换将动画部分、动画驱动部分都使用接口的方式给出，因此重用性非常优秀。在绝大多数情况下，精心编写的一套UIView动画是可以轻易地用在不同的VC中，甚至是不同的项目中的。</p>
+
+<p>需要特别一提的是，Github上的<a href="https://github.com/ColinEberhardt/VCTransitionsLibrary">ColinEberhardt的VCTransitionsLibrary</a>已经为我们提供了一系列的VC自定义切换动画效果，正是得益于iOS7中这一块的良好设计（虽然这几个接口的命名比较相似，在弄明白之前会有些confusing），因此这些效果使用起来非常方便，相信一般项目中是足够使用的了。而其他更复杂或者炫目的效果，亦可在其基础上进行扩展改进得到。可以说随着越来越多的应用转向iOS7，自定义VC切换将成为新的用户交互实现的基础和重要部分，对于今后会在其基础上会衍生出怎样让人眼前一亮的交互设计，不妨让我们拭目以待（或者自己努力去创造）。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作]]></title>
@@ -2852,6 +3529,7 @@
 <li>SpriteKit入门 <a href="http://onevcat.com/2013/06/sprite-kit-start/">WWDC2013笔记 SpriteKit快速入门和新时代iOS游戏开发指南</a> http://onevcat.com/2013/06/sprite-kit-start/</li>
 <li>后台应用运行和多任务新特性 <a href="http://onevcat.com/2013/08/ios7-background-multitask/">WWDC2013笔记 iOS7中的多任务</a> http://onevcat.com/2013/08/ios7-background-multitask/</li>
 <li>iOS7中弹簧式列表的制作 <a href="http://onevcat.com/2013/09/spring-list-like-ios7-message">WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作</a> http://onevcat.com/2013/09/spring-list-like-ios7-message</li>
+<li>iOS7中自定义ViewController切换效果 <a href="http://onevcat.com/2013/10/vc-transition-in-ios7/">WWDC 2013 Session笔记 - iOS7中的ViewController切换</a></li>
 </ul>
 
 
@@ -4319,53 +4997,6 @@ if (Time.timeScale == 0 ){
 <p>更多的例子可以参看Mods文件夹中的其他projmods文件。所有的定义路径都是基于当前projmods文件位置的相对路径。 最后，在完成projmods后，Unity会在编译完成后，调用XCodePostProcess的OnPostProcessBuild来对编译得到的Xcode工程进行修改。</p>
 
 <p>之后进一步要做的是为MiniJSON添加一个namespace，这样可以避免不必要的冲突。另外如果您有什么好的想法，也欢迎fork这个项目并给我pull request。项目的github链接请<a href="https://github.com/onevcat/XUPorter">猛击这里</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Unity 3D中的内存管理]]></title>
-    <link href="http://onevcat.com/2012/11/memory-in-unity3d/"/>
-    <updated>2012-11-16T00:00:00+09:00</updated>
-    <id>http://onevcat.com/2012/11/memory-in-unity3d</id>
-    <content type="html"><![CDATA[<p><!--:zh--><p style="text-align: justify;"><a href="http://www.onevcat.com/wp-content/uploads/2012/11/unity-technologies-870x531.jpg"><img class="aligncenter size-full wp-image-1043" title="unity-technologies-870x531" src="http://www.onevcat.com/wp-content/uploads/2012/11/unity-technologies-870x531.jpg" alt="" width="870" height="182" data-pinit="registered" /></a></p>
-<p style="text-align: justify;">本文欢迎转载，但烦请保留此行出处信息：<a href="http://www.onevcat.com/2012/11/memory-in-unity3d/">http://www.onevcat.com/2012/11/memory-in-unity3d/</a></p>
-<p style="text-align: justify;">Unity3D在内存占用上一直被人诟病，特别是对于面向移动设备的游戏开发，动辄内存占用飙上一两百兆，导致内存资源耗尽，从而被系统强退造成极差的体验。类似这种情况并不少见，但是绝大部分都是可以避免的。虽然理论上Unity的内存管理系统应当为开发者分忧解难，让大家投身到更有意义的事情中去，但是对于Unity对内存的管理方式，官方文档中并没有太多的说明，基本需要依靠自己摸索。最近在接手的项目中存在严重的内存问题，在参照文档和Unity Answer众多猜测和证实之后，稍微总结了下Unity中的内存的分配和管理的基本方式，在此共享。</p>
-<p style="text-align: justify;">虽然Unity标榜自己的内存使用全都是“Managed Memory”，但是事实上你必须正确地使用内存，以保证回收机制正确运行。如果没有做应当做的事情，那么场景和代码很有可能造成很多非必要内存的占用，这也是很多Unity开发者抱怨内存占用太大的原因。接下来我会介绍Unity使用内存的种类，以及相应每个种类的优化和使用的技巧。遵循使用原则，可以让非必要资源尽快得到释放，从而降低内存占用。</p>
-<p style="text-align: justify;"><!--:--><!--more--><!--:zh--></p></p>
-
-<p><hr /></p>
-
-<p><h3 style="text-align: justify;">Unity中的内存种类</h3>
-<p style="text-align: justify;">实际上Unity游戏使用的内存一共有三种：程序代码、托管堆（Managed Heap）以及本机堆（Native Heap）。</p>
-<p style="text-align: justify;">程序代码包括了所有的Unity引擎，使用的库，以及你所写的所有的游戏代码。在编译后，得到的运行文件将会被加载到设备中执行，并占用一定内存。这部分内存实际上是没有办法去“管理”的，它们将在内存中从一开始到最后一直存在。一个空的Unity默认场景，什么代码都不放，在iOS设备上占用内存应该在17MB左右，而加上一些自己的代码很容易就飙到20MB左右。想要减少这部分内存的使用，能做的就是减少使用的库，稍后再说。</p>
-<p style="text-align: justify;">托管堆是被Mono使用的一部分内存。<a href="http://www.mono-project.com/Main_Page">Mono</a>项目一个开源的.net框架的一种实现，对于Unity开发，其实充当了基本类库的角色。托管堆用来存放类的实例（比如用new生成的列表，实例中的各种声明的变量等）。“托管”的意思是Mono“应该”自动地改变堆的大小来适应你所需要的内存，并且定时地使用垃圾回收（Garbage Collect）来释放已经不需要的内存。关键在于，有时候你会忘记清除对已经不需要再使用的内存的引用，从而导致Mono认为这块内存一直有用，而无法回收。</p>
-<p style="text-align: justify;">最后，本机堆是Unity引擎进行申请和操作的地方，比如贴图，音效，关卡数据等。Unity使用了自己的一套内存管理机制来使这块内存具有和托管堆类似的功能。基本理念是，如果在这个关卡里需要某个资源，那么在需要时就加载，之后在没有任何引用时进行卸载。听起来很美好也和托管堆一样，但是由于Unity有一套自动加载和卸载资源的机制，让两者变得差别很大。自动加载资源可以为开发者省不少事儿，但是同时也意味着开发者失去了手动管理所有加载资源的权力，这非常容易导致大量的内存占用（贴图什么的你懂的），也是Unity给人留下“吃内存”印象的罪魁祸首。</p></p>
-
-<p><hr /></p>
-
-<p><h3 style="text-align: justify;">优化程序代码的内存占用</h3>
-<p style="text-align: justify;">这部分的优化相对简单，因为能做的事情并不多：主要就是减少打包时的引用库，改一改build设置即可。对于一个新项目来说不会有太大问题，但是如果是已经存在的项目，可能改变会导致原来所需要的库的缺失（虽说一般来说这种可能性不大），因此有可能无法做到最优。</p>
-<p style="text-align: justify;"><img src="http://www.onevcat.com/wp-content/uploads/2012/11/unity-setting.png" alt="image" data-pinit="registered" /></p>
-<p style="text-align: justify;">当使用Unity开发时，默认的Mono包含库可以说大部分用不上，在Player Setting（Edit-&gt;Project Setting-&gt;Player或者Shift+Ctrl(Command)+B里的Player Setting按钮）面板里，将最下方的Optimization栏目中“Api Compatibility Level”选为.NET 2.0 Subset，表示你只会使用到部分的.NET 2.0 Subset，不需要Unity将全部.NET的Api包含进去。接下来的“Stripping Level”表示从build的库中剥离的力度，每一个剥离选项都将从打包好的库中去掉一部分内容。你需要保证你的代码没有用到这部分被剥离的功能，选为“Use micro mscorlib”的话将使用最小的库（一般来说也没啥问题，不行的话可以试试之前的两个）。库剥离可以极大地降低打包后的程序的尺寸以及程序代码的内存占用，唯一的缺点是这个功能只支持Pro版的Unity。</p>
-<p style="text-align: justify;">这部分优化的力度需要根据代码所用到的.NET的功能来进行调整，有可能不能使用Subset或者最大的剥离力度。如果超出了限度，很可能会在需要该功能时因为找不到相应的库而crash掉（iOS的话很可能在Xcode编译时就报错了）。比较好地解决方案是仍然用最强的剥离，并辅以较小的第三方的类库来完成所需功能。一个最常见问题是最大剥离时Sysytem.Xml是不被Subset和micro支持的，如果只是为了xml，完全可以导入一个轻量级的xml库来解决依赖（Unity官方推荐<a href="http://unity3d.com/support/documentation/Images/manual/Mono.Xml.zip">这个</a>）。</p>
-<p style="text-align: justify;">关于每个设定对应支持的库的详细列表，可以在<a href="http://docs.unity3d.com/Documentation/ScriptReference/MonoCompatibility.html">这里</a>找到。关于每个剥离级别到底做了什么，<a href="http://unity3d.com/support/documentation/Manual/iphone-playerSizeOptimization.html">Unity的文档</a>也有说明。实际上，在游戏开发中绝大多数被剥离的功能使用不上的，因此不管如何，库剥离的优化方法都值得一试。</p></p>
-
-<p><hr /></p>
-
-<p><h3 style="text-align: justify;">托管堆优化</h3>
-<p style="text-align: justify;">Unity有一篇不错的关于<a href="http://unity3d.com/support/documentation/Manual/Understanding%20Automatic%20Memory%20Management.html">托管堆代码如何写比较好</a>的说明，在此基础上我个人有一些补充。</p>
-<p style="text-align: justify;">首先需要明确，托管堆中存储的是你在你的代码中申请的内存（不论是用js，C#还是Boo写的）。一般来说，无非是new或者Instantiate两种生成object的方法（事实上Instantiate中也是调用了new）。在接收到alloc请求后，托管堆在其上为要新生成的对象实例以及其实例变量分配内存，如果可用空间不足，则向系统申请更多空间。</p>
-<p style="text-align: justify;">当你使用完一个实例对象之后，通常来说在脚本中就不会再有对该对象的引用了（这包括将变量设置为null或其他引用，超出了变量的作用域，或者对Unity对象发送Destory()）。在每隔一段时间，Mono的垃圾回收机制将检测内存，将没有再被引用的内存释放回收。总的来说，你要做的就是在尽可能早的时间将不需要的引用去除掉，这样回收机制才能正确地把不需要的内存清理出来。但是需要注意在内存清理时有可能造成游戏的短时间卡顿，这将会很影响游戏体验，因此如果有大量的内存回收工作要进行的话，需要尽量选择合适的时间。</p>
-<p style="text-align: justify;">如果在你的游戏里，有特别多的类似实例，并需要对它们经常发送Destroy()的话，游戏性能上会相当难看。比如<a href="http://www.onevcat.com/showcase/coinpush/">小熊推金币</a>中的金币实例，按理说每枚金币落下台子后都需要对其Destory()，然后新的金币进入台子时又需要Instantiate，这对性能是极大的浪费。一种通常的做法是在不需要时，不摧毁这个GameObject，而只是隐藏它，并将其放入一个重用数组中。之后需要时，再从重用数组中找到可用的实例并显示。这将极大地改善游戏的性能，相应的代价是消耗部分内存，一般来说这是可以接受的。关于对象重用，可以参考<a href="http://docs.unity3d.com/Documentation/Manual/UnderstandingAutomaticMemoryManagement.html">Unity关于内存方面的文档中Reusable Object Pools部分</a>，或者Prime31有一个是用Linq来建立重用池的视频教程（Youtube，需要翻墙，<a href="http://www.youtube.com/watch?v=IX041ZvgQKE">上</a>，<a href="http://www.youtube.com/watch?v=d9078u8ft58">下</a>）。</p>
-<p style="text-align: justify;">如果不是必要，应该在游戏进行的过程中尽量减少对GameObject的Instantiate()和Destroy()调用，因为对计算资源会有很大消耗。在便携设备上短时间大量生成和摧毁物体的话，很容易造成瞬时卡顿。如果内存没有问题的话，尽量选择先将他们收集起来，然后在合适的时候（比如按暂停键或者是关卡切换），将它们批量地销毁并且回收内存。Mono的内存回收会在后台自动进行，系统会选择合适的时间进行垃圾回收。在合适的时候，也可以手动地调用System.GC.Collect()来建议系统进行一次垃圾回收。要注意的是这里的调用真的仅仅只是建议，可能系统会在一段时间后在进行回收，也可能完全不理会这条请求，不过在大部分时间里，这个调用还是靠谱的。</p></p>
-
-<p><hr /></p>
-
-<p><h3 style="text-align: justify;">本机堆的优化</h3>
-<p style="text-align: justify;">当你加载完成一个Unity的scene的时候，scene中的所有用到的asset（包括Hierarchy中所有GameObject上以及脚本中赋值了的的材质，贴图，动画，声音等素材），都会被自动加载（这正是Unity的智能之处）。也就是说，当关卡呈现在用户面前的时候，所有Unity编辑器能认识的本关卡的资源都已经被预先加入内存了，这样在本关卡中，用户将有良好的体验，不论是更换贴图，声音，还是播放动画时，都不会有额外的加载，这样的代价是内存占用将变多。Unity最初的设计目的还是面向台式机，几乎无限的内存和虚拟内存使得这样的占用似乎不是问题，但是这样的内存策略在之后移动平台的兴起和大量移动设备游戏的制作中出现了弊端，因为移动设备能使用的资源始终非常有限。因此在面向移动设备游戏的制作时，尽量减少在Hierarchy对资源的直接引用，而是使用Resource.Load的方法，在需要的时候从硬盘中读取资源，在使用后用Resource.UnloadAsset()和Resources.UnloadUnusedAssets()尽快将其卸载掉。总之，这里是一个处理时间和占用内存空间的trade off，如何达到最好的效果没有标准答案，需要自己权衡。</p>
-<p style="text-align: justify;">在关卡结束的时候，这个关卡中所使用的所有资源将会被卸载掉（除非被标记了DontDestroyOnLoad）的资源。注意不仅是DontDestroyOnLoad的资源本身，其相关的所有资源在关卡切换时都不会被卸载。DontDestroyOnLoad一般被用来在关卡之间保存一些玩家的状态，比如分数，级别等偏向文本的信息。如果DontDestroyOnLoad了一个包含很多资源（比如大量贴图或者声音等大内存占用的东西）的话，这部分资源在场景切换时无法卸载，将一直占用内存，这种情况应该尽量避免。</p>
-<p style="text-align: justify;">另外一种需要注意的情况是脚本中对资源的引用。大部分脚本将在场景转换时随之失效并被回收，但是，在场景之间被保持的脚本不在此列（通常情况是被附着在DontDestroyOnLoad的GameObject上了）。而这些脚本很可能含有对其他物体的Component或者资源的引用，这样相关的资源就都得不到释放，这绝对是不想要的情况。另外，static的单例（singleton）在场景切换时也不会被摧毁，同样地，如果这种单例含有大量的对资源的引用，也会成为大问题。因此，尽量减少代码的耦合和对其他脚本的依赖是十分有必要的。如果确实无法避免这种情况，那应当手动地对这些不再使用的引用对象调用Destroy()或者将其设置为null。这样在垃圾回收的时候，这些内存将被认为已经无用而被回收。</p>
-<p style="text-align: justify;">需要注意的是，Unity在一个场景开始时，根据场景构成和引用关系所自动读取的资源，只有在读取一个新的场景或者reset当前场景时，才会得到清理。因此这部分内存占用是不可避免的。在小内存环境中，这部分初始内存的占用十分重要，因为它决定了你的关卡是否能够被正常加载。因此在计算资源充足或是关卡开始之后还有机会进行加载时，尽量减少Hierarchy中的引用，变为手动用Resource.Load，将大大减少内存占用。在Resource.UnloadAsset()和Resources.UnloadUnusedAssets()时，只有那些真正没有任何引用指向的资源会被回收，因此请确保在资源不再使用时，将所有对该资源的引用设置为null或者Destroy。同样需要注意，这两个Unload方法仅仅对Resource.Load拿到的资源有效，而不能回收任何场景开始时自动加载的资源。与此类似的还有AssetBundle的Load和Unload方法，灵活使用这些手动自愿加载和卸载的方法，是优化Unity内存占用的不二法则～</p></p>
 ]]></content>
   </entry>
   

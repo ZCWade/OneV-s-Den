@@ -312,7 +312,7 @@
     </url>
     <url>
         <loc>http://onevcat.com/2013/06/developer-should-know-about-ios7/</loc>
-        <lastmod>2013-09-19T00:08:08+09:00</lastmod>
+        <lastmod>2013-10-14T11:23:22+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/2013/06/new-in-xcode5-and-objc/</loc>
@@ -324,7 +324,7 @@
     </url>
     <url>
         <loc>http://onevcat.com/2013/06/sprite-kit-start/</loc>
-        <lastmod>2013-09-19T17:12:47+09:00</lastmod>
+        <lastmod>2013-10-13T10:41:44+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/2013/07/what-i-did-recently/</loc>
@@ -347,16 +347,20 @@
         <lastmod>2013-09-22T11:18:40+09:00</lastmod>
     </url>
     <url>
+        <loc>http://onevcat.com/2013/10/vc-transition-in-ios7/</loc>
+        <lastmod>2013-10-14T11:55:46+09:00</lastmod>
+    </url>
+    <url>
         <loc>http://onevcat.com/about/</loc>
         <lastmod>2013-04-20T01:03:01+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/blog/archives/</loc>
-        <lastmod>2013-10-10T12:54:04+09:00</lastmod>
+        <lastmod>2013-10-14T11:55:46+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/</loc>
-        <lastmod>2013-10-10T12:54:04+09:00</lastmod>
+        <lastmod>2013-10-14T11:55:46+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/robots.txt</loc>
@@ -364,7 +368,7 @@
     </url>
     <url>
         <loc>http://onevcat.com/showcase/coinpush/</loc>
-        <lastmod>2013-10-10T12:54:04+09:00</lastmod>
+        <lastmod>2013-10-14T11:55:46+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/showcase/</loc>
@@ -376,15 +380,15 @@
     </url>
     <url>
         <loc>http://onevcat.com/showcase/pomodoro_do/</loc>
-        <lastmod>2013-10-10T12:54:04+09:00</lastmod>
+        <lastmod>2013-10-14T11:55:46+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/showcase/quizkingdom/</loc>
-        <lastmod>2013-10-10T12:54:04+09:00</lastmod>
+        <lastmod>2013-10-14T11:55:46+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/showcase/texaspokerking/</loc>
-        <lastmod>2013-10-10T12:54:04+09:00</lastmod>
+        <lastmod>2013-10-14T11:55:46+09:00</lastmod>
     </url>
     <url>
         <loc>http://onevcat.com/showcase/volume-recorder/</loc>
@@ -392,6 +396,6 @@
     </url>
     <url>
         <loc>http://onevcat.com/showcase/vvbordertimer/</loc>
-        <lastmod>2013-10-10T12:54:04+09:00</lastmod>
+        <lastmod>2013-10-14T11:55:46+09:00</lastmod>
     </url>
 </urlset>
