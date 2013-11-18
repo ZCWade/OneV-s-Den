@@ -4,7 +4,7 @@
   <title><![CDATA[OneV's Den]]></title>
   <link href="http://onevcat.com/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2013-10-27T23:29:28+09:00</updated>
+  <updated>2013-11-18T23:51:55+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -12,6 +12,56 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS内购实现及测试Check List]]></title>
+    <link href="http://onevcat.com/2013/11/ios-iap-checklist/"/>
+    <updated>2013-11-18T22:08:00+09:00</updated>
+    <id>http://onevcat.com/2013/11/ios-iap-checklist</id>
+    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/cannot-connect-its.png" alt="image" /></p>
+
+<p>免费+应用内购买的模式已经被证明了是最有效的盈利模式，所以实现内购功能可能是很多开发者必做的工作和必备的技能了。但是鉴于内购这块坑不算少，另外因为sandbox测试所需要特定的配置也很多，所以对于经验不太多的开发者来说很容易就遇到各种问题，并且测试时出错Apple给出的也只有“Can not connect iTunes Store”或者&#8221;Invalid Product IDs&#8221;之类毫无价值的错误提示，并没有详细的错误说明，因此调试起来往往没有方向。有老前辈在<a href="http://troybrant.net/blog/2010/01/invalid-product-ids/">这里</a>整理过一个相对完整的check list了，但是因为年代已经稍微久远，所以内容上和现在的情况已经有一些出入。趁着在最近两个项目里做内购这块遇到的新问题，顺便在此基础上总结整理了一份比较新的中文Check list，希望能帮到后来人。</p>
+
+<p>如果您在实现和测试iOS应用内购的时候遇到问题，可以逐一对照下面所列出的条目，并逐一进行检查。相信可以排除大部分的错误。如果您遇到的问题不在这个列表范围内，欢迎在评论中指出，我会进行更新。</p>
+
+<ul>
+<li>您是否在iOS Dev Center中打开了对应应用AppID的<code>In-App Purchases</code>功能？登陆iOS Dev Center的Certificates, Identifiers &amp; Profiles下，在Identifiers中找到正在开发的App，In-App Purchase一项应当显示Enabled（如果使用Xcode5，可以直接在Xcode的Capabilities页面中打开In-App Purchases）。</li>
+<li>您是否在iTunes Connect中注册了您的IAP项目，并将其设为Cleared for Sale？</li>
+<li>您的plist中的<code>Bundle identifier</code>的内容是否和您的AppID一致？</li>
+<li>您是否正确填写了Version（CFBundleVersion）和Build（CFBuildNumber）两个数字？两者缺一不可。</li>
+<li>您用代码向Apple申请售卖物品列表时是否使用了完整的在iTC注册的Product ID？（使用在IAP管理中内购项目的Product ID一栏中的字符串）</li>
+<li>您是否在打开IAP以后重新生成过包含IAP许可的provisioning profile？</li>
+<li>你是否重新导入了新的包含IAP的provisioning profile？建议在Organizer中先删掉原来设备上的老的provisioning profile。</li>
+<li>您是否在用包含IAP的provisioning profile在部署测试程序？在Xcode5中，建议使用General中的Team选项来自动管理。</li>
+<li>您是否是在模拟器中测试IAP？虽然理论上说模拟器在某些情况下可以测试IAP，但是条件很多也不让人安心，因此您确实需要一台真机来做IAP测试。</li>
+<li>您是在企业版发布中测试IAP么？因为企业版没有iTC进行内购项目管理，也无法发布AppStore应用，所以您在企业版的build中不能使用IAP。</li>
+<li>您是否将设备上原来的app删除了，并重新进行了安装？记得在安装前做一下Clean和Clean Build Folder。</li>
+<li>您是否在运行应用前将设备上实际的Apple ID登出了？建议在设置->iTunes Store和App Stroe中将使用中的Apple ID登出，以未登录状态进入应用进行测试。</li>
+<li>你是否使用的是Test User？如果你还没有创建Test User，你需要到iTC中创建。</li>
+<li>您使用的测试账号是否是美国区账号？虽然不是一定需要，但是鉴于其他地区的测试账号经常抽风，加上美国区账号一直很稳定，因此强烈建议使用美国区账号。正常情况下IAP不需要进行信用卡绑定和其他信息填写，如果你遇到了这种情况，可以试试删除这个测试账号再新建一个其他地区的。</li>
+<li>您是否有新建账户进行测试？可能的话，可以使用新建测试账户试试看，因为某些特定情况下测试账户会被Apple锁定。</li>
+<li>您的应用是否是被拒状态（Rejected）或自己拒绝（Developer Rejected）了？被拒绝状态的应用的话对应还未通过的内购项目也会一起被拒，因此您需要重新将IAP项目设为Cleared for Sale。</li>
+<li>您的应用是否处于等待开发者发布（Pending Developer Release）状态？等待发布状态的IAP是无法测试的。</li>
+<li>您的内购项目是否是最近才新建的，或者进行了更改？内购项目需要一段时间才能反应到所有服务器上，这个过程一般是一两小时，也可能再长一些达到若干小时。</li>
+<li>您在iTC中Contracts, Tax, and Banking Information项目中是否有还没有设置或者过期了的项目？不完整的财务信息无法进行内购测试。</li>
+<li>您是在越狱设备上进行内购测试么？越狱设备不能用于正常内购，您需要重装或者寻找一台没有越狱的设备。</li>
+<li>您是否能正常连接到Apple的服务器，你可以访问<a href="https://devforums.apple.com/community/ios/connected/purchase">Apple开发者论坛关于IAP的板块</a>，如果苹果服务器正down掉，那里应该有热烈的讨论。</li>
+</ul>
+
+
+<hr />
+
+<p>如果您正在寻找一份手把手教你实现IAP的教程的话，这篇文章不是您的菜。关于IAP的实现和步骤，可以参考下面的教程：</p>
+
+<ul>
+<li>苹果的<a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Introduction.html">官方IAP指南</a>和相应的<a href="https://developer.apple.com/library/mac/technotes/tn2259/_index.html">Technical Note</a></li>
+<li>Ray Wenderlich的<a href="http://www.raywenderlich.com/23266/in-app-purchases-in-ios-6-tutorial-consumables-and-receipt-validation">iOS6 IAP教程</a></li>
+<li>一篇图文并茂的<a href="http://blog.csdn.net/xiaominghimi/article/details/6937097">中文教程</a></li>
+<li>直接使用大神们封好的Store有关的库，比如<a href="https://github.com/mattt/CargoBay">mattt/CargoBay</a>，<a href="https://github.com/robotmedia/RMStore">robotmedia/RMStore</a>或者<a href="https://github.com/MugunthKumar/MKStoreKit">MugunthKumar/MKStoreKit</a>。推荐前两个，因为MKStoreKit有一些恼人的小bug。</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的ViewController切换]]></title>
@@ -4921,82 +4971,6 @@ if (Time.timeScale == 0 ){
 <p><!--:--><!--:ja-->&nbsp;</p>
 
 <p><!--:--></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Unity编译至Xcode工程后自动添加文件和库的方法]]></title>
-    <link href="http://onevcat.com/2012/12/xuporter/"/>
-    <updated>2012-12-18T00:00:00+09:00</updated>
-    <id>http://onevcat.com/2012/12/xuporter</id>
-    <content type="html"><![CDATA[<p><img src="http://www.onevcat.com/wp-content/uploads/2012/12/1.png" alt="XUPorter" /></p>
-
-<p>废话之前</p>
-
-<p><a href="https://github.com/onevcat/XUPorter">XUPorter项目Github链接</a></p>
-
-<h3>为什么想要自动添加</h3>
-
-<p>由于Unity是全平台的游戏开发环境，在开发中针对特定平台的特定功能时，很难避免根据对象平台的不同而引入不同的依赖。包括源码，需要的库和框架等。在使用各种插件后这种情况愈发严重：比如想加入内购功能，StroreKit.framework必不可少，而且也需要相应的处理代码。按照一般的Unity插件开发流程，在完成.cs的接口声明和Unity侧的调用实现后，最重要的当然是在iOS native侧完成实现。而在以前，包括依赖库和所有源码文件，都只有在Unity生成Xcode工程之后，再手动添加。如果工程小依赖少的话花不了太多时间，但是如果项目很大，很可能折腾一次就要十来分钟，严重影响了工作效率，必须加以解决。</p>
-
-<h3>怎么办</h3>
-
-<p>Unity开发团队也意识到了这个问题，在Unity编译的最后加入了一个脚本调用的命令，会自动搜索Editor文件夹下的PostprocessBuildPlayer，并进行调用，在该文件中可以自己加入脚本来向Xcode中添加库和文件。关于PostprocessBuildPlayer的详细信息，可以参看<a href="http://docs.unity3d.com/Documentation/Manual/BuildPlayerPipeline.html">官方文档</a>，关于向Xcode中添加文件或库，gonzoua的<a href="https://github.com/gonzoua/xcs">xcs</a>也许是不错的选择。但是似乎xcs只能针对Xcode3来添加，在Xcode4中，主工程文件的结构发生了改变，导致xcs失效，而这个项目也迟迟没有更新（也许有时间我会考虑接手继续这个项目，但肯定不是现在&#8230;）。因此不得不打其他主意。</p>
-
-<p>在Unity3.5中，加入了一个很棒的标签——<a href="http://docs.unity3d.com/Documentation/ScriptReference/PostProcessBuildAttribute.html">[PostProcessBuild]</a>，被该标签标注的函数将自动在build player后被调用，这为大家提供了一个不需要用脚本和命令行就能添加或修改编译得到的工程的绝好的入口。darktable用python实现了一个Xcode4工程文件读写的接口<a href="https://bitbucket.org/darktable/mod-pbxproj/overview">Mod PBXProj</a>，但是对于Unity来说，更需要的是C#的实现。Cariola完成了<a href="https://github.com/dcariola/XCodeEditor-for-Unity">一部分实现</a>，但是存在一些错误和不太好用的地方，代码也很乱。我在其基础上进行了一些改进和整理。但是因为变动的还是比较大，很难merge回去，所以决定自己开一个项目来继续推进这个项目。</p>
-
-<h3>XUPorter</h3>
-
-<p>我把它叫做XUPorter，a dependency porter from Unity to Xcode。XUPorter可以读取Xcode工程文件并进行解析（再次感谢darktable的工作），之后在Unity工程的Assets目录下寻找所有的.projmods文件，并根据文件内容向工程中添加文件或库。</p>
-
-<h4>使用方法</h4>
-
-<p>将Github项目中的所有文件copy到Unity工程文件夹下的/Assets/Editor目录中，XUPorter使用一个<a href="https://github.com/prime31/UIToolkit/blob/master/Assets/Plugins/MiniJSON.cs">改良版的MiniJSON</a>来进行。如果你的项目中已经在使用这个MiniJSON了的话，可以直接将XUPorter文件夹下的MiniJSON文件夹删掉；如果不一样的话，你可以选择其中一个重构一下或者加上命名空间来解决类名冲突。接下来，Mods文件夹下是示例文件以及需要导入Xcode的文件。在看完以后你需要把Mods文件夹下的所有.projmods文件以及Mods/iOS文件夹下的内容删除或者替换为你所需要的内容。</p>
-
-<p>在<a href="http://d.pr/f/HAzc">这里</a>提供了.unitypackege格式文件的下载，你也可以选择下载打包好的文件并导入你的工程，之后的步骤和上面一样。</p>
-
-<p>.projmods文件是一个JSON格式的配置patch文件，定义了要如何设置Xcode工程。举个基本的例子，比如KKKeychain.projmods：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;KKKeychain&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;libs&quot;</span><span class="p">:</span> <span class="p">[],</span>
-</span><span class='line'>    <span class="nt">&quot;frameworks&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Security.framework&quot;</span><span class="p">],</span>
-</span><span class='line'>    <span class="nt">&quot;headerpaths&quot;</span><span class="p">:</span> <span class="p">[],</span>
-</span><span class='line'>    <span class="nt">&quot;files&quot;</span><span class="p">:</span>   <span class="p">[],</span>
-</span><span class='line'>    <span class="nt">&quot;folders&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;iOS/KKKeychain/&quot;</span><span class="p">],</span>
-</span><span class='line'>    <span class="nt">&quot;linker_flags&quot;</span><span class="p">:</span> <span class="p">[],</span>
-</span><span class='line'>    <span class="nt">&quot;excludes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;^.*.meta$&quot;</span><span class="p">,</span> <span class="s2">&quot;^.*.mdown$&quot;</span><span class="p">,</span> <span class="s2">&quot;^.*.pdf$&quot;</span><span class="p">]</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>各参数定义如下：</p>
-
-<ul>
-<li>group：所有由该projmods添加的文件和文件夹所属的Xcode中的group名称</li>
-<li>libs：在Xcode Build Phases中需要添加的动态链接库的名称，比如libz.dylib</li>
-<li>frameworks：在Xcode Build Phases中需要添加的框架的名称，比如Security.framework</li>
-<li>headerpaths：Xcode中编译设置中的Header Search Paths路径</li>
-<li>files：加入工程的文件名</li>
-<li>folders：加入工程的文件夹，其中所有的文件和文件夹都将被加入工程中</li>
-<li>linker_flags：添加到工程linker flag中的链接配置，比如-ObjC</li>
-<li>excludes：忽略的文件的正则表达式，匹配的文件将不会被加入工程中</li>
-</ul>
-
-
-<p>更多的例子可以参看Mods文件夹中的其他projmods文件。所有的定义路径都是基于当前projmods文件位置的相对路径。 最后，在完成projmods后，Unity会在编译完成后，调用XCodePostProcess的OnPostProcessBuild来对编译得到的Xcode工程进行修改。</p>
-
-<p>之后进一步要做的是为MiniJSON添加一个namespace，这样可以避免不必要的冲突。另外如果您有什么好的想法，也欢迎fork这个项目并给我pull request。项目的github链接请<a href="https://github.com/onevcat/XUPorter">猛击这里</a>。</p>
 ]]></content>
   </entry>
   

@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Oct 11th, 2013 能工巧匠集 WWDC 2013 Session笔记 - iOS7中的ViewController切换 这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看这篇总览。本文仅作为个人记录使用，也欢迎在许可协议范围内转载或使用，但是还烦请保留原文链接， &hellip;">
+	<meta name="description" content="Nov 18th, 2013 能工巧匠集 iOS内购实现及测试Check List 免费+应用内购买的模式已经被证明了是最有效的盈利模式，所以实现内购功能可能是很多开发者必做的工作和必备的技能了。但是鉴于内购这块坑不算少，另外因为sandbox测试所需要特定的配置也很多， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,6 +92,82 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-18T22:08:00+09:00" data-updated="true" itemprop="datePublished">Nov 18<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/11/ios-iap-checklist/" itemprop="url">iOS内购实现及测试Check List</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/cannot-connect-its.png" alt="image" /></p>
+
+<p>免费+应用内购买的模式已经被证明了是最有效的盈利模式，所以实现内购功能可能是很多开发者必做的工作和必备的技能了。但是鉴于内购这块坑不算少，另外因为sandbox测试所需要特定的配置也很多，所以对于经验不太多的开发者来说很容易就遇到各种问题，并且测试时出错Apple给出的也只有“Can not connect iTunes Store”或者&#8221;Invalid Product IDs&#8221;之类毫无价值的错误提示，并没有详细的错误说明，因此调试起来往往没有方向。有老前辈在<a href="http://troybrant.net/blog/2010/01/invalid-product-ids/">这里</a>整理过一个相对完整的check list了，但是因为年代已经稍微久远，所以内容上和现在的情况已经有一些出入。趁着在最近两个项目里做内购这块遇到的新问题，顺便在此基础上总结整理了一份比较新的中文Check list，希望能帮到后来人。</p>
+
+<p>如果您在实现和测试iOS应用内购的时候遇到问题，可以逐一对照下面所列出的条目，并逐一进行检查。相信可以排除大部分的错误。如果您遇到的问题不在这个列表范围内，欢迎在评论中指出，我会进行更新。</p>
+
+<ul>
+<li>您是否在iOS Dev Center中打开了对应应用AppID的<code>In-App Purchases</code>功能？登陆iOS Dev Center的Certificates, Identifiers &amp; Profiles下，在Identifiers中找到正在开发的App，In-App Purchase一项应当显示Enabled（如果使用Xcode5，可以直接在Xcode的Capabilities页面中打开In-App Purchases）。</li>
+<li>您是否在iTunes Connect中注册了您的IAP项目，并将其设为Cleared for Sale？</li>
+<li>您的plist中的<code>Bundle identifier</code>的内容是否和您的AppID一致？</li>
+<li>您是否正确填写了Version（CFBundleVersion）和Build（CFBuildNumber）两个数字？两者缺一不可。</li>
+<li>您用代码向Apple申请售卖物品列表时是否使用了完整的在iTC注册的Product ID？（使用在IAP管理中内购项目的Product ID一栏中的字符串）</li>
+<li>您是否在打开IAP以后重新生成过包含IAP许可的provisioning profile？</li>
+<li>你是否重新导入了新的包含IAP的provisioning profile？建议在Organizer中先删掉原来设备上的老的provisioning profile。</li>
+<li>您是否在用包含IAP的provisioning profile在部署测试程序？在Xcode5中，建议使用General中的Team选项来自动管理。</li>
+<li>您是否是在模拟器中测试IAP？虽然理论上说模拟器在某些情况下可以测试IAP，但是条件很多也不让人安心，因此您确实需要一台真机来做IAP测试。</li>
+<li>您是在企业版发布中测试IAP么？因为企业版没有iTC进行内购项目管理，也无法发布AppStore应用，所以您在企业版的build中不能使用IAP。</li>
+<li>您是否将设备上原来的app删除了，并重新进行了安装？记得在安装前做一下Clean和Clean Build Folder。</li>
+<li>您是否在运行应用前将设备上实际的Apple ID登出了？建议在设置->iTunes Store和App Stroe中将使用中的Apple ID登出，以未登录状态进入应用进行测试。</li>
+<li>你是否使用的是Test User？如果你还没有创建Test User，你需要到iTC中创建。</li>
+<li>您使用的测试账号是否是美国区账号？虽然不是一定需要，但是鉴于其他地区的测试账号经常抽风，加上美国区账号一直很稳定，因此强烈建议使用美国区账号。正常情况下IAP不需要进行信用卡绑定和其他信息填写，如果你遇到了这种情况，可以试试删除这个测试账号再新建一个其他地区的。</li>
+<li>您是否有新建账户进行测试？可能的话，可以使用新建测试账户试试看，因为某些特定情况下测试账户会被Apple锁定。</li>
+<li>您的应用是否是被拒状态（Rejected）或自己拒绝（Developer Rejected）了？被拒绝状态的应用的话对应还未通过的内购项目也会一起被拒，因此您需要重新将IAP项目设为Cleared for Sale。</li>
+<li>您的应用是否处于等待开发者发布（Pending Developer Release）状态？等待发布状态的IAP是无法测试的。</li>
+<li>您的内购项目是否是最近才新建的，或者进行了更改？内购项目需要一段时间才能反应到所有服务器上，这个过程一般是一两小时，也可能再长一些达到若干小时。</li>
+<li>您在iTC中Contracts, Tax, and Banking Information项目中是否有还没有设置或者过期了的项目？不完整的财务信息无法进行内购测试。</li>
+<li>您是在越狱设备上进行内购测试么？越狱设备不能用于正常内购，您需要重装或者寻找一台没有越狱的设备。</li>
+<li>您是否能正常连接到Apple的服务器，你可以访问<a href="https://devforums.apple.com/community/ios/connected/purchase">Apple开发者论坛关于IAP的板块</a>，如果苹果服务器正down掉，那里应该有热烈的讨论。</li>
+</ul>
+
+
+<hr />
+
+<p>如果您正在寻找一份手把手教你实现IAP的教程的话，这篇文章不是您的菜。关于IAP的实现和步骤，可以参考下面的教程：</p>
+
+<ul>
+<li>苹果的<a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Introduction.html">官方IAP指南</a>和相应的<a href="https://developer.apple.com/library/mac/technotes/tn2259/_index.html">Technical Note</a></li>
+<li>Ray Wenderlich的<a href="http://www.raywenderlich.com/23266/in-app-purchases-in-ios-6-tutorial-consumables-and-receipt-validation">iOS6 IAP教程</a></li>
+<li>一篇图文并茂的<a href="http://blog.csdn.net/xiaominghimi/article/details/6937097">中文教程</a></li>
+<li>直接使用大神们封好的Store有关的库，比如<a href="https://github.com/mattt/CargoBay">mattt/CargoBay</a>，<a href="https://github.com/robotmedia/RMStore">robotmedia/RMStore</a>或者<a href="https://github.com/MugunthKumar/MKStoreKit">MugunthKumar/MKStoreKit</a>。推荐前两个，因为MKStoreKit有一些恼人的小bug。</li>
+</ul>
+
+
+		
+		
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -608,65 +684,6 @@
 
 		
 		<a href="/2013/06/new-in-xcode5-and-objc/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-11T07:43:00+09:00" data-updated="true" itemprop="datePublished">Jun 11<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/06/developer-should-know-about-ios7/" itemprop="url">开发者所需要知道的iOS7 SDK新特性</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://img.onevcat.com/2013/ios-7-logo.png" alt="iOS 7" /></p>
-
-<p>春风又绿加州岸，物是人非又一年。WWDC 2013 keynote落下帷幕，新的iOS开发旅程也由此开启。在iOS7界面重大变革的背后，开发者们需要知道的又有哪些呢。同去年一样，我会先简单纵览地介绍iOS7中我个人认为开发者需要着重关注和学习的内容，之后再陆续对自己感兴趣章节进行探索。计划继承类似<a href="http://onevcat.com/2012/06/%E5%BC%80%E5%8F%91%E8%80%85%E6%89%80%E9%9C%80%E8%A6%81%E7%9F%A5%E9%81%93%E7%9A%84ios6-sdk%E6%96%B0%E7%89%B9%E6%80%A7/">WWDC2012的笔记</a>的形式，希望对国内开发者有所帮助。</p>
-
-<p>相关笔记整理如下：</p>
-
-<ul>
-<li>总览 <a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">开发者所需要知道的iOS7 SDK新特性</a></li>
-<li>工具 <a href="http://onevcat.com/2013/06/new-in-xcode5-and-objc/">WWDC2013笔记 Xcode5和ObjC新特性</a> http://onevcat.com/2013/06/new-in-xcode5-and-objc/</li>
-<li>UIKit动力学 <a href="http://onevcat.com/2013/06/uikit-dynamics-started/">WWDC2013笔记 UIKit力学模型入门</a> http://onevcat.com/2013/06/uikit-dynamics-started/</li>
-<li>SpriteKit入门 <a href="http://onevcat.com/2013/06/sprite-kit-start/">WWDC2013笔记 SpriteKit快速入门和新时代iOS游戏开发指南</a> http://onevcat.com/2013/06/sprite-kit-start/</li>
-<li>后台应用运行和多任务新特性 <a href="http://onevcat.com/2013/08/ios7-background-multitask/">WWDC2013笔记 iOS7中的多任务</a> http://onevcat.com/2013/08/ios7-background-multitask/</li>
-<li>iOS7中弹簧式列表的制作 <a href="http://onevcat.com/2013/09/spring-list-like-ios7-message">WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作</a> http://onevcat.com/2013/09/spring-list-like-ios7-message</li>
-<li>iOS7中自定义ViewController切换效果 <a href="http://onevcat.com/2013/10/vc-transition-in-ios7/">WWDC 2013 Session笔记 - iOS7中的ViewController切换</a></li>
-</ul>
-
-
-<hr />
-
-<h3>UI相关</h3>
-
-<h4>全新UI设计</h4>
-
-<p>iOS7最大的变化莫过于UI设计，也许你会说UI设计“这是设计师大大们应该关注的事情，不关开发者的事，我们只需要替换图片就行了”。那你就错了。UI的变化必然带来使用习惯和方式的转变，如何运用iOS7的UI，如何是自己的应用更切合新的系统，都是需要考虑的事情。另外值得注意的是，使用iOS7 SDK（现在只有Xcode5预览版提供）打包的应用在iOS7上运行时将会自动使用iOS7的新界面，所以原有应用可能需要对新界面进行重大调整。具体的iOS7中所使用的UI元素的人际交互界面文档，可以从<a href="https://developer.apple.com/library/prerelease/ios/design/index.html#//apple_ref/doc/uid/TP40013289">这里</a>找到（应该是需要开发者账号才能看）。</p>
-
-
-		
-		<a href="/2013/06/developer-should-know-about-ios7/" class="more-link">继续阅读</a>
 	</div>
 
 </article>
