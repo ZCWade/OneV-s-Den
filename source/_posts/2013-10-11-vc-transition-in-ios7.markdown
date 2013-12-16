@@ -39,7 +39,7 @@ __weak id weakSelf = self;
                            options:UIViewAnimationOptionTransitionCrossDissolve
                         animations:^{}
                         completion:^(BOOL finished) {
-    [fromVC removeFromSuperView];
+    [fromVC.view removeFromSuperView];
     [fromVC removeFromParentViewController];
     [toVC didMoveToParentViewController:weakSelf];
 }];

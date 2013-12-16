@@ -159,7 +159,7 @@
 </span><span class='line'>                           <span class="nl">options:</span><span class="n">UIViewAnimationOptionTransitionCrossDissolve</span>
 </span><span class='line'>                        <span class="nl">animations:</span><span class="o">^</span><span class="p">{}</span>
 </span><span class='line'>                        <span class="nl">completion:</span><span class="o">^</span><span class="p">(</span><span class="kt">BOOL</span> <span class="n">finished</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="p">[</span><span class="n">fromVC</span> <span class="n">removeFromSuperView</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">fromVC</span><span class="p">.</span><span class="n">view</span> <span class="n">removeFromSuperView</span><span class="p">];</span>
 </span><span class='line'>    <span class="p">[</span><span class="n">fromVC</span> <span class="n">removeFromParentViewController</span><span class="p">];</span>
 </span><span class='line'>    <span class="p">[</span><span class="n">toVC</span> <span class="nl">didMoveToParentViewController:</span><span class="n">weakSelf</span><span class="p">];</span>
 </span><span class='line'><span class="p">}];</span>
