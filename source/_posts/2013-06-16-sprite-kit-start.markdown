@@ -21,7 +21,7 @@ SpriteKit的加入绝对是iOS 7/OSX 10.9的SDK最大的亮点。从此以后官
 
 ### 什么是SpriteKit
 
-首先要知道什么是`Sprite`。Sprite的中文译名就是精灵，在游戏开发中，精灵指的是以图像方式呈现在屏幕上的一个图像。这个图像也许可以移动，用户可以与其交互，也有可能仅只是游戏的一个静止的背景图。塔防游戏中敌方源源不断用来的每个小兵都是一个精灵，我方防御塔发出的炮弹也是精灵。可以说精灵构成了游戏的绝大部分主体视觉内容，而一个2D引擎的主要工作，就是高效地组织，管理和渲染这些精灵。SpriteKit是在iOS7 SDK中Apple新加入的一个2D游戏引擎框架，在SpriteKit出现之前，iOS开发平台上已经出现了像cocos2d这样的比较成熟的2D引擎解决方案。SpriteKit展现出的是Apple将Xcode和iOS/Mac SDK打造成游戏引擎的野心，但是同时也确实与IDE有着更好的集成，减少了开发者的工作。
+首先要知道什么是`Sprite`。Sprite的中文译名就是精灵，在游戏开发中，精灵指的是以图像方式呈现在屏幕上的一个图像。这个图像也许可以移动，用户可以与其交互，也有可能仅只是游戏的一个静止的背景图。塔防游戏中敌方源源不断涌来的每个小兵都是一个精灵，我方防御塔发出的炮弹也是精灵。可以说精灵构成了游戏的绝大部分主体视觉内容，而一个2D引擎的主要工作，就是高效地组织，管理和渲染这些精灵。SpriteKit是在iOS7 SDK中Apple新加入的一个2D游戏引擎框架，在SpriteKit出现之前，iOS开发平台上已经出现了像cocos2d这样的比较成熟的2D引擎解决方案。SpriteKit展现出的是Apple将Xcode和iOS/Mac SDK打造成游戏引擎的野心，但是同时也确实与IDE有着更好的集成，减少了开发者的工作。
 
 ### Hello SpriteKit
 
@@ -178,7 +178,7 @@ Cool，我们的游戏有个能动的图像。知道么，游戏的本质是什�
 
 这里声明了一个SKAction的序列，run一个block，然后等待1秒。用这个动作序列用`-repeatActionForever:`生成一个无限重复的动作，然后让scene执行。这样就可以实现每秒调用一次`-addMonster`来向场景中不断添加敌人了。如果你对Cocoa（Touch）开发比较熟悉的话，可能会说，为什么不用一个NSTimer来做同样的事情，而要写这样的SKAction呢？能不能用NSTimer来达到同样的目的？答案是在对场景或者精灵等SpriteKit对象进行类似操作时，尽量不要用NSTimer。因为NSTimer将不受SpriteKit的影响和管理，使用SKAction可以不加入其它任何代码就获取如下好处：
 
-* 自动暂停和继续，当设定一个SKNode的`paused`属性为YES时，这个SKNode和它管理的子node的action都会自动被暂停。这里详细说明一下SKNode的概念：SKNode时SpriteKit中要素的基本组织方式，它代表了SKView中的一种游戏资源的组织方式。我们现在接触到的SKScene和SKSprite都是SKNode的子类，而一个SKNode可以有很多的子Node，从而构成一个SKNode的树。在我们的例子中，MyScene直接加在SKView中作为最root的node存在，而英雄或者敌人的精灵都作为Scene这个node的子node被添加进来。SKAction和node上的各种属性的的作用范围是当前这个node和它的所有子node，在这里我们如果设定MySecnen这个node（也就是self）的`paused`属性被设为YES的话，所有的Action都会被暂停，包括这个每隔一秒调用一次的action，而如果你用NSTimer的话，恭喜，你必须自行维护它的状态。
+* 自动暂停和继续，当设定一个SKNode的`paused`属性为YES时，这个SKNode和它管理的子node的action都会自动被暂停。这里详细说明一下SKNode的概念：SKNode是SpriteKit中要素的基本组织方式，它代表了SKView中的一种游戏资源的组织方式。我们现在接触到的SKScene和SKSprite都是SKNode的子类，而一个SKNode可以有很多的子Node，从而构成一个SKNode的树。在我们的例子中，MyScene直接加在SKView中作为最root的node存在，而英雄或者敌人的精灵都作为Scene这个node的子node被添加进来。SKAction和node上的各种属性的的作用范围是当前这个node和它的所有子node，在这里我们如果设定MySecnen这个node（也就是self）的`paused`属性被设为YES的话，所有的Action都会被暂停，包括这个每隔一秒调用一次的action，而如果你用NSTimer的话，恭喜，你必须自行维护它的状态。
 * 当SKAction依附的结点被从结点树中拿掉的时候，这个action会自动结束并停止，这是符合一般逻辑的。
 
 编译，运行，一切如我们所预期的那样，每个一秒有一个怪物从右侧进入，并以不同的速度穿过屏幕。
@@ -251,7 +251,7 @@ Cool，我们的游戏有个能动的图像。知道么，游戏的本质是什�
 
 ![SpriteKit的更新周期](http://img.onevcat.com/2013/spritekit-update_loop.png)
 
-在iOS传统的view的系统中，view的内容被渲染一次后就将一直等待，知道需要渲染的内容发生改变（比如用户发生交互，view的迁移等）的时候，才进行下一次渲染。这主要是因为传统的view大多工作在静态环境下，并没有需要频繁改变的需求。而对于SpriteKit来说，其本身就是用来制作大多数时候是动态的游戏的，为了保证动画的流畅和场景的持续更新，在SpriteKit中view将会循环不断地重绘。
+在iOS传统的view的系统中，view的内容被渲染一次后就将一直等待，直到需要渲染的内容发生改变（比如用户发生交互，view的迁移等）的时候，才进行下一次渲染。这主要是因为传统的view大多工作在静态环境下，并没有需要频繁改变的需求。而对于SpriteKit来说，其本身就是用来制作大多数时候是动态的游戏的，为了保证动画的流畅和场景的持续更新，在SpriteKit中view将会循环不断地重绘。
 
 动画和渲染的进程是和SKScene对象绑定的，只有当场景被呈现时，这些渲染以及其中的action才会被执行。SKScene实例中，一个循环按执行顺序包括
 
@@ -262,7 +262,7 @@ Cool，我们的游戏有个能动的图像。知道么，游戏的本质是什�
 * 然后`-didSimulatePhysics`会被调用，这类似之前的`-didEvaluateActions`。这里是我们开发者能参与的最后的地方，是我们改变结点的最后机会。
 * 一帧的最后是渲染流程，根据之前设定和计算的结果对整个呈现的场景进行绘制。完成之后，SpriteKit将开始新的一帧。
 
-在了解了一些SpriteKit的基础概念后，回到我们的demo。检测场景上每个怪物和飞镖的状态，如果它们相撞就移除，这是对精灵的计算的和操作，我们可以将其放到`-update:`方法中来处理。在此之前，我们需要保存一下添加到场景中的怪物和飞，在MyScene.m的@implementation之前加入下面的声明：
+在了解了一些SpriteKit的基础概念后，回到我们的demo。检测场景上每个怪物和飞镖的状态，如果它们相撞就移除，这是对精灵的计算的和操作，我们可以将其放到`-update:`方法中来处理。在此之前，我们需要保存一下添加到场景中的怪物和飞镖，在MyScene.m的@implementation之前加入下面的声明：
 
 ```objc
 @interface MyScene()

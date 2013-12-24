@@ -4,7 +4,7 @@
   <title><![CDATA[OneV's Den]]></title>
   <link href="http://onevcat.com/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2013-12-20T12:35:52+09:00</updated>
+  <updated>2013-12-24T22:27:28+08:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[iOS内购实现及测试Check List]]></title>
     <link href="http://onevcat.com/2013/11/ios-iap-checklist/"/>
-    <updated>2013-11-18T22:08:00+09:00</updated>
+    <updated>2013-11-18T22:08:00+08:00</updated>
     <id>http://onevcat.com/2013/11/ios-iap-checklist</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/cannot-connect-its.png" alt="image" /></p>
 
@@ -66,7 +66,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的ViewController切换]]></title>
     <link href="http://onevcat.com/2013/10/vc-transition-in-ios7/"/>
-    <updated>2013-10-11T15:36:00+09:00</updated>
+    <updated>2013-10-11T15:36:00+08:00</updated>
     <id>http://onevcat.com/2013/10/vc-transition-in-ios7</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios-transition-banner.jpg" alt="iOS7中的ViewController切换" /></p>
 
@@ -743,7 +743,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作]]></title>
     <link href="http://onevcat.com/2013/09/spring-list-like-ios7-message/"/>
-    <updated>2013-09-01T23:03:00+09:00</updated>
+    <updated>2013-09-01T23:03:00+08:00</updated>
     <id>http://onevcat.com/2013/09/spring-list-like-ios7-message</id>
     <content type="html"><![CDATA[<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
 
@@ -1078,7 +1078,7 @@
   <entry>
     <title type="html"><![CDATA[猫都能学会的Unity3D Shader入门指南（二）]]></title>
     <link href="http://onevcat.com/2013/08/shader-tutorial-2/"/>
-    <updated>2013-08-31T22:18:00+09:00</updated>
+    <updated>2013-08-31T22:18:00+08:00</updated>
     <id>http://onevcat.com/2013/08/shader-tutorial-2</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/shader-tutorial2-light.jpg" alt="Unity Shader教程" /></p>
 
@@ -1413,7 +1413,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的多任务]]></title>
     <link href="http://onevcat.com/2013/08/ios7-background-multitask/"/>
-    <updated>2013-08-17T19:16:00+09:00</updated>
+    <updated>2013-08-17T19:16:00+08:00</updated>
     <id>http://onevcat.com/2013/08/ios7-background-multitask</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios7-multitasking.jpg" alt="iOS7的后台多任务特性" /></p>
 
@@ -1792,7 +1792,7 @@
   <entry>
     <title type="html"><![CDATA[猫都能学会的Unity3D Shader入门指南（一）]]></title>
     <link href="http://onevcat.com/2013/07/shader-tutorial-1/"/>
-    <updated>2013-07-23T23:14:00+09:00</updated>
+    <updated>2013-07-23T23:14:00+08:00</updated>
     <id>http://onevcat.com/2013/07/shader-tutorial-1</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/shader-tutorial-banner.jpg" alt="Unity Shader教程" /></p>
 
@@ -2134,7 +2134,7 @@
   <entry>
     <title type="html"><![CDATA[近期做的两三事]]></title>
     <link href="http://onevcat.com/2013/07/what-i-did-recently/"/>
-    <updated>2013-07-21T10:47:00+09:00</updated>
+    <updated>2013-07-21T10:47:00+08:00</updated>
     <id>http://onevcat.com/2013/07/what-i-did-recently</id>
     <content type="html"><![CDATA[<p>夏日炎炎，无心睡眠。</p>
 
@@ -2183,7 +2183,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - SpriteKit快速入门和新时代iOS游戏开发指南]]></title>
     <link href="http://onevcat.com/2013/06/sprite-kit-start/"/>
-    <updated>2013-06-16T18:13:00+09:00</updated>
+    <updated>2013-06-16T18:13:00+08:00</updated>
     <id>http://onevcat.com/2013/06/sprite-kit-start</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/spritekit-intro.png" alt="SpriteKit，iOS/Mac游戏制作的新纪元" /></p>
 
@@ -2203,7 +2203,7 @@
 
 <h3>什么是SpriteKit</h3>
 
-<p>首先要知道什么是<code>Sprite</code>。Sprite的中文译名就是精灵，在游戏开发中，精灵指的是以图像方式呈现在屏幕上的一个图像。这个图像也许可以移动，用户可以与其交互，也有可能仅只是游戏的一个静止的背景图。塔防游戏中敌方源源不断用来的每个小兵都是一个精灵，我方防御塔发出的炮弹也是精灵。可以说精灵构成了游戏的绝大部分主体视觉内容，而一个2D引擎的主要工作，就是高效地组织，管理和渲染这些精灵。SpriteKit是在iOS7 SDK中Apple新加入的一个2D游戏引擎框架，在SpriteKit出现之前，iOS开发平台上已经出现了像cocos2d这样的比较成熟的2D引擎解决方案。SpriteKit展现出的是Apple将Xcode和iOS/Mac SDK打造成游戏引擎的野心，但是同时也确实与IDE有着更好的集成，减少了开发者的工作。</p>
+<p>首先要知道什么是<code>Sprite</code>。Sprite的中文译名就是精灵，在游戏开发中，精灵指的是以图像方式呈现在屏幕上的一个图像。这个图像也许可以移动，用户可以与其交互，也有可能仅只是游戏的一个静止的背景图。塔防游戏中敌方源源不断涌来的每个小兵都是一个精灵，我方防御塔发出的炮弹也是精灵。可以说精灵构成了游戏的绝大部分主体视觉内容，而一个2D引擎的主要工作，就是高效地组织，管理和渲染这些精灵。SpriteKit是在iOS7 SDK中Apple新加入的一个2D游戏引擎框架，在SpriteKit出现之前，iOS开发平台上已经出现了像cocos2d这样的比较成熟的2D引擎解决方案。SpriteKit展现出的是Apple将Xcode和iOS/Mac SDK打造成游戏引擎的野心，但是同时也确实与IDE有着更好的集成，减少了开发者的工作。</p>
 
 <h3>Hello SpriteKit</h3>
 
@@ -2450,7 +2450,7 @@
 <p>这里声明了一个SKAction的序列，run一个block，然后等待1秒。用这个动作序列用<code>-repeatActionForever:</code>生成一个无限重复的动作，然后让scene执行。这样就可以实现每秒调用一次<code>-addMonster</code>来向场景中不断添加敌人了。如果你对Cocoa（Touch）开发比较熟悉的话，可能会说，为什么不用一个NSTimer来做同样的事情，而要写这样的SKAction呢？能不能用NSTimer来达到同样的目的？答案是在对场景或者精灵等SpriteKit对象进行类似操作时，尽量不要用NSTimer。因为NSTimer将不受SpriteKit的影响和管理，使用SKAction可以不加入其它任何代码就获取如下好处：</p>
 
 <ul>
-<li>自动暂停和继续，当设定一个SKNode的<code>paused</code>属性为YES时，这个SKNode和它管理的子node的action都会自动被暂停。这里详细说明一下SKNode的概念：SKNode时SpriteKit中要素的基本组织方式，它代表了SKView中的一种游戏资源的组织方式。我们现在接触到的SKScene和SKSprite都是SKNode的子类，而一个SKNode可以有很多的子Node，从而构成一个SKNode的树。在我们的例子中，MyScene直接加在SKView中作为最root的node存在，而英雄或者敌人的精灵都作为Scene这个node的子node被添加进来。SKAction和node上的各种属性的的作用范围是当前这个node和它的所有子node，在这里我们如果设定MySecnen这个node（也就是self）的<code>paused</code>属性被设为YES的话，所有的Action都会被暂停，包括这个每隔一秒调用一次的action，而如果你用NSTimer的话，恭喜，你必须自行维护它的状态。</li>
+<li>自动暂停和继续，当设定一个SKNode的<code>paused</code>属性为YES时，这个SKNode和它管理的子node的action都会自动被暂停。这里详细说明一下SKNode的概念：SKNode是SpriteKit中要素的基本组织方式，它代表了SKView中的一种游戏资源的组织方式。我们现在接触到的SKScene和SKSprite都是SKNode的子类，而一个SKNode可以有很多的子Node，从而构成一个SKNode的树。在我们的例子中，MyScene直接加在SKView中作为最root的node存在，而英雄或者敌人的精灵都作为Scene这个node的子node被添加进来。SKAction和node上的各种属性的的作用范围是当前这个node和它的所有子node，在这里我们如果设定MySecnen这个node（也就是self）的<code>paused</code>属性被设为YES的话，所有的Action都会被暂停，包括这个每隔一秒调用一次的action，而如果你用NSTimer的话，恭喜，你必须自行维护它的状态。</li>
 <li>当SKAction依附的结点被从结点树中拿掉的时候，这个action会自动结束并停止，这是符合一般逻辑的。</li>
 </ul>
 
@@ -2564,7 +2564,7 @@
 
 <p><img src="http://img.onevcat.com/2013/spritekit-update_loop.png" alt="SpriteKit的更新周期" /></p>
 
-<p>在iOS传统的view的系统中，view的内容被渲染一次后就将一直等待，知道需要渲染的内容发生改变（比如用户发生交互，view的迁移等）的时候，才进行下一次渲染。这主要是因为传统的view大多工作在静态环境下，并没有需要频繁改变的需求。而对于SpriteKit来说，其本身就是用来制作大多数时候是动态的游戏的，为了保证动画的流畅和场景的持续更新，在SpriteKit中view将会循环不断地重绘。</p>
+<p>在iOS传统的view的系统中，view的内容被渲染一次后就将一直等待，直到需要渲染的内容发生改变（比如用户发生交互，view的迁移等）的时候，才进行下一次渲染。这主要是因为传统的view大多工作在静态环境下，并没有需要频繁改变的需求。而对于SpriteKit来说，其本身就是用来制作大多数时候是动态的游戏的，为了保证动画的流畅和场景的持续更新，在SpriteKit中view将会循环不断地重绘。</p>
 
 <p>动画和渲染的进程是和SKScene对象绑定的，只有当场景被呈现时，这些渲染以及其中的action才会被执行。SKScene实例中，一个循环按执行顺序包括</p>
 
@@ -2578,7 +2578,7 @@
 </ul>
 
 
-<p>在了解了一些SpriteKit的基础概念后，回到我们的demo。检测场景上每个怪物和飞镖的状态，如果它们相撞就移除，这是对精灵的计算的和操作，我们可以将其放到<code>-update:</code>方法中来处理。在此之前，我们需要保存一下添加到场景中的怪物和飞，在MyScene.m的@implementation之前加入下面的声明：</p>
+<p>在了解了一些SpriteKit的基础概念后，回到我们的demo。检测场景上每个怪物和飞镖的状态，如果它们相撞就移除，这是对精灵的计算的和操作，我们可以将其放到<code>-update:</code>方法中来处理。在此之前，我们需要保存一下添加到场景中的怪物和飞镖，在MyScene.m的@implementation之前加入下面的声明：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -3026,7 +3026,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - UIKit Dynamics入门]]></title>
     <link href="http://onevcat.com/2013/06/uikit-dynamics-started/"/>
-    <updated>2013-06-15T15:11:00+09:00</updated>
+    <updated>2013-06-15T15:11:00+08:00</updated>
     <id>http://onevcat.com/2013/06/uikit-dynamics-started</id>
     <content type="html"><![CDATA[<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
 
@@ -3384,7 +3384,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - Xcode5和ObjC新特性]]></title>
     <link href="http://onevcat.com/2013/06/new-in-xcode5-and-objc/"/>
-    <updated>2013-06-13T10:05:00+09:00</updated>
+    <updated>2013-06-13T10:05:00+08:00</updated>
     <id>http://onevcat.com/2013/06/new-in-xcode5-and-objc</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/xcode5-title.png" alt="Welcome to Xcode 5" /></p>
 
@@ -3564,7 +3564,7 @@
   <entry>
     <title type="html"><![CDATA[开发者所需要知道的iOS7 SDK新特性]]></title>
     <link href="http://onevcat.com/2013/06/developer-should-know-about-ios7/"/>
-    <updated>2013-06-11T07:43:00+09:00</updated>
+    <updated>2013-06-11T07:43:00+08:00</updated>
     <id>http://onevcat.com/2013/06/developer-should-know-about-ios7</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios-7-logo.png" alt="iOS 7" /></p>
 
@@ -3711,7 +3711,7 @@
   <entry>
     <title type="html"><![CDATA[谈谈Objective-C的警告]]></title>
     <link href="http://onevcat.com/2013/05/talk-about-warning/"/>
-    <updated>2013-05-24T09:52:00+09:00</updated>
+    <updated>2013-05-24T09:52:00+08:00</updated>
     <id>http://onevcat.com/2013/05/talk-about-warning</id>
     <content type="html"><![CDATA[<blockquote><p>一个有节操的程序员会在乎自己的代码的警告，就像在乎饭碗边上有只死蟑螂那样。——<a href="http://weibo.com/onevcat">@onevcat</a></p></blockquote>
 
@@ -3811,7 +3811,7 @@
   <entry>
     <title type="html"><![CDATA[iOS中使用blend改变图片颜色]]></title>
     <link href="http://onevcat.com/2013/04/using-blending-in-ios/"/>
-    <updated>2013-04-29T16:30:00+09:00</updated>
+    <updated>2013-04-29T16:30:00+08:00</updated>
     <id>http://onevcat.com/2013/04/using-blending-in-ios</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/blend_title.png" alt="使用Blend处理图片颜色" /></p>
 
@@ -4153,7 +4153,7 @@ Ra, Sa, and Da are the alpha components of R, S, and D</p></blockquote>
   <entry>
     <title type="html"><![CDATA[苹果应用描述中不能使用特殊字符的对应方法]]></title>
     <link href="http://onevcat.com/2013/04/itc-special-characters/"/>
-    <updated>2013-04-28T18:01:00+09:00</updated>
+    <updated>2013-04-28T18:01:00+08:00</updated>
     <id>http://onevcat.com/2013/04/itc-special-characters</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/itc-special-character.png" alt="就是不让你用就是不让你用～" /></p>
 
@@ -4174,7 +4174,7 @@ Ra, Sa, and Da are the alpha components of R, S, and D</p></blockquote>
   <entry>
     <title type="html"><![CDATA[上级向的十个iOS面试问题]]></title>
     <link href="http://onevcat.com/2013/04/ios-interview/"/>
-    <updated>2013-04-13T01:22:00+09:00</updated>
+    <updated>2013-04-13T01:22:00+08:00</updated>
     <id>http://onevcat.com/2013/04/ios-interview</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/welcome-to-xcode.png" alt="Welcome to Xcode" /></p>
 
@@ -4210,7 +4210,7 @@ Ra, Sa, and Da are the alpha components of R, S, and D</p></blockquote>
   <entry>
     <title type="html"><![CDATA[两个人一起记账吧～ Our Money]]></title>
     <link href="http://onevcat.com/2013/04/our-money-app/"/>
-    <updated>2013-04-06T11:54:00+09:00</updated>
+    <updated>2013-04-06T11:54:00+08:00</updated>
     <id>http://onevcat.com/2013/04/our-money-app</id>
     <content type="html"><![CDATA[<p><a href="https://itunes.apple.com/cn/app/our-money/id562520527?ls=1&amp;mt=8"><img src="http://img.onevcat.com/2013/ourmoney-banner.jpg" alt="image" /></a></p>
 
@@ -4279,7 +4279,7 @@ Our Money的主界面相当简洁，最上方列出列表名称，收入（预�
   <entry>
     <title type="html"><![CDATA[赴日半年的一些杂感]]></title>
     <link href="http://onevcat.com/2013/04/half-year-in-japan/"/>
-    <updated>2013-04-01T23:47:00+09:00</updated>
+    <updated>2013-04-01T23:47:00+08:00</updated>
     <id>http://onevcat.com/2013/04/half-year-in-japan</id>
     <content type="html"><![CDATA[<p><img src="http://i758.photobucket.com/albums/xx224/onevcat/OneV-s-Den/half-year-in-japan/2013-03-09125056.jpg" alt="樱花之国" /></p>
 
@@ -4339,7 +4339,7 @@ Our Money的主界面相当简洁，最上方列出列表名称，收入（预�
   <entry>
     <title type="html"><![CDATA[MGTwitterEngine中Twitter API 1.1的使用]]></title>
     <link href="http://onevcat.com/2013/03/mgtwitterengine%E4%B8%ADtwitter-api-1-1%E7%9A%84%E4%BD%BF%E7%94%A8/"/>
-    <updated>2013-03-24T00:00:00+09:00</updated>
+    <updated>2013-03-24T00:00:00+08:00</updated>
     <id>http://onevcat.com/2013/03/mgtwitterengine中twitter-api-1-1的使用</id>
     <content type="html"><![CDATA[<p>在iOS5中使用Twitter framework或者在iOS6中使用Social framework来完成Twitter的集成是非常简单和轻松的，但是如果应用要针对iOS5之前的系统版本，那么就不能使用iOS提供的框架了。一个比较常见也是使用最广泛的选择是<a href="https://github.com/mattgemmell/MGTwitterEngine">MGTwitterEngine</a>，比如<a href="http://www.onevcat.com/showcase/pomodoro_do/">PomodoroDo</a>选择使用的就是该框架。</p>
 
@@ -4411,7 +4411,7 @@ Our Money的主界面相当简洁，最上方列出列表名称，收入（预�
   <entry>
     <title type="html"><![CDATA[Xcode 4 插件制作入门]]></title>
     <link href="http://onevcat.com/2013/02/xcode-plugin/"/>
-    <updated>2013-02-02T00:00:00+09:00</updated>
+    <updated>2013-02-02T00:00:00+08:00</updated>
     <id>http://onevcat.com/2013/02/xcode-plugin</id>
     <content type="html"><![CDATA[<p><img src="http://www.onevcat.com/wp-content/uploads/2013/02/QQ20130202-15.png"></p>
 
@@ -4921,7 +4921,7 @@ Our Money的主界面相当简洁，最上方列出列表名称，收入（预�
   <entry>
     <title type="html"><![CDATA[Unity3D中暂停时的动画及粒子效果实现]]></title>
     <link href="http://onevcat.com/2013/01/do_not_pause_me/"/>
-    <updated>2013-01-26T00:00:00+09:00</updated>
+    <updated>2013-01-26T00:00:00+08:00</updated>
     <id>http://onevcat.com/2013/01/do_not_pause_me</id>
     <content type="html"><![CDATA[<p><!--:zh--><h2 style="text-align: justify;"><a href="http://www.onevcat.com/wp-content/uploads/2013/01/big副本.png"><img class="aligncenter size-full wp-image-1087" title="unpause" src="http://www.onevcat.com/wp-content/uploads/2013/01/big副本.png" alt="" width="500" height="200" data-pinit="registered" /></a></h2>
 <p style="text-align: justify;">暂停是游戏中经常出现的功能，而Unity3D中对于暂停的处理并不是很理想。一般的做法是将Time.timeScale设置为0。Unity的文档中对于这种情况有以下描述；</p></p>
