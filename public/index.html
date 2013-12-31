@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Nov 18th, 2013 能工巧匠集 iOS内购实现及测试Check List 免费+应用内购买的模式已经被证明了是最有效的盈利模式，所以实现内购功能可能是很多开发者必做的工作和必备的技能了。但是鉴于内购这块坑不算少，另外因为sandbox测试所需要特定的配置也很多， &hellip;">
+	<meta name="description" content="Dec 31st, 2013 能工巧匠集 代码手写UI，xib和StoryBoard间的博弈，以及Interface Builder的一些小技巧 最近接触了几个刚入门的iOS学习者，他们之中存在一个普遍和困惑和疑问，就是应该如何制作UI界面。iOS应用是非常重视用户体验的， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +94,44 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-31T21:32:00+08:00" data-updated="true" itemprop="datePublished">Dec 31<span>st</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/12/code-vs-xib-vs-storyboard/" itemprop="url">代码手写UI，xib和StoryBoard间的博弈，以及Interface Builder的一些小技巧</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/code-xib-sb.png" alt="Code-vs-Xibs-vs-StroyBoard" /></p>
+
+<p>最近接触了几个刚入门的iOS学习者，他们之中存在一个普遍和困惑和疑问，就是应该如何制作UI界面。iOS应用是非常重视用户体验的，可以说绝大多数的应用成功与否与交互设计以及UI是否漂亮易用有着非常大的关系。而随着iOS开发发展至今，可以说在UI制作上大家逐渐分化为了三种主要流派：使用代码手写UI及布局；使用单个xib文件组织viewController或者view；使用StoryBoard来通过单个或很少的几个（关于这点稍后会进行展开）文件构建全部UI。应该使用哪种方式来制作UI已经是iOS开发中亘古不变的争论话题了，或许永远不会有一个统一的结论。但是首先需要知道的是三种方式各有优劣，所以也各有自己最适用的场合，而不会有完全的孰优孰劣。对于初学iOS开发来说，一时间其实是很难判定最适合自己的UI架构方式的。在这篇文章里我希望能够通过自己的经验给出一些意见，以期能帮助入门者来挑选最适合自己应用场景的方案。对于老鸟的话，也不妨对照自己平日的使用习惯和运用场景，看看有没有可以改进或变化的地方。最后，因为我本人现在最习惯和喜欢的是用Interface Builder(之后简称IB)及xib来做UI，所以文末附上了一些IB使用时候的小技巧，算是做个总结。</p>
+
+
+		
+		<a href="/2013/12/code-vs-xib-vs-storyboard/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -630,62 +668,6 @@
 
 		
 		<a href="/2013/06/uikit-dynamics-started/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-13T10:05:00+08:00" data-updated="true" itemprop="datePublished">Jun 13<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/06/new-in-xcode5-and-objc/" itemprop="url">WWDC 2013 Session笔记 - Xcode5和ObjC新特性</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><img src="http://img.onevcat.com/2013/xcode5-title.png" alt="Welcome to Xcode 5" /></p>
-
-<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 400 What&#8217;s New in Xcode 5</li>
-<li>Session 401 Xcode Core Concepts</li>
-<li>Session 407 Debugging with Xcode</li>
-<li>Session 404 Advances in Objective-C</li>
-</ul>
-
-
-<p>等Tools模块下的内容</p>
-
-<p>随着iOS7 SDK的beta放出，以及Xcode 5 DP版本的到来，很多为iOS7开发应用的方式已经逐渐浮现。可以豪不夸张地讲，由于iOS7的UI发生了重大变革，此次的升级不同于以往，我们将会迎来iOS开发诞生以来最剧烈的变动，如何拥抱变化，快速适应新的世界和平台，值得每个Cocoa和CocoaTouch开发者研究。工欲善其事，必先利其器。想做iOS7的开发，就必须切换到Xcode5和新的ObjC体系（包括新引入的语法和编译器），在这里我简要地对新添加或重大变化的功能做一个小结。</p>
-
-<h2>说说新的Xcode</h2>
-
-<p>Xcode4刚出的时候存在茫茫多似乎无穷无尽的bug（如果是一路走来的同仁可能对此还记忆犹新），好消息是这次Xcode5 DP版本似乎相当稳定，如果你遇到了开启新Xcode就报错强退的话，多半原因是因为你在使用为Xcode4制作的插件，不同版本的Xcode是共用同一个文件夹下的插件的，请将<code>~/Library/Application Support/Developer/Shared/Xcode/Plug-ins</code>目录下的内容清理一下，应该就能顺利进入Xcode5了。</p>
-
-
-		
-		<a href="/2013/06/new-in-xcode5-and-objc/" class="more-link">继续阅读</a>
 	</div>
 
 </article>
