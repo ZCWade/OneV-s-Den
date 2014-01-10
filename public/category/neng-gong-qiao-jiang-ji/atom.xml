@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 能工巧匠集 | OneV's Den]]></title>
   <link href="http://onevcat.com/category/neng-gong-qiao-jiang-ji/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2014-01-01T15:16:22+08:00</updated>
+  <updated>2014-01-10T22:13:32+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[代码手写UI，xib和StoryBoard间的博弈，以及Interface Builder的一些小技巧]]></title>
     <link href="http://onevcat.com/2013/12/code-vs-xib-vs-storyboard/"/>
-    <updated>2013-12-31T21:32:00+08:00</updated>
+    <updated>2013-12-31T21:32:00+09:00</updated>
     <id>http://onevcat.com/2013/12/code-vs-xib-vs-storyboard</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/code-xib-sb.png" alt="Code-vs-Xibs-vs-StroyBoard" /></p>
 
@@ -100,7 +100,7 @@
   <entry>
     <title type="html"><![CDATA[iOS内购实现及测试Check List]]></title>
     <link href="http://onevcat.com/2013/11/ios-iap-checklist/"/>
-    <updated>2013-11-18T22:08:00+08:00</updated>
+    <updated>2013-11-18T22:08:00+09:00</updated>
     <id>http://onevcat.com/2013/11/ios-iap-checklist</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/cannot-connect-its.png" alt="image" /></p>
 
@@ -150,7 +150,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的ViewController切换]]></title>
     <link href="http://onevcat.com/2013/10/vc-transition-in-ios7/"/>
-    <updated>2013-10-11T15:36:00+08:00</updated>
+    <updated>2013-10-11T15:36:00+09:00</updated>
     <id>http://onevcat.com/2013/10/vc-transition-in-ios7</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios-transition-banner.jpg" alt="iOS7中的ViewController切换" /></p>
 
@@ -661,7 +661,7 @@ mvc.transitioningDelegate = self;
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作]]></title>
     <link href="http://onevcat.com/2013/09/spring-list-like-ios7-message/"/>
-    <updated>2013-09-01T23:03:00+08:00</updated>
+    <updated>2013-09-01T23:03:00+09:00</updated>
     <id>http://onevcat.com/2013/09/spring-list-like-ios7-message</id>
     <content type="html"><![CDATA[<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
 
@@ -888,7 +888,7 @@ return NO;
   <entry>
     <title type="html"><![CDATA[猫都能学会的Unity3D Shader入门指南（二）]]></title>
     <link href="http://onevcat.com/2013/08/shader-tutorial-2/"/>
-    <updated>2013-08-31T22:18:00+08:00</updated>
+    <updated>2013-08-31T22:18:00+09:00</updated>
     <id>http://onevcat.com/2013/08/shader-tutorial-2</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/shader-tutorial2-light.jpg" alt="Unity Shader教程" /></p>
 

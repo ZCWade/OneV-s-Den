@@ -4,7 +4,7 @@
   <title><![CDATA[OneV's Den]]></title>
   <link href="http://onevcat.com/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2014-01-01T15:16:22+08:00</updated>
+  <updated>2014-01-10T22:13:06+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[代码手写UI，xib和StoryBoard间的博弈，以及Interface Builder的一些小技巧]]></title>
     <link href="http://onevcat.com/2013/12/code-vs-xib-vs-storyboard/"/>
-    <updated>2013-12-31T21:32:00+08:00</updated>
+    <updated>2013-12-31T21:32:00+09:00</updated>
     <id>http://onevcat.com/2013/12/code-vs-xib-vs-storyboard</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/code-xib-sb.png" alt="Code-vs-Xibs-vs-StroyBoard" /></p>
 
@@ -100,7 +100,7 @@
   <entry>
     <title type="html"><![CDATA[iOS内购实现及测试Check List]]></title>
     <link href="http://onevcat.com/2013/11/ios-iap-checklist/"/>
-    <updated>2013-11-18T22:08:00+08:00</updated>
+    <updated>2013-11-18T22:08:00+09:00</updated>
     <id>http://onevcat.com/2013/11/ios-iap-checklist</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/cannot-connect-its.png" alt="image" /></p>
 
@@ -150,7 +150,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的ViewController切换]]></title>
     <link href="http://onevcat.com/2013/10/vc-transition-in-ios7/"/>
-    <updated>2013-10-11T15:36:00+08:00</updated>
+    <updated>2013-10-11T15:36:00+09:00</updated>
     <id>http://onevcat.com/2013/10/vc-transition-in-ios7</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios-transition-banner.jpg" alt="iOS7中的ViewController切换" /></p>
 
@@ -827,7 +827,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作]]></title>
     <link href="http://onevcat.com/2013/09/spring-list-like-ios7-message/"/>
-    <updated>2013-09-01T23:03:00+08:00</updated>
+    <updated>2013-09-01T23:03:00+09:00</updated>
     <id>http://onevcat.com/2013/09/spring-list-like-ios7-message</id>
     <content type="html"><![CDATA[<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
 
@@ -1162,7 +1162,7 @@
   <entry>
     <title type="html"><![CDATA[猫都能学会的Unity3D Shader入门指南（二）]]></title>
     <link href="http://onevcat.com/2013/08/shader-tutorial-2/"/>
-    <updated>2013-08-31T22:18:00+08:00</updated>
+    <updated>2013-08-31T22:18:00+09:00</updated>
     <id>http://onevcat.com/2013/08/shader-tutorial-2</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/shader-tutorial2-light.jpg" alt="Unity Shader教程" /></p>
 
@@ -1497,7 +1497,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的多任务]]></title>
     <link href="http://onevcat.com/2013/08/ios7-background-multitask/"/>
-    <updated>2013-08-17T19:16:00+08:00</updated>
+    <updated>2013-08-17T19:16:00+09:00</updated>
     <id>http://onevcat.com/2013/08/ios7-background-multitask</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios7-multitasking.jpg" alt="iOS7的后台多任务特性" /></p>
 
@@ -1876,7 +1876,7 @@
   <entry>
     <title type="html"><![CDATA[猫都能学会的Unity3D Shader入门指南（一）]]></title>
     <link href="http://onevcat.com/2013/07/shader-tutorial-1/"/>
-    <updated>2013-07-23T23:14:00+08:00</updated>
+    <updated>2013-07-23T23:14:00+09:00</updated>
     <id>http://onevcat.com/2013/07/shader-tutorial-1</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/shader-tutorial-banner.jpg" alt="Unity Shader教程" /></p>
 
@@ -2218,7 +2218,7 @@
   <entry>
     <title type="html"><![CDATA[近期做的两三事]]></title>
     <link href="http://onevcat.com/2013/07/what-i-did-recently/"/>
-    <updated>2013-07-21T10:47:00+08:00</updated>
+    <updated>2013-07-21T10:47:00+09:00</updated>
     <id>http://onevcat.com/2013/07/what-i-did-recently</id>
     <content type="html"><![CDATA[<p>夏日炎炎，无心睡眠。</p>
 
@@ -2267,7 +2267,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - SpriteKit快速入门和新时代iOS游戏开发指南]]></title>
     <link href="http://onevcat.com/2013/06/sprite-kit-start/"/>
-    <updated>2013-06-16T18:13:00+08:00</updated>
+    <updated>2013-06-16T18:13:00+09:00</updated>
     <id>http://onevcat.com/2013/06/sprite-kit-start</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/spritekit-intro.png" alt="SpriteKit，iOS/Mac游戏制作的新纪元" /></p>
 
@@ -3110,7 +3110,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - UIKit Dynamics入门]]></title>
     <link href="http://onevcat.com/2013/06/uikit-dynamics-started/"/>
-    <updated>2013-06-15T15:11:00+08:00</updated>
+    <updated>2013-06-15T15:11:00+09:00</updated>
     <id>http://onevcat.com/2013/06/uikit-dynamics-started</id>
     <content type="html"><![CDATA[<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
 
@@ -3468,7 +3468,7 @@
   <entry>
     <title type="html"><![CDATA[WWDC 2013 Session笔记 - Xcode5和ObjC新特性]]></title>
     <link href="http://onevcat.com/2013/06/new-in-xcode5-and-objc/"/>
-    <updated>2013-06-13T10:05:00+08:00</updated>
+    <updated>2013-06-13T10:05:00+09:00</updated>
     <id>http://onevcat.com/2013/06/new-in-xcode5-and-objc</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/xcode5-title.png" alt="Welcome to Xcode 5" /></p>
 
@@ -3648,7 +3648,7 @@
   <entry>
     <title type="html"><![CDATA[开发者所需要知道的iOS7 SDK新特性]]></title>
     <link href="http://onevcat.com/2013/06/developer-should-know-about-ios7/"/>
-    <updated>2013-06-11T07:43:00+08:00</updated>
+    <updated>2013-06-11T07:43:00+09:00</updated>
     <id>http://onevcat.com/2013/06/developer-should-know-about-ios7</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios-7-logo.png" alt="iOS 7" /></p>
 
@@ -3795,7 +3795,7 @@
   <entry>
     <title type="html"><![CDATA[谈谈Objective-C的警告]]></title>
     <link href="http://onevcat.com/2013/05/talk-about-warning/"/>
-    <updated>2013-05-24T09:52:00+08:00</updated>
+    <updated>2013-05-24T09:52:00+09:00</updated>
     <id>http://onevcat.com/2013/05/talk-about-warning</id>
     <content type="html"><![CDATA[<blockquote><p>一个有节操的程序员会在乎自己的代码的警告，就像在乎饭碗边上有只死蟑螂那样。——<a href="http://weibo.com/onevcat">@onevcat</a></p></blockquote>
 
@@ -3895,7 +3895,7 @@
   <entry>
     <title type="html"><![CDATA[iOS中使用blend改变图片颜色]]></title>
     <link href="http://onevcat.com/2013/04/using-blending-in-ios/"/>
-    <updated>2013-04-29T16:30:00+08:00</updated>
+    <updated>2013-04-29T16:30:00+09:00</updated>
     <id>http://onevcat.com/2013/04/using-blending-in-ios</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/blend_title.png" alt="使用Blend处理图片颜色" /></p>
 
@@ -4237,7 +4237,7 @@ Ra, Sa, and Da are the alpha components of R, S, and D</p></blockquote>
   <entry>
     <title type="html"><![CDATA[苹果应用描述中不能使用特殊字符的对应方法]]></title>
     <link href="http://onevcat.com/2013/04/itc-special-characters/"/>
-    <updated>2013-04-28T18:01:00+08:00</updated>
+    <updated>2013-04-28T18:01:00+09:00</updated>
     <id>http://onevcat.com/2013/04/itc-special-characters</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/itc-special-character.png" alt="就是不让你用就是不让你用～" /></p>
 
@@ -4258,7 +4258,7 @@ Ra, Sa, and Da are the alpha components of R, S, and D</p></blockquote>
   <entry>
     <title type="html"><![CDATA[上级向的十个iOS面试问题]]></title>
     <link href="http://onevcat.com/2013/04/ios-interview/"/>
-    <updated>2013-04-13T01:22:00+08:00</updated>
+    <updated>2013-04-13T01:22:00+09:00</updated>
     <id>http://onevcat.com/2013/04/ios-interview</id>
     <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/welcome-to-xcode.png" alt="Welcome to Xcode" /></p>
 
@@ -4294,7 +4294,7 @@ Ra, Sa, and Da are the alpha components of R, S, and D</p></blockquote>
   <entry>
     <title type="html"><![CDATA[两个人一起记账吧～ Our Money]]></title>
     <link href="http://onevcat.com/2013/04/our-money-app/"/>
-    <updated>2013-04-06T11:54:00+08:00</updated>
+    <updated>2013-04-06T11:54:00+09:00</updated>
     <id>http://onevcat.com/2013/04/our-money-app</id>
     <content type="html"><![CDATA[<p><a href="https://itunes.apple.com/cn/app/our-money/id562520527?ls=1&amp;mt=8"><img src="http://img.onevcat.com/2013/ourmoney-banner.jpg" alt="image" /></a></p>
 
@@ -4363,7 +4363,7 @@ Our Money的主界面相当简洁，最上方列出列表名称，收入（预�
   <entry>
     <title type="html"><![CDATA[赴日半年的一些杂感]]></title>
     <link href="http://onevcat.com/2013/04/half-year-in-japan/"/>
-    <updated>2013-04-01T23:47:00+08:00</updated>
+    <updated>2013-04-01T23:47:00+09:00</updated>
     <id>http://onevcat.com/2013/04/half-year-in-japan</id>
     <content type="html"><![CDATA[<p><img src="http://i758.photobucket.com/albums/xx224/onevcat/OneV-s-Den/half-year-in-japan/2013-03-09125056.jpg" alt="樱花之国" /></p>
 
@@ -4423,7 +4423,7 @@ Our Money的主界面相当简洁，最上方列出列表名称，收入（预�
   <entry>
     <title type="html"><![CDATA[MGTwitterEngine中Twitter API 1.1的使用]]></title>
     <link href="http://onevcat.com/2013/03/mgtwitterengine%E4%B8%ADtwitter-api-1-1%E7%9A%84%E4%BD%BF%E7%94%A8/"/>
-    <updated>2013-03-24T00:00:00+08:00</updated>
+    <updated>2013-03-24T00:00:00+09:00</updated>
     <id>http://onevcat.com/2013/03/mgtwitterengine中twitter-api-1-1的使用</id>
     <content type="html"><![CDATA[<p>在iOS5中使用Twitter framework或者在iOS6中使用Social framework来完成Twitter的集成是非常简单和轻松的，但是如果应用要针对iOS5之前的系统版本，那么就不能使用iOS提供的框架了。一个比较常见也是使用最广泛的选择是<a href="https://github.com/mattgemmell/MGTwitterEngine">MGTwitterEngine</a>，比如<a href="http://www.onevcat.com/showcase/pomodoro_do/">PomodoroDo</a>选择使用的就是该框架。</p>
 
@@ -4495,7 +4495,7 @@ Our Money的主界面相当简洁，最上方列出列表名称，收入（预�
   <entry>
     <title type="html"><![CDATA[Xcode 4 插件制作入门]]></title>
     <link href="http://onevcat.com/2013/02/xcode-plugin/"/>
-    <updated>2013-02-02T00:00:00+08:00</updated>
+    <updated>2013-02-02T00:00:00+09:00</updated>
     <id>http://onevcat.com/2013/02/xcode-plugin</id>
     <content type="html"><![CDATA[<p><img src="http://www.onevcat.com/wp-content/uploads/2013/02/QQ20130202-15.png"></p>
 
