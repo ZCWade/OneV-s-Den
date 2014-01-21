@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Dec 31st, 2013 能工巧匠集 代码手写UI，xib和StoryBoard间的博弈，以及Interface Builder的一些小技巧 最近接触了几个刚入门的iOS学习者，他们之中存在一个普遍和困惑和疑问，就是应该如何制作UI界面。iOS应用是非常重视用户体验的， &hellip;">
+	<meta name="description" content="Jan 17th, 2014 能工巧匠集 宏定义的黑魔法 - 宏菜鸟起飞手册 宏定义在C系开发中可以说占有举足轻重的作用。底层框架自不必说，为了编译优化和方便，以及跨平台能力，宏被大量使用，可以说底层开发离开define将寸步难行。而在更高层级进行开发时，我们会将更多的重心放在业务逻辑上， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +94,57 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-17T09:56:00+09:00" data-updated="true" itemprop="datePublished">Jan 17<span>th</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2014/01/black-magic-in-macro/" itemprop="url">宏定义的黑魔法 - 宏菜鸟起飞手册</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2014/define-title.png" alt="Happy define :)" /></p>
+
+<p>宏定义在C系开发中可以说占有举足轻重的作用。底层框架自不必说，为了编译优化和方便，以及跨平台能力，宏被大量使用，可以说底层开发离开define将寸步难行。而在更高层级进行开发时，我们会将更多的重心放在业务逻辑上，似乎对宏的使用和依赖并不多。但是使用宏定义的好处是不言自明的，在节省工作量的同时，代码可读性大大增加。如果想成为一个能写出漂亮优雅代码的开发者，宏定义绝对是必不可少的技能（虽然宏本身可能并不漂亮优雅XD）。但是因为宏定义对于很多人来说，并不像业务逻辑那样是每天会接触的东西。即使是能偶尔使用到一些宏，也更多的仅仅只停留在使用的层级，却并不会去探寻背后发生的事情。有一些开发者确实也有探寻的动力和意愿，但却在点开一个定义之后发现还有宏定义中还有其他无数定义，再加上满屏幕都是不同于平时的代码，既看不懂又不变色，于是乎心生烦恼，怒而回退。本文希望通过循序渐进的方式，通过几个例子来表述C系语言宏定义世界中的一些基本规则和技巧，从0开始，希望最后能让大家至少能看懂和还原一些相对复杂的宏。考虑到我自己现在objc使用的比较多，这个站点的读者应该也大多是使用objc的，所以有部分例子是选自objc，但是本文的大部分内容将是C系语言通用。</p>
+
+<h3>入门</h3>
+
+<p>如果您完全不知道宏是什么的话，可以先来热个身。很多人在介绍宏的时候会说，宏嘛很简单，就是简单的查找替换嘛。嗯，只说对了的一半。C中的宏分为两类，对象宏(object-like macro)和函数宏(function-like macro)。对于对象宏来说确实相对简单，但却也不是那么简单的查找替换。对象宏一般用来定义一些常数，举个例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">//This defines PI</span>
+</span><span class='line'><span class="cp">#define M_PI        3.14159265358979323846264338327950288</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+
+		
+		<a href="/2014/01/black-magic-in-macro/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -612,62 +663,6 @@
 
 		
 		<a href="/2013/06/sprite-kit-start/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-15T15:11:00+09:00" data-updated="true" itemprop="datePublished">Jun 15<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/06/uikit-dynamics-started/" itemprop="url">WWDC 2013 Session笔记 - UIKit Dynamics入门</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 206 Getting Started with UIKit Dynamics</li>
-<li>Session 221 Advanced Techniques with UIKit Dynamics</li>
-</ul>
-
-
-<h3>什么是UIKit动力学（UIKit Dynamics）</h3>
-
-<p>其实就是UIKit的一套动画和交互体系。我们现在进行UI动画基本都是使用CoreAnimation或者UIView animations。而UIKit动力学最大的特点是将现实世界动力驱动的动画引入了UIKit，比如重力，铰链连接，碰撞，悬挂等效果。一言蔽之，即是，将2D物理引擎引入了人UIKit。需要注意，UIKit动力学的引入，并不是以替代CA或者UIView动画为目的的，在绝大多数情况下CA或者UIView动画仍然是最优方案，只有在需要引入逼真的交互设计的时候，才需要使用UIKit动力学它是作为现有交互设计和实现的一种补充而存在的。</p>
-
-<p>目的当然是更加自然和炫目的UI动画效果，比如模拟现实的拖拽和弹性效果，放在以前如果单用iOS SDK的动画实现起来还是相当困难的，而在UIKit Dynamics的帮助下，复杂的动画效果可能也只需要很短的代码（基本100行以内&#8230;其实现在用UIView animation想实现一个不太复杂的动画所要的代码行数都不止这个数了吧）。总之，便利多多，配合UI交互设计，以前很多不敢想和不敢写（至少不敢自己写）的效果实现起来会非常方便，也相信在iOS7的时代各色使用UIKit动力学的应用的在动画效果肯定会上升一个档次。</p>
-
-<h3>那么，应该怎么做呢</h3>
-
-<h4>UIKit动力学实现的结构</h4>
-
-<p>为了实现动力UI，需要注册一套UI行为的体系，之后UI便会按照预先的设定进行运动了。我们应该了解的新的基本概念有如下四个：</p>
-
-
-		
-		<a href="/2013/06/uikit-dynamics-started/" class="more-link">继续阅读</a>
 	</div>
 
 </article>
