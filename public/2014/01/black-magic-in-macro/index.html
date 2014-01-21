@@ -797,10 +797,8 @@
 
 
 
-<div id="editor">function foo(items) {
-    var x = &#8220;All this is syntax highlighted&#8221;;
-    return x;
-}</div>
+<div id="editor">//调用 RACSignal是类的名字
+RACSignal *signal = [RACObserve(self, currentLocation)];</div>
 
 
 
@@ -810,8 +808,8 @@
 
 <script>
     var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/javascript");
+    editor.setTheme("ace/theme/github");
+    editor.getSession().setMode("ace/mode/objectivec");
 </script>
 
 </div>

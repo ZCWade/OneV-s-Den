@@ -459,14 +459,12 @@ RACSignal *signal = [RACObserve(self, currentLocation)];
         metamacro_at(VAL, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
 ```
 
-<div id="editor">function foo(items) {
-    var x = "All this is syntax highlighted";
-    return x;
-}</div>
+<div id="editor">//调用 RACSignal是类的名字
+RACSignal *signal = [RACObserve(self, currentLocation)];</div>
     
 <script src="/javascripts/src-min/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
     var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/javascript");
+    editor.setTheme("ace/theme/github");
+    editor.getSession().setMode("ace/mode/objectivec");
 </script>
