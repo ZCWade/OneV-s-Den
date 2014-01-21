@@ -4,7 +4,7 @@
   <title><![CDATA[OneV's Den]]></title>
   <link href="http://onevcat.com/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2014-01-21T16:36:41+09:00</updated>
+  <updated>2014-01-21T23:58:24+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -353,7 +353,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>答案当然是否定的，也许简单的测视里你没有遇到问题，但是在生产环境中这个宏显然悲剧了。考虑下面的常见情况</p>
+<p>答案当然是否定的，也许简单的测试里你没有遇到问题，但是在生产环境中这个宏显然悲剧了。考虑下面的常见情况</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -587,7 +587,7 @@
 
 <p>另外，在这里一定要宣传一下关注了很久的<a href="http://weibo.com/hangcom">@hangcom</a> 吴航前辈的新书《iOS应用逆向工程》。很荣幸能够在发布之前得到前辈的允许拜读了整本书，可以说看的畅快淋漓。我之前并没有越狱开发的任何基础，也对相关领域知之甚少，在这样的前提下跟随书中的教程和例子进行探索的过程可以说是十分有趣。我也得以能够用不同的眼光和高度来审视这几年所从事的iOS开发行业，获益良多。可以说《iOS应用逆向工程》是我近期所愉快阅读到的很cool的一本好书。现在这本书还在预售中，但是距离1月28日的正式发售已经很近，有兴趣的同学可以前往<a href="http://www.amazon.cn/gp/product/B00HQW9AA6/ref=s9_simh_gw_p14_d0_i6?pf_rd_m=A1AJ19PSB66TGU&amp;pf_rd_s=center-2&amp;pf_rd_r=1KY5VBPQDKMCCWC07ANV&amp;pf_rd_t=101&amp;pf_rd_p=108773272&amp;pf_rd_i=899254051">亚马逊</a>或者<a href="http://product.china-pub.com/3769262">ChinaPub</a>的相关页面预定，相信这本书将会是iOS技术人员非常棒的春节读物。</p>
 
-<p>最后是我们说好的留给大家玩的练习，我加了一点注释帮助大家稍微理解每个宏是做什么的。总之，加油！</p>
+<p>最后是我们说好的留给大家玩的练习，我加了一点注释帮助大家稍微理解每个宏是做什么的，在文章后面留了一块试验田，大家可以随便填写玩弄。总之，加油！</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
