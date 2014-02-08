@@ -4,7 +4,7 @@
   <title><![CDATA[OneV's Den]]></title>
   <link href="http://onevcat.com/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2014-01-21T23:58:24+09:00</updated>
+  <updated>2014-02-08T18:12:31+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -646,7 +646,7 @@
 <span class='line-number'>55</span>
 <span class='line-number'>56</span>
 </pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//调用 RACSignal是类的名字</span>
-</span><span class='line'><span class="n">RACSignal</span> <span class="o">*</span><span class="n">signal</span> <span class="o">=</span> <span class="p">[</span><span class="n">RACObserve</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">currentLocation</span><span class="p">)];</span>
+</span><span class='line'><span class="n">RACSignal</span> <span class="o">*</span><span class="n">signal</span> <span class="o">=</span> <span class="n">RACObserve</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">currentLocation</span><span class="p">);</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1">//以下开始是宏定义</span>
 </span><span class='line'><span class="c1">//rac_valuesForKeyPath:observer:是方法名</span>
@@ -707,7 +707,7 @@
 
 
 <div id="editor">//调用 RACSignal是类的名字
-RACSignal *signal = [RACObserve(self, currentLocation)];</div>
+RACSignal *signal = RACObserve(self, currentLocation);</div>
 
 
 

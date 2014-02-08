@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 能工巧匠集 | OneV's Den]]></title>
   <link href="http://onevcat.com/category/neng-gong-qiao-jiang-ji/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2014-01-21T23:58:24+09:00</updated>
+  <updated>2014-02-08T18:12:31+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -498,7 +498,7 @@ NSLog(@"Hello");
 
 <p>```
 //调用 RACSignal是类的名字
-RACSignal *signal = [RACObserve(self, currentLocation)];</p>
+RACSignal *signal = RACObserve(self, currentLocation);</p>
 
 <p>//以下开始是宏定义
 //rac_valuesForKeyPath:observer:是方法名</p>
@@ -582,7 +582,7 @@ RACSignal *signal = [RACObserve(self, currentLocation)];</p>
 <p>```</p>
 
 <div id="editor">//调用 RACSignal是类的名字
-RACSignal *signal = [RACObserve(self, currentLocation)];</div>
+RACSignal *signal = RACObserve(self, currentLocation);</div>
 
 
 

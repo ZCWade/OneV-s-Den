@@ -402,7 +402,7 @@ NSLog(@"Hello");
 
 ```
 //调用 RACSignal是类的名字
-RACSignal *signal = [RACObserve(self, currentLocation)];
+RACSignal *signal = RACObserve(self, currentLocation);
 
 //以下开始是宏定义
 //rac_valuesForKeyPath:observer:是方法名
@@ -460,7 +460,7 @@ RACSignal *signal = [RACObserve(self, currentLocation)];
 ```
 
 <div id="editor">//调用 RACSignal是类的名字
-RACSignal *signal = [RACObserve(self, currentLocation)];</div>
+RACSignal *signal = RACObserve(self, currentLocation);</div>
     
 <script src="/javascripts/src-min/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
