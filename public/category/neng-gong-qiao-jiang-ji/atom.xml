@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 能工巧匠集 | OneV's Den]]></title>
   <link href="http://onevcat.com/category/neng-gong-qiao-jiang-ji/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2014-02-08T18:12:31+09:00</updated>
+  <updated>2014-02-17T11:20:59+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -12,6 +12,502 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[TDD的iOS开发初步以及Kiwi使用入门]]></title>
+    <link href="http://onevcat.com/2014/02/ios-test-with-kiwi/"/>
+    <updated>2014-02-17T10:12:00+09:00</updated>
+    <id>http://onevcat.com/2014/02/ios-test-with-kiwi</id>
+    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2014/kiwi-title.jpg" alt="Kiwi" /></p>
+
+<p>测试驱动开发(Test Driven Development，以下简称TDD)是保证代码质量的不二法则，也是先进程序开发的共识。Apple一直致力于在iOS开发中集成更加方便和可用的测试，在Xcode 5中，新的IDE和SDK引入了XCTest来替代原来的SenTestingKit，并且取消了新建工程时的“包括单元测试”的可选项（同样待遇的还有使用ARC的可选项）。新工程将自动包含测试的target，并且相关框架也搭建完毕，可以说测试终于摆脱了iOS开发中“二等公民”的地位，现在已经变得和产品代码一样重要了。我相信每个工程师在完成自己的业务代码的同时，也有最基本的编写和维护相应的测试代码的义务，以保证自己的代码能够正确运行。更进一步，如果能够使用TDD来进行开发，不仅能保证代码运行的正确性，也有助于代码结构的安排和思考，有助于自身的不断提高。我在最开始进行开发时也曾对测试嗤之以鼻，但后来无数的惨痛教训让我明白那么多工程师痴迷于测试或者追求更完美的测试，是有其深刻含义的。如果您之前还没有开始为您的代码编写测试，我强烈建议，从今天开始，从现在开始（也许做不到的话，也请从下一个项目开始），编写测试，或者尝试一下TDD的开发方式。</p>
+
+<p>而<a href="https://github.com/allending/Kiwi">Kiwi</a>是一个iOS平台十分好用的行为驱动开发(Behavior Driven Development，以下简称BDD)的测试框架，有着非常漂亮的语法，可以写出结构性强，非常容易读懂的测试。因为国内现在有关Kiwi的介绍比较少，加上在测试这块很能很多工程师们并没有特别留意，水平层次可能相差会很远，因此在这一系列的两篇博文中，我将从头开始先简单地介绍一些TDD的概念和思想，然后从XCTest的最简单的例子开始，过渡到Kiwi的测试世界。在下一篇中我将继续深入介绍一些Kiwi的其他稍高一些的特性，以期更多的开发者能够接触并使用Kiwi这个优秀的测试框架。</p>
+
+<h3>什么是TDD，为什么我们要TDD</h3>
+
+<p>测试驱动开发并不是一个很新鲜的概念了。软件开发工程师们（当然包括你我）最开始学习程序编写时，最喜欢干的事情就是编写一段代码，然后运行观察结果是否正确。如果不对就返回代码检查错误，或者是加入断点或者输出跟踪程序并找出错误，然后再次运行查看输出是否与预想一致。如果输出只是控制台的一个简单的数字或者字符那还好，但是如果输出必须在点击一系列按钮之后才能在屏幕上显示出来的东西呢？难道我们就只能一次一次地等待编译部署，启动程序然后操作UI，一直点到我们需要观察的地方么？这种行为无疑是对美好生命和绚丽青春的巨大浪费。于是有一些已经浪费了无数时间的资深工程师们突然发现，原来我们可以在代码中构建出一个类似的场景，然后在代码中调用我们之前想检查的代码，并将运行的结果与我们的设想结果在程序中进行比较，如果一致，则说明了我们的代码没有问题，是按照预期工作的。比如我们想要实现一个加法函数add，输入两个数字，输出它们相加后的结果。那么我们不妨设想我们真的拥有两个数，比如3和5，根据人人会的十以内的加法知识，我们知道答案是8.于是我们在相加后与预测的8进行比较，如果相等，则说明我们的函数实现至少对于这个例子是没有问题的，因此我们对“这个方法能正确工作”这一命题的信心就增加了。这个例子的伪码如下：</p>
+
+<!--more-->
+
+
+<p>```c
+//Product Code
+add(float num1, float num 2) {...}</p>
+
+<p>//Test code
+let a = 3;
+let b = 5;
+let c = a + b;</p>
+
+<p>if (c == 8) {</p>
+
+<pre><code>// Yeah, it works!
+</code></pre>
+
+<p>} else {</p>
+
+<pre><code>//Something wrong!
+</code></pre>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>当测试足够全面和具有代表性的时候，我们便可以信心爆棚，拍着胸脯说，这段代码没问题。我们做出某些条件和假设，并以其为条件使用到被测试代码中，并比较预期的结果和实际运行的结果是否相等，这就是软件开发中测试的基本方式。</p>
+
+<p><img src="http://img.onevcat.com/2014/kiwi-manga.png" alt="为什么我们要test" /></p>
+
+<p>而TDD是一种相对于普通思维的方式来说，比较极端的一种做法。我们一般能想到的是先编写业务代码，也就是上面例子中的<code>add</code>方法，然后为其编写测试代码，用来验证产品方法是不是按照设计工作。而TDD的思想正好与之相反，在TDD的世界中，我们应该首先根据需求或者接口情况编写测试，然后再根据测试来编写业务代码，而这其实是违反传统软件开发中的先验认知的。但是我们可以举一个生活中类似的例子来说明TDD的必要性：有经验的砌砖师傅总是会先拉一条垂线，然后沿着线砌砖，因为有直线的保证，因此可以做到笔直整齐；而新入行的师傅往往二话不说直接开工，然后在一阶段完成后再用直尺垂线之类的工具进行测量和修补。TDD的好处不言自明，因为总是先测试，再编码，所以至少你的所有代码的public部分都应该含有必要的测试。另外，因为测试代码实际是要使用产品代码的，因此在编写产品代码前你将有一次深入思考和实践如何使用这些代码的机会，这对提高设计和可扩展性有很好的帮助，试想一下你测试都很难写的接口，别人（或者自己）用起来得多纠结。在测试的准绳下，你可以有目的有方向地编码；另外，因为有测试的保护，你可以放心对原有代码进行重构，而不必担心破坏逻辑。这些其实都指向了一个最终的目的：让我们快乐安心高效地工作。</p>
+
+<p>在TDD原则的指导下，我们先编写测试代码。这时因为还没有对应的产品代码，所以测试代码肯定是无法通过的。在大多数测试系统中，我们使用红色来表示错误，因此一个测试的初始状态应该是红色的。接下来我们需要使用最小的代价（最少的代码）来让测试通过。通过的测试将被表示为安全的绿色，于是我们回到了绿色的状态。接下来我们可以添加一些测试例，来验证我们的产品代码的实现是否正确。如果不幸新的测试例让我们回到了红色状态，那我们就可以修改产品代码，使其回到绿色。如此反复直到各种边界和测试都进行完毕，此时我们便可以得到一个具有测试保证，鲁棒性超强的产品代码。在我们之后的开发中，因为你有这些测试的保证，你可以大胆重构这段代码或者与之相关的代码，最后只需要保证项目处于绿灯状态，你就可以保证代码没重构没有出现问题。</p>
+
+<p>简单说来，TDD的基本步骤就是“红→绿→大胆重构”。</p>
+
+<h3>使用XCTest来执行TDD</h3>
+
+<p>Xcode 5中已经集成了XCTest的测试框架（之前版本是SenTestingKit和OCUnit），所谓测试框架，就是一组让“将测试集成到工程中”以及“编写和实践测试”变得简单的库。我们之后将通过实现一个栈数据结构的例子，来用XCTest初步实践一下TDD开发。在大家对TDD有一些直观认识之后，再转到Kiwi的介绍。如果您已经在使用XCTest或者其他的测试框架了的话，可以直接跳过本节。</p>
+
+<p>首先我们用Xcode新建一个工程吧，选择模板为空项目，在<code>Product Name</code>中输入工程名字VVStack，当然您可以使用自己喜欢的名字。如果您使用过Xcode之前的版本的话，应该有留意到之前在这个界面是可以选择是否使用Unit Test的，但是现在这个选框已经被取消。</p>
+
+<p><img src="http://img.onevcat.com/2014/kiwi-1-1.png" alt="新建工程" /></p>
+
+<p>新建工程后，可以发现在工程中默认已经有一个叫做<code>VVStackTests</code>的target了，这就是我们测试时使用的target。测试部分的代码默认放到了{ProjectName}Tests的group中，现在这个group下有一个测试文件VVStackTests.m。我们的测试例不需要向别的类暴露接口，因此不需要.h文件。另外一般XCTest的测试文件都会以Tests来做文件名结尾。</p>
+
+<p><img src="http://img.onevcat.com/2014/kiwi-1-2.png" alt="Test文件和target" /></p>
+
+<p>运行测试的快捷键是<code>⌘U</code>（或者可以使用菜单的Product→Test），我们这时候直接对这个空工程进行测试，Xcode在编译项目后会使用你选择的设备或者模拟器运行测试代码。不出意外的话，这次测试将会失败，如图：</p>
+
+<p><img src="http://img.onevcat.com/2014/kiwi-1-3.png" alt="失败的初始测试" /></p>
+
+<p><code>VVStackTests.m</code>是Xcode在新建工程时自动为我们添加的测试文件。因为这个文件并不长，所以我们可以将其内容全部抄录如下：</p>
+
+<p>```objc</p>
+
+<h1>import &lt;XCTest/XCTest.h></h1>
+
+<p>@interface VVStackTests : XCTestCase</p>
+
+<p>@end</p>
+
+<p>@implementation VVStackTests</p>
+
+<ul>
+<li><p>(void)setUp
+{
+  [super setUp];
+  // Put setup code here. This method is called before the invocation of each test method in the class.
+}</p></li>
+<li><p>(void)tearDown
+{
+  // Put teardown code here. This method is called after the invocation of each test method in the class.
+  [super tearDown];
+}</p></li>
+<li><p>(void)testExample
+{
+  XCTFail(@"No implementation for \"%s\"", <strong>PRETTY_FUNCTION</strong>);
+}</p></li>
+</ul>
+
+
+<p>@end
+```</p>
+
+<p>可以看到，<code>VVStackTests</code>是<code>XCTestCase</code>的子类，而<code>XCTestCase</code>正是XCTest测试框架中的测试用例类。XCTest在进行测试时将会寻找测试target中的所有<code>XCTestCase</code>子类，并运行其中以<code>test</code>开头的所有实例方法。在这里，默认实现的<code>-testExample</code>将被执行，而在这个方法里，Xcode默认写了一个<code>XCTFail</code>的断言，来强制这个测试失败，用以提醒我们测试还没有实现。所谓断言，就是判断输入的条件是否满足。如果不满足，则抛出错误并输出预先规定的字符串作为提示。在这个Fail的断言一定会失败，并提示没有实现该测试。另外，默认还有两个方法<code>-setUp</code>和<code>-tearDown</code>，正如它们的注释里所述，这两个方法会分别在每个测试开始和结束的时候被调用。我们现在正要开始编写我们的测试，所以先将原来的<code>-testExample</code>删除掉。现在再使用<code>⌘U</code>来进行测试，应该可以顺利通过了（因为我们已经没有任何测试了）。</p>
+
+<p>接下来让我们想想要做什么吧。我们要实现一个简单的栈数据结构，那么当然会有一个类来代表这种数据结构，在这个工程中我打算就叫它<code>VVStack</code>。按照常规，我们可以新建一个Cocoa Touch类，继承NSObject并且开始实现了。但是别忘了，我们现在在TDD，我们需要先写测试！那么首先测试的目标是什么呢？没错，是测试这个<code>VVStack</code>类是否存在，以及是否能够初始化。有了这个目标，我们就可以动手开始编写测试了。在文件开头加上<code>#import "VVStack.h"</code>，然后在<code>VVStackTests.m</code>的<code>@end</code>前面加上如下代码：</p>
+
+<p>```objc
+- (void)testStackExist {</p>
+
+<pre><code>XCTAssertNotNil([VVStack class], @"VVStack class should exist.");
+</code></pre>
+
+<p>}</p>
+
+<ul>
+<li>(void)testStackObjectCanBeCreated {
+  VVStack *stack = [VVStack new];
+  XCTAssertNotNil(stack, @"VVStack object can be created.");
+}
+```</li>
+</ul>
+
+
+<p>嘛，当然是不可能通过测试的，而且甚至连编译都无法完成，因为我们现在根本没有一个叫做<code>VVStack</code>的类。最简单的让测试通过的方法就是在产品代码中添加<code>VVStack</code>类。新建一个Cocoa Touch的Objective-C class，取名VVStack，作为NSObject的子类。注意在添加的时候，应该只将其加入产品的target中：</p>
+
+<p><img src="http://img.onevcat.com/2014/kiwi-1-4.png" alt="添加类的时候注意选择合适的target" /></p>
+
+<p>由于<code>VVStack</code>是NSObject的子类，所以上面的两个断言应该都能通过。这时候再运行测试，成功变绿。接下来我们开始考虑这个类的功能：栈的话肯定需要能够push，并且push后的栈顶元素应该就是刚才所push进去的元素。那么建立一个push方法的测试吧，在刚才添加的代码之下继续写：</p>
+
+<p>```objc
+- (void)testPushANumberAndGetIt {</p>
+
+<pre><code>VVStack *stack = [VVStack new];
+[stack push:2.3];
+double topNumber = [stack top];
+XCTAssertEqual(topNumber, 2.3, @"VVStack should can be pushed and has that top value.");
+</code></pre>
+
+<p>}
+```</p>
+
+<p>因为我们还没有实现<code>-push:</code>和<code>-top</code>方法，所以测试毫无疑问地失败了（在ARC环境中直接无法编译）。为了使测试立即通过我们首先需要在<code>VVStack.h</code>中声明这两个方法，然后在.m的实现文件中进行实现。令测试通过的最简单的实现是一个空的push方法以及直接返回2.3这个数：</p>
+
+<p>```objc
+//VVStack.h
+@interface VVStack : NSObject
+- (void)push:(double)num;
+- (double)top;
+@end</p>
+
+<p>//VVStack.m
+@implementation VVStack
+- (void)push:(double)num {</p>
+
+<p>}</p>
+
+<ul>
+<li>(double)top {
+  return 2.3;
+}
+@end
+```</li>
+</ul>
+
+
+<p>再次运行测试，我们顺利回到了绿灯状态。也许你很快就会说，这算哪门子实现啊，如果再增加一组测试例，比如push一个4.6，然后检查top，不就失败了么？我们难道不应该直接实现一个真正的合理的实现么？对此的回答是，在实际开发中，我们肯定不会以这样的步伐来处理像例子中这样类似的简单问题，而是会直接跳过一些error-try的步骤，实现一个比较完整的方案。但是在更多的时候，我们所关心和需要实现的目标并不是这样容易。特别是在对TDD还不熟悉的时候，我们有必要放慢节奏和动作，将整个开发理念进行充分实践，这样才有可能在之后更复杂的案例中正确使用。于是我们发扬不怕繁杂，精益求精的精神，在刚才的测试例上增加一个测试，回到<code>VVStackTests.m</code>中，在刚才的测试方法中加上：</p>
+
+<p>```objc
+- (void)testPushANumberAndGetIt {</p>
+
+<pre><code>//...
+[stack push:4.6];
+topNumber = [stack top];
+XCTAssertEqual(topNumber, 4.6, @"Top value of VVStack should be the last num pushed into it");
+</code></pre>
+
+<p>}
+```</p>
+
+<p>很好，这下子我们回到了红灯状态，这正是我们所期望的，现在是时候来考虑实现这个栈了。这个实现过于简单，也有非常多的思路，其中一种是使用一个<code>NSMutableArray</code>来存储数据，然后在<code>top</code>方法里返回最后加入的数据。修改<code>VVStack.m</code>，加入数组，更改实现：</p>
+
+<p>```objc
+//VVStack.m
+@interface VVStack()
+@property (nonatomic, strong) NSMutableArray *numbers;
+@end</p>
+
+<p>@implementation VVStack
+- (id)init {</p>
+
+<pre><code>if (self = [super init]) {
+    _numbers = [NSMutableArray new];
+}
+return self;
+</code></pre>
+
+<p>}</p>
+
+<ul>
+<li><p>(void)push:(double)num {
+  [self.numbers addObject:@(num)];
+}</p></li>
+<li><p>(double)top {
+  return [[self.numbers lastObject] doubleValue];
+}
+@end
+```</p></li>
+</ul>
+
+
+<p>测试通过，注意到在<code>-testStackObjectCanBeCreated</code>和<code>testPushANumberAndGetIt</code>两个测试中都生成了一个<code>VVStack</code>对象。在这个测试文件中基本每个测试都会需要初始化对象，因此我们可以考虑在测试文件中添加一个VVStack的实例成员，并将测试中的初始化代码移到<code>-setUp</code>中，并在<code>-tearDown</code>中释放。</p>
+
+<p>接下来我们可以模仿继续实现<code>pop</code>等栈的方法。鉴于篇幅这里不再继续详细实现，大家可以自己动手试试看。记住先实现测试，然后再实现产品代码。一开始您可能会觉得这很无聊，效率低下，但是请记住这是起步练习不可缺少的一部分，而且在我们的例子中其实一切都是以“慢动作”在进行的。相信在经过实践和使用后，您将会逐渐掌握自己的节奏和重点测试。关于使用XCTest到这里为止的代码，可以在<a href="https://github.com/onevcat/VVStack/tree/xctest">github</a>上找到。</p>
+
+<h3>Kiwi和BDD的测试思想</h3>
+
+<p><code>XCTest</code>是基于OCUnit的传统测试框架，在书写性和可读性上都不太好。在测试用例太多的时候，由于各个测试方法是割裂的，想在某个很长的测试文件中找到特定的某个测试并搞明白这个测试是在做什么并不是很容易的事情。所有的测试都是由断言完成的，而很多时候断言的意义并不是特别的明确，对于项目交付或者新的开发人员加入时，往往要花上很大成本来进行理解或者转换。另外，每一个测试的描述都被写在断言之后，夹杂在代码之中，难以寻找。使用XCTest测试另外一个问题是难以进行<a href="http://www.mockobjects.com">mock或者stub</a>，而这在测试中是非常重要的一部分（关于mock测试的问题，我会在下一篇中继续深入）。</p>
+
+<p>行为驱动开发（BDD）正是为了解决上述问题而生的，作为第二代敏捷方法，BDD提倡的是通过将测试语句转换为类似自然语言的描述，开发人员可以使用更符合大众语言的习惯来书写测试，这样不论在项目交接/交付，或者之后自己修改时，都可以顺利很多。如果说作为开发者的我们日常工作是写代码，那么BDD其实就是在讲故事。一个典型的BDD的测试用例包活完整的三段式上下文，测试大多可以翻译为<code>Given..When..Then</code>的格式，读起来轻松惬意。BDD在其他语言中也已经有一些框架，包括最早的Java的JBehave和赫赫有名的Ruby的<a href="http://rspec.info">RSpec</a>和<a href="http://cukes.info">Cucumber</a>。而在objc社区中BDD框架也正在欣欣向荣地发展，得益于objc的语法本来就非常接近自然语言，再加上<a href="http://onevcat.com/2014/01/black-magic-in-macro/">C语言宏的威力</a>，我们是有可能写出漂亮优美的测试的。在objc中，现在比较流行的BDD框架有<a href="https://github.com/pivotal/cedar">cedar</a>，<a href="https://github.com/specta/specta">specta</a>和<a href="https://github.com/allending/Kiwi">Kiwi</a>。其中个人比较喜欢Kiwi，使用Kiwi写出的测试看起来大概会是这个样子的：</p>
+
+<p>```objc
+describe(@"Team", ^{</p>
+
+<pre><code>context(@"when newly created", ^{
+    it(@"should have a name", ^{
+        id team = [Team team];
+        [[team.name should] equal:@"Black Hawks"];
+    });
+
+    it(@"should have 11 players", ^{
+        id team = [Team team];
+        [[[team should] have:11] players];
+    });
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p>我们很容易根据上下文将其提取为<code>Given..When..Then</code>的三段式自然语言</p>
+
+<blockquote><p>Given a team, when newly created, it should have a name, and should have 11 players</p></blockquote>
+
+<p>很简单啊有木有！在这样的语法下，是不是写测试的兴趣都被激发出来了呢。关于Kiwi的进一步语法和使用，我们稍后详细展开。首先来看看如何在项目中添加Kiwi框架吧。</p>
+
+<h3>在项目中添加Kiwi</h3>
+
+<p>最简单和最推荐的方法当然是<a href="http://cocoapods.org">CocoaPods</a>，如果您对CocoaPods还比较陌生的话，推荐您花时间先看一看这篇<a href="http://blog.devtang.com/blog/2012/12/02/use-cocoapod-to-manage-ios-lib-dependency/">CocoaPods的简介</a>。Xcode 5和XCTest环境下，我们需要在Podfile中添加类似下面的条目（记得将<code>VVStackTests</code>换成您自己的项目的测试target的名字）：</p>
+
+<p><code>
+target :VVStackTests, :exclusive =&gt; true do
+   pod 'Kiwi/XCTest'
+end
+</code></p>
+
+<p>之后<code>pod install</code>以后，打开生成的<code>xcworkspace</code>文件，Kiwi就已经处于可用状态了。另外，为了我们在新建测试的时候能省点事儿，可以在官方repo里下载并运行安装<a href="https://github.com/allending/Kiwi/tree/master/Xcode%20Templates">Kiwi的Xcode Template</a>。如果您坚持不用CocoaPods，而想要自己进行配置Kiwi的话，可以参考<a href="https://github.com/allending/Kiwi/wiki/Setting-Up-Kiwi-2.x-without-CocoaPods">这篇wiki</a>。</p>
+
+<h3>行为描述（Specs）和期望（Expectations），Kiwi测试的基本结构</h3>
+
+<p>我们先来新建一个Kiwi测试吧。如果安装了Kiwi的Template的话，在新建文件中选择<code>Kiwi/Kiwi Spec</code>来建立一个Specs，取名为<code>SimpleString</code>，注意选择目标target为我们的测试target，模板将会在新建的文件名字后面加上Spec后缀。传统测试的文件名一般以Tests为后缀，表示这个文件中含有一组测试，而在Kiwi中，一个测试文件所包含的是一组对于行为的描述（Spec），因此习惯上使用需要测试的目标类来作为名字，并以Spec作为文件名后缀。在Xcode 5中建立测试时已经不会同时创建.h文件了，但是现在的模板中包含有对同名.h的引用，可以在创建后将其删去。如果您没有安装Kiwi的Template的话，可以直接创建一个普通的Objective-C test case class，然后将内容替换为下面这样：</p>
+
+<p>```objc</p>
+
+<h1>import &lt;Kiwi/Kiwi.h></h1>
+
+<p>SPEC_BEGIN(SimpleStringSpec)</p>
+
+<p>describe(@"SimpleString", ^{</p>
+
+<p>});</p>
+
+<p>SPEC_END
+```</p>
+
+<p>你可能会觉得这不是objc代码，甚至怀疑这些语法是否能够编译通过。其实<code>SPEC_BEGIN</code>和<code>SPEC_END</code>都是宏，它们定义了一个<code>KWSpec</code>的子类，并将其中的内容包装在一个函数中（有兴趣的朋友不妨点进去看看）。我们现在先添加一些描述和测试语句，并运行看看吧，将上面的代码的<code>SPEC_BEGIN</code>和<code>SPEC_END</code>之间的内容替换为：</p>
+
+<p>```objc
+describe(@"SimpleString", ^{</p>
+
+<pre><code>context(@"when assigned to 'Hello world'", ^{
+    NSString *greeting = @"Hello world";
+    it(@"should exist", ^{
+        [[greeting shouldNot] beNil];
+    });
+
+    it(@"should equal to 'Hello world'", ^{
+        [[greeting should] equal:@"Hello world"];
+    });
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p><code>describe</code>描述需要测试的对象内容，也即我们三段式中的<code>Given</code>，<code>context</code>描述测试上下文，也就是这个测试在<code>When</code>来进行，最后<code>it</code>中的是测试的本体，描述了这个测试应该满足的条件，三者共同构成了Kiwi测试中的行为描述。它们是可以nest的，也就是一个Spec文件中可以包含多个<code>describe</code>（虽然我们很少这么做，一个测试文件应该专注于测试一个类）；一个<code>describe</code>可以包含多个<code>context</code>，来描述类在不同情景下的行为；一个<code>context</code>可以包含多个<code>it</code>的测试例。让我们运行一下这个测试，观察输出：</p>
+
+<p><code>
+VVStack[36517:70b] + 'SimpleString, when assigned to 'Hello world', should exist' [PASSED]
+VVStack[36517:70b] + 'SimpleString, when assigned to 'Hello world', should equal to 'Hello world'' [PASSED]
+</code></p>
+
+<p>可以看到，这三个关键字的描述将在测试时被依次打印出来，形成一个完整的行为描述。除了这三个之外，Kiwi还有一些其他的行为描述关键字，其中比较重要的包括</p>
+
+<ul>
+<li><code>beforeAll(aBlock)</code> - 当前scope内部的所有的其他block运行之前调用一次</li>
+<li><code>afterAll(aBlock)</code> - 当前scope内部的所有的其他block运行之后调用一次</li>
+<li><code>beforeEach(aBlock)</code> - 在scope内的每个it之前调用一次，对于<code>context</code>的配置代码应该写在这里</li>
+<li><code>afterEach(aBlock)</code> - 在scope内的每个it之后调用一次，用于清理测试后的代码</li>
+<li><code>specify(aBlock)</code> - 可以在里面直接书写不需要描述的测试</li>
+<li><code>pending(aString, aBlock)</code> - 只打印一条log信息，不做测试。这个语句会给出一条警告，可以作为一开始集中书写行为描述时还未实现的测试的提示。</li>
+<li><code>xit(aString, aBlock)</code> - 和<code>pending</code>一样，另一种写法。因为在真正实现时测试时只需要将x删掉就是<code>it</code>，但是pending语意更明确，因此还是推荐pending</li>
+</ul>
+
+
+<p>可以看到，由于有<code>context</code>的存在，以及其可以嵌套的特性，测试的流程控制相比传统测试可以更加精确。我们更容易把before和after的作用区域限制在合适的地方。</p>
+
+<p>实际的测试写在<code>it</code>里，是由一个一个的期望(Expectations)来进行描述的，期望相当于传统测试中的断言，要是运行的结果不能匹配期望，则测试失败。在Kiwi中期望都由<code>should</code>或者<code>shouldNot</code>开头，并紧接一个或多个判断的的链式调用，大部分常见的是be或者haveSomeCondition的形式。在我们上面的例子中我们使用了should not be nil和should equal两个期望来确保字符串赋值的行为正确。其他的期望语句非常丰富，并且都符合自然语言描述，所以并不需要太多介绍。在使用的时候不妨直接按照自己的想法来描述自己的期望，一般情况下在IDE的帮助下我们都能找到想要的结果。如果您想看看完整的期望语句的列表，可以参看文档的<a href="https://github.com/allending/Kiwi/wiki/Expectations">这个页面</a>。另外，您还可以通过新建<code>KWMatcher</code>的子类，来简单地自定义自己和项目所需要的期望语句。从这一点来看，Kiwi可以说是一个非常灵活并具有可扩展性的测试框架。</p>
+
+<p>到此为止的代码可以从<a href="https://github.com/onevcat/VVStack/tree/kiwi-start">这里</a>找到。</p>
+
+<h3>Kiwi实际使用实例</h3>
+
+<p>最后我们来用Kiwi完整地实现VVStack类的测试和开发吧。首先重写刚才XCTest的相关测试：新建一个VVStackSpec作为Kiwi版的测试用例，然后把describe换成下面的代码：</p>
+
+<p>```objc
+describe(@"VVStack", ^{</p>
+
+<pre><code>context(@"when created", ^{
+    __block VVStack *stack = nil;
+    beforeEach(^{
+        stack = [VVStack new];
+    });
+
+    afterEach(^{
+        stack = nil;
+    });
+
+    it(@"should have the class VVStack", ^{
+        [[[VVStack class] shouldNot] beNil];
+    });
+
+    it(@"should exist", ^{
+        [[stack shouldNot] beNil];
+    });
+
+    it(@"should be able to push and get top", ^{
+        [stack push:2.3];
+        [[theValue([stack top]) should] equal:theValue(2.3)];
+
+        [stack push:4.6];
+        [[theValue([stack top]) should] equal:4.6 withDelta:0.001];
+    });
+
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p>看到这里的您看这段测试应该不成问题。需要注意的有两点：首先<code>stack</code>分别是在<code>beforeEach</code>和<code>afterEach</code>的block中的赋值的，因此我们需要在声明时在其前面加上<code>__block</code>标志。其次，期望描述的should或者shouldNot是作用在对象上的宏，因此对于标量，我们需要先将其转换为对象。Kiwi为我们提供了一个标量转对象的语法糖，叫做<code>theValue</code>，在做精确比较的时候我们可以直接使用例子中直接与2.3做比较这样的写法来进行对比。但是如果测试涉及到运算的话，由于浮点数精度问题，我们一般使用带有精度的比较期望来进行描述，即4.6例子中的<code>equal:withDelta:</code>（当然，这里只是为了demo，实际在这用和上面2.3一样的方法就好了）。</p>
+
+<p>接下来我们再为这个context添加一个测试例，用来测试初始状况时栈是否为空。因为我们使用了一个Array来作为存储容器，根据我们之前用过的equal方法，我们很容易想到下面这样的测试代码</p>
+
+<p>```objc
+it(@"should equal contains 0 element", ^{</p>
+
+<pre><code>[[theValue([stack.numbers count]) should] equal:theValue(0)];
+</code></pre>
+
+<p>});
+```</p>
+
+<p>这段测试在逻辑上没有太大问题，但是有非常多值得改进的地方。首先如果我们需要将原来写在Extension里的<code>numbers</code>暴露到头文件中，这对于类的封装是一种破坏，对于这个，一种常见的做法是只暴露一个<code>-count</code>方法，让其返回<code>numbers</code>的元素个数，从而保证<code>numbers</code>的私有性。另外对于取值和转换，其实theValue的存在在一定程度上是破坏了测试可读性的，我们可以想办法改善一下，比如对于0的来说，我们有<code>beZero</code>这样的期望可以使用。简单改写以后，这个<code>VVStack.h</code>和这个测试可以变成这个样子：</p>
+
+<p>```objc
+//VVStack.h
+//...
+- (NSUInteger)count;
+//...</p>
+
+<p>//VVStack.m
+//...
+- (NSUInteger)count {</p>
+
+<pre><code>return [self.numbers count];
+</code></pre>
+
+<p>}
+//...</p>
+
+<p>it(@"should equal contains 0 element", ^{</p>
+
+<pre><code>[[theValue([stack count]) should] beZero];
+</code></pre>
+
+<p>});
+```</p>
+
+<p>更进一步地，对于一个collection来说，Kiwi有一些特殊处理，比如<code>have</code>和<code>haveCountOf</code>系列的期望。如果测试的对象实现了<code>-count</code>方法的话，我们就可以使用这一系列期望来写出更好的测试语句。比如上面的测试还可以进一步写成</p>
+
+<p>```objc
+it(@"should equal contains 0 element", ^{</p>
+
+<pre><code>[[stack should] haveCountOf:0];
+</code></pre>
+
+<p>});
+```</p>
+
+<p>在这种情况下，我们并没有显式地调用VVStack的<code>-count</code>方法，所以我们可以在头文件中将其删掉。但是我们需要保留这个方法的实现，因为测试时是需要这个方法的。如果测试对象不能响应count方法的话，如你所料，测试时会扔一个unrecognized selector的错。Kiwi的内部实现是一个大量依赖了一个个行为Matcher和objc的消息转发，对objcruntime特性比较熟悉，并想更深入的朋友不放可以看看Kiwi的源码，写得相当漂亮。</p>
+
+<p>其实对于这个测试，我们还可以写出更漂亮的版本，像这样：</p>
+
+<p>```objc
+it(@"should equal contains 0 element", ^{</p>
+
+<pre><code>[[stack should] beEmpty];
+</code></pre>
+
+<p>});
+```</p>
+
+<p>好了。关于空栈这个情景下的测试感觉差不多了。我们继续用TDD的思想来完善<code>VVStack</code>类吧。栈的话，我们当然需要能够<code>-pop</code>，也就是说在（Given）给定一个栈时，（When）当栈中有元素的时候，（Then）我们可以pop它，并且得到栈顶元素。我们新建一个context，然后按照这个思路书写行为描述（测试）：</p>
+
+<p>```objc</p>
+
+<pre><code>context(@"when new created and pushed 4.6", ^{
+    __block VVStack *stack = nil;
+    beforeEach(^{
+        stack = [VVStack new];
+        [stack push:4.6];
+    });
+
+    afterEach(^{
+        stack = nil;
+    });
+
+    it(@"can be poped and the value equals 4.6", ^{
+        [[theValue([stack pop]) should] equal:theValue(4.6)];
+    });
+
+    it(@"should contains 0 element after pop", ^{
+        [stack pop];
+        [[stack should] beEmpty];
+    });
+});
+</code></pre>
+
+<p>```</p>
+
+<p>完成了测试书写后，我们开始按照设计填写产品代码。在VVStack.h中完成申明，并在.m中加入相应实现。</p>
+
+<p>```objc
+- (double)pop {</p>
+
+<pre><code>double result = [self top];
+[self.numbers removeLastObject];
+return result;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>很简单吧。而且因为有测试的保证，我们在提供像Stack这样的基础类时，就不需要等到或者在真实的环境中检测了。因为在被别人使用之前，我们自己的测试代码已经能够保证它的正确性了。<code>VVStack</code>剩余的最后一个小问题是，在栈是空的时候，我们执行pop操作时应该给出一个错误，用以提示空栈无法pop。虽然在objc中异常并不常见，但是在这个情景下是抛异常的好时机，也符合一般C语言对于出空栈的行为。我们可以在之前的“when created”上下文中加入一个期望：</p>
+
+<p>```objc
+it(@"should raise a exception when pop", ^{</p>
+
+<pre><code>[[theBlock(^{
+    [stack pop];
+}) should] raiseWithName:@"VVStackPopEmptyException"];
+</code></pre>
+
+<p>});
+```</p>
+
+<p>和<code>theValue</code>配合标量值类似，<code>theBlock</code>也是Kiwi中的一个转换语法，用来将一段程序转换为相应的matcher，使其可以被施加期望。这里我们期望空的Stack在被pop时抛出一个叫做"VVStackPopEmptyException"的异常。我们可以重构pop方法，在栈为空时给一个异常：</p>
+
+<p>```objc
+- (double)pop {</p>
+
+<pre><code>if ([self count] == 0) {
+    [NSException raise:@"VVStackPopEmptyException" format:@"Can not pop an empty stack."];
+}
+double result = [self top];
+[self.numbers removeLastObject];
+return result;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>进一步的Kiwi</h3>
+
+<p>VVStack的测试和实现就到这里吧，根据这套测试，您可以使用自己的实现来轻易地重构这个类，而不必担心破坏它的公共接口的行为。如果需要添加新的功能或者修正已有bug的时候，我们也可以通过添加或者修改相应的测试，来确保正确性。我将会在下一篇博文中继续介绍Kiwi，看看Kiwi在异步测试和mock/stub的使用和表现如何。Kiwi现在还在比较快速的发展中，官方repo的<a href="https://github.com/allending/Kiwi/wiki">wiki</a>上有一些不错的资料和文档，可以参考。<code>VVStack</code>的项目代码可以在<a href="https://github.com/onevcat/VVStack">这个repo</a>上找到，可以作为参考。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[宏定义的黑魔法 - 宏菜鸟起飞手册]]></title>
@@ -1241,233 +1737,6 @@ mvc.transitioningDelegate = self;
 <p>另外，可能你会觉得使用VC容器其提供的transition动画方法来进行VC切换就已经够好够方便了，为什么iOS7中还要引入一套自定义的方式呢。其实从根本来说它们所承担的是两类完全不同的任务：自定义VC容器可以提供自己定义的VC结构，并保证系统的各类方法和通知能够准确传递到合适的VC，它提供的transition方法虽然可以实现一些简单的UIView动画，但是难以重用，可以说是和containerVC完全耦合在一起的；而自定义切换并不改变VC的组织结构，只是负责提供view的效果，因为VC切换将动画部分、动画驱动部分都使用接口的方式给出，因此重用性非常优秀。在绝大多数情况下，精心编写的一套UIView动画是可以轻易地用在不同的VC中，甚至是不同的项目中的。</p>
 
 <p>需要特别一提的是，Github上的<a href="https://github.com/ColinEberhardt/VCTransitionsLibrary">ColinEberhardt的VCTransitionsLibrary</a>已经为我们提供了一系列的VC自定义切换动画效果，正是得益于iOS7中这一块的良好设计（虽然这几个接口的命名比较相似，在弄明白之前会有些confusing），因此这些效果使用起来非常方便，相信一般项目中是足够使用的了。而其他更复杂或者炫目的效果，亦可在其基础上进行扩展改进得到。可以说随着越来越多的应用转向iOS7，自定义VC切换将成为新的用户交互实现的基础和重要部分，对于今后会在其基础上会衍生出怎样让人眼前一亮的交互设计，不妨让我们拭目以待（或者自己努力去创造）。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中弹簧式列表的制作]]></title>
-    <link href="http://onevcat.com/2013/09/spring-list-like-ios7-message/"/>
-    <updated>2013-09-01T23:03:00+09:00</updated>
-    <id>http://onevcat.com/2013/09/spring-list-like-ios7-message</id>
-    <content type="html"><![CDATA[<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 206 Getting Started with UIKit Dynamics</li>
-<li>Session 217 Exploring Scroll Views in iOS7</li>
-</ul>
-
-
-<p>UIScrollView可以说是UIKit中最重要的类之一了，包括UITableView和UICollectionView等重要的数据容器类都是UIScrollView的子类。在历年的WWDC上，UIScrollView和相关的API都有专门的主题进行介绍，也可以看出这个类的使用和变化之快。今年也不例外，因为iOS7完全重新定义了UI，这使得UIScrollView里原来不太会使用的一些用法和实现的效果在新的系统中得到了很好的表现。另外，由于引入了UIKit Dynamics，我们还可以结合ScrollView做出一些以前不太可能或者需要花费很大力气来实现的效果，包括带有重力的swipe或者是类似新的信息app中的带有弹簧效果聊天泡泡等。如果您还不太了解iOS7中信息app的效果，这里有一张gif图可以帮您大概了解一下：</p>
-
-<p><img src="http://img.onevcat.com/2013/ios7-message-app-spring.gif" alt="iOS7中信息app的弹簧效果" /></p>
-
-<p>这次笔记的内容主要就是实现一个这样的效果。为了避免重复造轮子，我对这个效果进行了一些简单的封装，并连同这篇笔记的demo一起扔在了Github上，有需要的童鞋可以<a href="https://github.com/onevcat/VVSpringCollectionViewFlowLayout">到这里</a>自取。</p>
-
-<p>iOS7的SDK中Apple最大的野心其实是想用SpriteKit来结束iOS平台游戏开发（至少是2D游戏开发）的乱战，统一游戏开发的方式并建立良性社区。而UIKit Dynamics，个人猜测Apple在花费力气为SpriteKit开发了物理引擎的同时，发现在UIKit中也可以使用，并能得到不错的效果，于是顺便革新了一下设计理念，在UI设计中引入了不少物理的概念。在iOS系统中，最为典型的应用是锁屏界面打开相机时中途放弃后的重力下坠+反弹的效果，另一个就是信息应用中的加入弹性的消息列表了。弹性列表在我自己上手试过以后觉得表现形式确实很生动，可以消除原来列表那种冷冰冰的感觉，是有可能在今后的设计中被大量使用的，因此决定学上一学。</p>
-
-<p>首先我们需要知道要如何实现这样一种效果，我们会用到哪些东西。毋庸置疑，如果不使用UIKit Dynamics的话，自己从头开始来完成会是一件非常费力的事情，你可能需要实现一套位置计算和物理模拟来使效果看起来真实滑润。而UIKit Dynamics中已经给我们提供了现成的弹簧效果，可以用<code>UIAttachmentBehavior</code>进行实现。另外，在说到弹性效果的时候，我们其实是在描述一个列表中的各个cell之间的关系，对于传统的UITableView来说，描述UITableViewCell之间的关系是比较复杂的（因为Apple已经把绝大多数工作做了，包括计算cell位置和位移等。使用越简单，定制就会越麻烦在绝大多数情况下都是真理）。而UICollectionView则通过layout来完成cell之间位置关系的描述，给了开发者较大的空间来实现布局。另外，UIKit Dynamics为UICollectionView做了很多方便的Catagory，可以很容易地“指导”UICollectionView利用加入物理特性计算后的结果，在实现弹性效果的时候，UICollectionView是我们不二的选择。</p>
-
-<p>如果您在阅读这篇笔记的时候遇到困难的话，建议您可以看看我之前的一些笔记，包括今年的<a href="http://onevcat.com/2013/06/uikit-dynamics-started/">UIKit Dynamics的介绍</a>和去年的<a href="http://onevcat.com/2012/06/introducing-collection-views/">UICollectionView介绍</a>。</p>
-
-<!--more-->
-
-
-<p>话不多说，我们开工。首先准备一个UICollectionViewFlowLayout的子类（在这里叫做<code>VVSpringCollectionViewFlowLayout</code>），然后在ViewController中用这个layout实现一个简单的collectionView：</p>
-
-<p>```objc
-//ViewController.m</p>
-
-<p>@interface ViewController ()&lt;UICollectionViewDataSource, UICollectionViewDelegate>
-@property (nonatomic, strong) VVSpringCollectionViewFlowLayout *layout;
-@end</p>
-
-<p>static NSString *reuseId = @"collectionViewCellReuseId";</p>
-
-<p>@implementation ViewController
-- (void)viewDidLoad
-{</p>
-
-<pre><code>[super viewDidLoad];
-// Do any additional setup after loading the view, typically from a nib.
-
-self.layout = [[VVSpringCollectionViewFlowLayout alloc] init];
-self.layout.itemSize = CGSizeMake(self.view.frame.size.width, 44);
-UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:self.layout];
-
-collectionView.backgroundColor = [UIColor clearColor];
-
-[collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:reuseId];
-
-collectionView.dataSource = self;
-[self.view insertSubview:collectionView atIndex:0];
-</code></pre>
-
-<p>}</p>
-
-<h1>pragma mark - UICollectionViewDataSource</h1>
-
-<ul>
-<li><p>(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-  return 50;
-}</p></li>
-<li><p>(UICollectionViewCell <em>)collectionView:(UICollectionView </em>)collectionView cellForItemAtIndexPath:(NSIndexPath <em>)indexPath
-{
-  UICollectionViewCell </em>cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseId forIndexPath:indexPath];</p>
-
-<p>  //Just give a random color to the cell. See https://gist.github.com/kylefox/1689973
-  cell.contentView.backgroundColor = [UIColor randomColor];
-  return cell;
-}
-@end
-```</p></li>
-</ul>
-
-
-<p>这部分没什么可以多说的，现在我们有一个标准的FlowLayout的UICollectionView了。通过使用UICollectionViewFlowLayout的子类来作为开始的layout，我们可以节省下所有的初始cell位置计算的代码，在上面代码的情况下，这个collectionView的表现和一个普通的tableView并没有太大不同。接下来我们着重来看看要如何实现弹性的layout。对于弹性效果，我们需要的是连接一个item和一个锚点间弹性连接的<code>UIAttachmentBehavior</code>，并能在滚动时设置新的锚点位置。我们在scroll的时候，只要使用UIKit Dynamics的计算结果，替代掉原来的位置更新计算（其实就是简单的scrollView的contentOffset的改变），就可以模拟出弹性的效果了。</p>
-
-<p>首先在<code>-prepareLayout</code>中为cell添加<code>UIAttachmentBehavior</code>。</p>
-
-<p>```objc
-//VVSpringCollectionViewFlowLayout.m
-@interface VVSpringCollectionViewFlowLayout()
-@property (nonatomic, strong) UIDynamicAnimator *animator;
-@end</p>
-
-<p>@implementation VVSpringCollectionViewFlowLayout
-//...</p>
-
-<p>-(void)prepareLayout {</p>
-
-<pre><code>[super prepareLayout];
-
-if (!_animator) {
-    _animator = [[UIDynamicAnimator alloc] initWithCollectionViewLayout:self];
-    CGSize contentSize = [self collectionViewContentSize];
-    NSArray *items = [super layoutAttributesForElementsInRect:CGRectMake(0, 0, contentSize.width, contentSize.height)];
-
-    for (UICollectionViewLayoutAttributes *item in items) {
-        UIAttachmentBehavior *spring = [[UIAttachmentBehavior alloc] initWithItem:item attachedToAnchor:item.center];
-
-        spring.length = 0;
-        spring.damping = 0.5;
-        spring.frequency = 0.8;
-
-        [_animator addBehavior:spring];
-    }
-}
-</code></pre>
-
-<p>}
-@end
-```</p>
-
-<p>prepareLayout将在CollectionView进行排版的时候被调用。首先当然是call一下super的prepareLayout，你肯定不会想要全都要自己进行设置的。接下来，如果是第一次调用这个方法的话，先初始化一个UIDynamicAnimator实例，来负责之后的动画效果。iOS7 SDK中，UIDynamicAnimator类专门有一个针对UICollectionView的Category，以使UICollectionView能够轻易地利用UIKit Dynamics的结果。在<code>UIDynamicAnimator.h</code>中能够找到这个Category：</p>
-
-<p>```objc
-@interface UIDynamicAnimator (UICollectionViewAdditions)</p>
-
-<p>// When you initialize a dynamic animator with this method, you should only associate collection view layout attributes with your behaviors.
-// The animator will employ thecollection view layout’s content size coordinate system.
-- (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout*)layout;</p>
-
-<p>// The three convenience methods returning layout attributes (if associated to behaviors in the animator) if the animator was configured with collection view layout
-- (UICollectionViewLayoutAttributes<em>)layoutAttributesForCellAtIndexPath:(NSIndexPath</em>)indexPath;
-- (UICollectionViewLayoutAttributes<em>)layoutAttributesForSupplementaryViewOfKind:(NSString </em>)kind atIndexPath:(NSIndexPath <em>)indexPath;
-- (UICollectionViewLayoutAttributes</em>)layoutAttributesForDecorationViewOfKind:(NSString<em>)decorationViewKind atIndexPath:(NSIndexPath </em>)indexPath;</p>
-
-<p>@end
-```</p>
-
-<p>于是通过<code>-initWithCollectionViewLayout:</code>进行初始化后，这个UIDynamicAnimator实例便和我们的layout进行了绑定，之后这个layout对应的attributes都应该由绑定的UIDynamicAnimator的实例给出。就像下面这样：</p>
-
-<p>```objc
-//VVSpringCollectionViewFlowLayout.m
-@implementation VVSpringCollectionViewFlowLayout</p>
-
-<p>//...</p>
-
-<p>-(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {</p>
-
-<pre><code>return [_animator itemsInRect:rect];
-</code></pre>
-
-<p>}</p>
-
-<p>-(UICollectionViewLayoutAttributes <em>)layoutAttributesForItemAtIndexPath:(NSIndexPath </em>)indexPath {</p>
-
-<pre><code>return [_animator layoutAttributesForCellAtIndexPath:indexPath];
-</code></pre>
-
-<p>}
-@end
-```</p>
-
-<p>让我们回到<code>-prepareLayout</code>方法中，在创建了UIDynamicAnimator实例后，我们对于这个layout中的每个attributes对应的点，都创建并添加一个添加一个<code>UIAttachmentBehavior</code>（在iOS7 SDK中，UICollectionViewLayoutAttributes已经实现了UIDynamicItem接口，可以直接参与UIKit Dynamic的计算中去）。创建时我们希望collectionView的每个cell就保持在原位，因此我们设定了锚点为当前attribute本身的center。</p>
-
-<p>接下来我们考虑滑动时的弹性效果的实现。在系统的信息app中，我们可以看到弹性效果有两个特点：</p>
-
-<ul>
-<li>随着滑动的速度增大，初始的拉伸和压缩的幅度将变大</li>
-<li>随着cell距离屏幕触摸位置越远，拉伸和压缩的幅度</li>
-</ul>
-
-
-<p>对于考虑到这两方面的特点，我们所期望的滑动时的各cell锚点的变化应该是类似这样的：</p>
-
-<p><img src="http://img.onevcat.com/2013/spring-list-ios7.png" alt="向上拖动时的锚点变化示意" /></p>
-
-<p>现在我们来实现这个锚点的变化。既然都是滑动，我们是不是可以考虑在UIScrollView的<code>–scrollViewDidScroll:</code>委托方法中来设定新的Behavior锚点值呢？理论上来说当然是可以的，但是如果这样的话我们大概就不得不面临着将刚才的layout实例设置为collectionView的delegate这样一个事实。但是我们都知道layout应该做的事情是给collectionView提供必要的布局信息，而不应该负责去处理它的委托事件。处理collectionView的回调更恰当地应该由处于collectionView的controller层级的类来完成，而不应该由一个给collectionView提供数据和信息的类来响应。在<code>UICollectionViewLayout</code>中，我们有一个叫做<code>-shouldInvalidateLayoutForBoundsChange:</code>的方法，每次layout的bounds发生变化的时候，collectionView都会询问这个方法是否需要为这个新的边界和更新layout。一般情况下只要layout没有根据边界不同而发生变化的话，这个方法直接不做处理地返回NO，表示保持现在的layout即可，而每次bounds改变时这个方法都会被调用的特点正好可以满足我们更新锚点的需求，因此我们可以在这里面完成锚点的更新。</p>
-
-<p>```objc
-//VVSpringCollectionViewFlowLayout.m
-@implementation VVSpringCollectionViewFlowLayout</p>
-
-<p>//...</p>
-
-<p>-(BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {</p>
-
-<pre><code>UIScrollView *scrollView = self.collectionView;
-CGFloat scrollDelta = newBounds.origin.y - scrollView.bounds.origin.y;
-
-//Get the touch point
-CGPoint touchLocation = [scrollView.panGestureRecognizer locationInView:scrollView];
-
-for (UIAttachmentBehavior *spring in _animator.behaviors) {
-    CGPoint anchorPoint = spring.anchorPoint;
-
-    CGFloat distanceFromTouch = fabsf(touchLocation.y - anchorPoint.y);
-    CGFloat scrollResistance = distanceFromTouch / 500;
-
-    UICollectionViewLayoutAttributes *item = [spring.items firstObject];
-    CGPoint center = item.center;
-
-    //In case the added value bigger than the scrollDelta, which leads an unreasonable effect
-    center.y += (scrollDelta &gt; 0) ? MIN(scrollDelta, scrollDelta * scrollResistance)
-                                  : MAX(scrollDelta, scrollDelta * scrollResistance);
-    item.center = center;
-
-    [_animator updateItemUsingCurrentState:item];
-}
-return NO;
-</code></pre>
-
-<p>}</p>
-
-<p>@end
-```</p>
-
-<p>首先我们计算了这次scroll的距离<code>scrollDelta</code>，为了得到每个item与触摸点的之间的距离，我们当然还需要知道触摸点的坐标<code>touchLocation</code>。接下来，可以根据距离对每个锚点进行设置了：简单地计算了原来锚点与触摸点之间的距离<code>distanceFromTouch</code>，并由此计算一个系数。接下来，对于当前的item，我们获取其当前锚点位置，然后将其根据<code>scrollDelta</code>的数值和刚才计算的系数，重新设定锚点的位置。最后我们需要告诉UIDynamicAnimator我们已经完成了对冒点的更新，现在可以开始更新物理计算，并随时准备collectionView来取LayoutAttributes的数据了。</p>
-
-<p>也许你还没有缓过神来？但是我们确实已经做完了，让我们来看看实际的效果吧：</p>
-
-<p><img src="http://img.onevcat.com/2013/spring-collection-view-over-ios7.gif" alt="带有弹性效果的collecitonView" /></p>
-
-<p>当然，通过调节<code>damping</code>，<code>frequency</code>和<code>scrollResistance</code>的系数等参数，可以得到弹性不同的效果，比如更多的震荡或者更大的幅度等等。</p>
-
-<p>这个layout实现起来非常简单，我顺便封装了一下放到了Github上，大家有需要的话可以<a href="https://github.com/onevcat/VVSpringCollectionViewFlowLayout">点击这里下载</a>并直接使用。</p>
 ]]></content>
   </entry>
   

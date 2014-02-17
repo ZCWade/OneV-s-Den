@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Jun 15th, 2013 能工巧匠集 WWDC 2013 Session笔记 - UIKit Dynamics入门 这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看这篇总览。本文仅作为个人记录使用，也欢迎在许可协议范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。 &hellip;">
+	<meta name="description" content="Jun 16th, 2013 能工巧匠集 WWDC 2013 Session笔记 - SpriteKit快速入门和新时代iOS游戏开发指南 这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看这篇总览。本文仅作为个人记录使用，也欢迎在许可协议范围内转载或使用，但是还烦请保留原文链接， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +94,64 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-16T18:13:00+09:00" data-updated="true" itemprop="datePublished">Jun 16<span>th</span>, 2013</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2013/06/sprite-kit-start/" itemprop="url">WWDC 2013 Session笔记 - SpriteKit快速入门和新时代iOS游戏开发指南</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2013/spritekit-intro.png" alt="SpriteKit，iOS/Mac游戏制作的新纪元" /></p>
+
+<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
+
+<p>本文涉及到的WWDC2013 Session有</p>
+
+<ul>
+<li>Session 502 Introduction to Sprite Kit</li>
+<li>Session 503 Designing Games with Sprite Kit</li>
+</ul>
+
+
+<p>SpriteKit的加入绝对是iOS 7/OSX 10.9的SDK最大的亮点。从此以后官方SDK也可以方便地进行游戏制作了。</p>
+
+<p>如果你在看这篇帖子，那我估计你应该稍微知道一些iOS平台上2D游戏开发的东西，比如cocos2d，那很好，因为SpriteKit的很多概念其实和cocos2d非常类似，你应该能很快掌握。如果上面这张图你看着眼熟，或者自己动手实践过，那更好，因为这篇文章的内容就是通过使用SpriteKit来一步一步带你重新实践一遍这个经典教程。如果你既不知道cocos2d，更没有使用游戏引擎开发iOS游戏的经验，只是想一窥游戏开发的天地，那现在，SpriteKit将是一个非常好的入口，因为是iOS SDK自带的框架，因此思想和用法上和现有的其他框架是统一的，这极大地降低了学习的难度和门槛。</p>
+
+<h3>什么是SpriteKit</h3>
+
+<p>首先要知道什么是<code>Sprite</code>。Sprite的中文译名就是精灵，在游戏开发中，精灵指的是以图像方式呈现在屏幕上的一个图像。这个图像也许可以移动，用户可以与其交互，也有可能仅只是游戏的一个静止的背景图。塔防游戏中敌方源源不断涌来的每个小兵都是一个精灵，我方防御塔发出的炮弹也是精灵。可以说精灵构成了游戏的绝大部分主体视觉内容，而一个2D引擎的主要工作，就是高效地组织，管理和渲染这些精灵。SpriteKit是在iOS7 SDK中Apple新加入的一个2D游戏引擎框架，在SpriteKit出现之前，iOS开发平台上已经出现了像cocos2d这样的比较成熟的2D引擎解决方案。SpriteKit展现出的是Apple将Xcode和iOS/Mac SDK打造成游戏引擎的野心，但是同时也确实与IDE有着更好的集成，减少了开发者的工作。</p>
+
+<h3>Hello SpriteKit</h3>
+
+<p>废话不多说，本文直接上实例教程来说明SpriteKit的基本用法。</p>
+
+
+		
+		<a href="/2013/06/sprite-kit-start/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -537,104 +595,6 @@
 
 		
 		<a href="/2013/04/half-year-in-japan/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-24T00:00:00+09:00" data-updated="true" itemprop="datePublished">Mar 24<span>th</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/03/mgtwitterengine%E4%B8%ADtwitter-api-1-1%E7%9A%84%E4%BD%BF%E7%94%A8/" itemprop="url">MGTwitterEngine中Twitter API 1.1的使用</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在iOS5中使用Twitter framework或者在iOS6中使用Social framework来完成Twitter的集成是非常简单和轻松的，但是如果应用要针对iOS5之前的系统版本，那么就不能使用iOS提供的框架了。一个比较常见也是使用最广泛的选择是<a href="https://github.com/mattgemmell/MGTwitterEngine">MGTwitterEngine</a>，比如<a href="http://www.onevcat.com/showcase/pomodoro_do/">PomodoroDo</a>选择使用的就是该框架。</p>
-
-<p>但是今天在对PomodoroDo作更新的时候，发现Twitter的分享无法使用了，在查阅Twitter文档说明之后，发现这是Twitter采用了新版API的原因。默认状况下MGTwitterEngine采用的是v1版的API，并且使用XML的版本进行请求，而在1.1中，将<a href="https://dev.twitter.com/docs/api/1.1/overview#JSON_support_only">只有JSON方式的API可以使用</a>。v1.0版本的API已经于2013年3月5日被完全废弃，因此想要继续使用MGTwitterEngine来适配iOS5之前的Twitter集成需求，就需要将MGTwitterEngine的请求改为JSON方式。MGTwitterEngine也考虑到了这一点，但是因为时间比较古老了，MGTwitterEngine使用了YAJL来作为JSON的Wrapper，因此还需要将YAJL集成进来。下午的时候尝试了一会儿，成功地让MGTwitterEngine用上了1.1的Twitter API，为了以防之后别人或是自己可能遇到同样的问题，将更新的方法在此留底备忘。</p>
-
-<ol>
-<li><p>导入YAJL Framework</p>
-
-<ul>
-<li>YAJL的OC实现，从<a href="https://github.com/gabriel/yajl-objc/download">该地址下载该框架</a>。(2013年3月24日的最新版本为YAJL 0.3.1 for iOS)</li>
-<li>解压下载得到的zip，将解压后的YAJLiOS.framework加入项目工程</li>
-<li>在Xcode的Build Setting里在Other Linker Flags中添加-ObjC和-all_load标记</li>
-</ul>
-</li>
-<li><p>加入MGTwitterEngine的JSON相关代码</p>
-
-<ul>
-<li>从<a href="https://github.com/mattgemmell/MGTwitterEngine">MGTwitterEngine的页面</a>down下该项目。当然如果有新版或者有别的branch可以用的话更省事儿，但是鉴于MGTwitterEngine现在的活跃度来说估计可能性不大，所以还是乖乖自己更新吧。</li>
-<li>解开下载的zip，用Xcode打开MGTwitterEngine.xcodeproj工程文件，将其中Twitter YAJL Parsers组下的所有文件copy到自己的项目中。</li>
-</ul>
-</li>
-<li><p>YAJL头文件集成</p>
-
-<ul>
-<li>接下来是C和OC接口头文件的导入，从下面下载YAJL库：<a href="https://github.com/thinglabs/yajl-objc">https://github.com/thinglabs/yajl-objc</a></li>
-<li>在下载得到的文件夹中，寻找并将以下h文件拷贝到自己的工程中：
-
-<ul>
-<li>yajl_common.h</li>
-<li>yajl_gen.h</li>
-<li>yajl_parse.h</li>
-<li>NSObject+YAJL.h</li>
-<li>YAJL.h</li>
-<li>YAJLDocument.h</li>
-<li>YAJLGen.h</li>
-<li>YAJLParser.h</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>最后是在MGTwitterEngine设定为使用v1.1 API以及JSON方式请求</p></li>
-</ol>
-
-
-<p>在MGTwitterEngine.m中，将对应代码修改为以下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define USE_LIBXML 0</span>
-</span><span class='line'><span class="cp">#define TWITTER_DOMAIN @&quot;api.twitter.com/1.1&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在MGbTwitader.h，启用YAJL</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#define define YAJL_AVAILABLE 1</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>本文参考：</p>
-
-<p><a href="https://github.com/mattgemmell/MGTwitterEngine/issues/107">MGTwitterEngine issues 107</a></p>
-
-<p><a href="http://damienh.org/2009/06/20/setting-up-mgtwitterengine-with-yajl-106-for-iphone-development/">http://damienh.org/2009/06/20/setting-up-mgtwitterengine-with-yajl-106-for-iphone-development/</a></p>
-
-		
-		
 	</div>
 
 </article>
