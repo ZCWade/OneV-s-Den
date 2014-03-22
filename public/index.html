@@ -7,7 +7,7 @@
 	<meta name="author" content="onevcat">
 
 	
-	<meta name="description" content="Feb 17th, 2014 能工巧匠集 TDD的iOS开发初步以及Kiwi使用入门 测试驱动开发(Test Driven Development，以下简称TDD)是保证代码质量的不二法则，也是先进程序开发的共识。Apple一直致力于在iOS开发中集成更加方便和可用的测试，在Xcode 5中， &hellip;">
+	<meta name="description" content="Mar 22nd, 2014 能工巧匠集 常见的后台实践 题外 objc.io 是一个非常棒的iOS进阶学习的网站，上面有很多超赞的学习资源和例子。最近我和 @方一雄，@answer-huang 和社区的另外几名小伙伴在主持做一个 objc.io 的译文整理汇总和后续翻译跟进的项目， &hellip;">
 	
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +94,50 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 <div itemscope itemtype="http://schema.org/Blog">
+
+
+    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="meta">
+		<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-22T23:56:00+09:00" data-updated="true" itemprop="datePublished">Mar 22<span>nd</span>, 2014</time></div>
+		<div class="tags">
+
+
+	<a class='category' href='/category/neng-gong-qiao-jiang-ji/'>能工巧匠集</a>
+
+
+</div>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="/2014/03/common-background-practices/" itemprop="url">常见的后台实践</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><img src="http://img.onevcat.com/2014/multi-threading.jpg" alt="multi-threading" /></p>
+
+<h2>题外</h2>
+
+<p><a href="http://www.objc.io">objc.io</a> 是一个非常棒的iOS进阶学习的网站，上面有很多超赞的学习资源和例子。最近我和 <a href="http://weibo.com/fangyixiong">@方一雄</a>，<a href="http://weibo.com/u/1623064627">@answer-huang</a> 和社区的另外几名小伙伴在主持做一个 objc.io 的译文整理汇总和后续翻译跟进的项目，我暂时略自我狂妄地把它叫做 <code>objc中国</code>（<a href="http://objccn.io">objccn.io</a>） 项目，希望它能给现在已经很红火的中国objc社区锦上添花。现在上面已经有一些文章，您可以时不时地访问我们的<a href="http://objccn.io">首页</a>来查看新的动态。如果有兴趣，也可以考虑<a href="https://github.com/objccn/articles">加入我们</a>，来为中国objc社区的发展贡献一点力量。</p>
+
+<p>对objc中国上的每一篇文章，我都会至少进行一个基本的校对。在整理和收集的过程中，我发现虽然不少文章有相对完整的译文，但其中也存在对原文的理解上有一定偏差的情况。可能是译者并没有原作者对某些问题的深入理解，可能是原文也做过一些修改调整而译文没有更新，也可能是因为翻译时时间上多有仓促，导致了它们并不足以在只是稍加修改后就能发表在主站点上。对于这样的译文，我的想法是为了保证文章质量，牺牲一些个人时间来重新进行翻译。一来可以保证文章质量和站点的水准，二来也算是一次自我学习和提高的过程。</p>
+
+<p>题外话完毕。本文是 objc.io issue #2 的第二篇正文，这篇文章在该主题第一篇<a href="http://objccn.io/issue-2-1/">并发编程：API 及挑战</a>的基础上深层次地讲了一些实践上的例子和技术，颇有难度。对多线程不熟悉的同学可以先参照看看第一篇，再来阅读本文。</p>
+
+
+		
+		<a href="/2014/03/common-background-practices/" class="more-link">继续阅读</a>
+	</div>
+
+</article>
 
 
     <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
@@ -574,81 +618,6 @@
 
 		
 		<a href="/2013/07/shader-tutorial-1/" class="more-link">继续阅读</a>
-	</div>
-
-</article>
-
-
-    <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-	<div class="meta">
-		<div class="date">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-21T10:47:00+09:00" data-updated="true" itemprop="datePublished">Jul 21<span>st</span>, 2013</time></div>
-		<div class="tags">
-
-
-	<a class='category' href='/category/hu-yan-luan-yu-ji/'>胡言乱语集</a>
-
-
-</div>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="/2013/07/what-i-did-recently/" itemprop="url">近期做的两三事</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>夏日炎炎，无心睡眠。</p>
-
-<p>虽然已经有一段时间没有更新博客了，但是我确实是一直在努力干活儿的。这一个月以来大部分视线都在WWDC上，也写了几篇博文介绍个人觉得iOS7中需要深入挖掘和研究的API。但是因为NDA加上现在人在国外的缘故，还是不太好肆无忌惮地发出来。等到iOS7和Xcode5的NDA结束的时候（大概是9月中旬吧），我会一并把写的WWDC2013的笔记发出来，到时候还要请大家多多捧场。</p>
-
-<p>另外在工作之外，也自己做了一些小项目，基本都是一些个人兴趣所致。虽然不值一提，但是还是想写下来主要作为记录。另外如果恰好能帮助到两三个同仁的话，那是最好不过。</p>
-
-<h3>一个Xcode插件，VVDocumenter</h3>
-
-<p>虽然ObjC代码因为其可读性极强，而不太需要时常查阅文档，但是其实对于大多数人（包括我自己）来说，可能为方法或变量取一个好名字并不是那么简单的事情。这时候可能就需要文档或者注释来帮助之后的开发者（包括大家自己）尽快熟悉和方便修改。但是用Xcode写文档是一件让人很头疼的事情，没有像VS之类的成熟IDE的方便的方法，一直以来都是依靠像Snippet这样的东西，然后自己辛苦填写大量已有的内容。</p>
-
-<p>之前看到一个用<a href="http://blog.chukong-inc.com/index.php/2012/05/16/xcode4_fast_doxygen/">Ruby+系统服务来生成注释的方案</a>，但是每次要自己去选还要按快捷键，总觉得是很麻烦的事情。借鉴其他平台IDE一般都是采用三个斜杠（<code>///</code>）来生成文档注释的方法，所以也为Xcode写了一个类似的。用法很简单，在要写文档的代码上面连打三个斜杠，就能自动提取参数等生成规范的Javadoc格式文档注释。<strong>VVDocumenter</strong>整个项目MIT开源，并且扔在github上了，有兴趣的童鞋可以<a href="https://github.com/onevcat/VVDocumenter-Xcode">在这里</a>找到，欢迎大家加星fork以及给我发pull request来改善这个插件。</p>
-
-<p><img src="https://raw.github.com/onevcat/VVDocumenter-Xcode/master/ScreenShot.gif" alt="VVDocumenter演示" /></p>
-
-<h3>一个Unity插件，UniRate</h3>
-
-<p>做了一个叫<strong>UniRate</strong>的Unity插件，可以完全解决Unity移动端游戏请求用户评价的需求。对于一款应用/游戏来说，一般都会在你使用若干次/天之后弹一个邀请你评价的窗口，你可以选择是否到AppStore/Android Market进行评价或者稍后提醒。分别在iOS或者Android中实现这样的功能可以说是小菜一碟，但是Unity里现在暂时没有很好的方案。很可能你会需要花不少时间来实现一个类似功能，又或者要是你对native plugin这方面不太熟悉的话，可能就比较头疼了。</p>
-
-<p>现在可以用UniRate来解决，添加的方法很简单，导入资源包，将里面的UniRateManager拖拽到scene中，就可以了..是的..没有第三步，这时候你已经有一个会监测用户使用并在安装3天并且使用10次后弹出一个提示评价的框，用户可以选择评价并跳转到相应页面了。如果你想做更多细节的调整和控制，可以参看这里的<a href="https://github.com/onevcat/UniRate/wiki/UniRate-Manual">用户手册</a>和<a href="http://unirate.onevcat.com/reference/class_uni_rate.html">在线文档</a>。</p>
-
-<p><img src="http://img.onevcat.com/2013/UniRate.jpg" alt="UniRate" /></p>
-
-<p>如果你感兴趣并且希望支持一下的话，UniRate现在可以在Unity Asset Store购买，<a href="https://www.assetstore.unity3d.com/#/content/10116">传送门在这里</a>。</p>
-
-<h3>Oculus VR Rift</h3>
-
-<p>如果你不知道Oculus的话，这里有张我的近照可以帮助你了解。</p>
-
-<p><img src="http://img.onevcat.com/2013/oculus-me.png" alt="我的Oculus Rift" /></p>
-
-<p>其实就是一个虚拟现实用的眼镜，可以直接在眼前塞满屏幕的设备。之前也有索尼之类的厂家出过类似的眼镜，但是Oculus最大的特点是全屏无黑边，可以说提供了和以往完全不同的沉浸式游戏体验。难能可贵的是，在此同时还能做到价格厚道（坊间传闻今后希望能做到本体免费）。</p>
-
-<p>回到主题，自从体验过Oculus VR Rift以后，我就相信这会是游戏的未来和方向。于是之前就下了订单预定了开发者版本，今天总算是到货。Oculus对于我来说最大的优点是支持Unity3D，所以自己可以用它来做一些好玩儿的东西，算是门槛比较低。相信之后会有一段时间来学习适配Oculus的Unity开发，并且每天沉浸在创造自娱自乐的虚拟现实之中，希望这段时光能成为自己之后美好的回忆。我在之后也会找机会在博客里分享一些关于Unity和Oculus集成，以及开发Oculus适配的游戏的一些经验和方法。</p>
-
-<p><strong>如果有可能的话，真希望自己能够做一款好玩的Oculus的游戏，或者找到一个做Oculus游戏的企业，去创造这个未来，改变世界。</strong></p>
-
-<h3>XUPorter更新</h3>
-
-<p><a href="https://github.com/onevcat/XUPorter">XUPorter</a>最早是写出来自己用的。因为每次从Unity build工程出来的时候，在Xcode里把各种依赖库拖来拖去简直是一件泯灭人性的事情。两年多前刚开始Unity的时候没有post build script这种东西，于是每次都要花上五到十分钟来配置Xcode的工程，时间一长就直接忘了需要依赖哪些文件和框架才能编译通过。后来有个post build脚本，但是每次写起来也很麻烦。XUPorter利用Unity3.5新加入的<code>PostProcessBuild</code>来根据配置修改Xcode工程文件，具体的介绍可以<a href="http://onevcat.com/2012/12/xuporter/">看这里</a>。之前就是往Github上一扔而已，很高兴的是，有一些项目开始使用XUPorter做管理了，也有热心人在Github上帮助维护这个项目。于是最近对其进行了一些更新，添加了第三方库的添加等一些功能。</p>
-
-<p>如果有需要的朋友可以了解一下并使用，可以节省不少时间。如果觉得好，也欢迎帮助推荐和支持，让更多人知道并受益。最简单的方法就是在<a href="https://github.com/onevcat/XUPorter">项目的Github页面</a>加个星星～ :)</p>
-
-		
-		
 	</div>
 
 </article>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 能工巧匠集 | OneV's Den]]></title>
   <link href="http://onevcat.com/category/neng-gong-qiao-jiang-ji/atom.xml" rel="self"/>
   <link href="http://onevcat.com/"/>
-  <updated>2014-02-17T11:20:59+09:00</updated>
+  <updated>2014-03-23T00:42:40+09:00</updated>
   <id>http://onevcat.com/</id>
   <author>
     <name><![CDATA[onevcat]]></name>
@@ -12,6 +12,493 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[常见的后台实践]]></title>
+    <link href="http://onevcat.com/2014/03/common-background-practices/"/>
+    <updated>2014-03-22T23:56:00+09:00</updated>
+    <id>http://onevcat.com/2014/03/common-background-practices</id>
+    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2014/multi-threading.jpg" alt="multi-threading" /></p>
+
+<h2>题外</h2>
+
+<p><a href="http://www.objc.io">objc.io</a> 是一个非常棒的iOS进阶学习的网站，上面有很多超赞的学习资源和例子。最近我和 <a href="http://weibo.com/fangyixiong">@方一雄</a>，<a href="http://weibo.com/u/1623064627">@answer-huang</a> 和社区的另外几名小伙伴在主持做一个 objc.io 的译文整理汇总和后续翻译跟进的项目，我暂时略自我狂妄地把它叫做 <code>objc中国</code>（<a href="http://objccn.io">objccn.io</a>） 项目，希望它能给现在已经很红火的中国objc社区锦上添花。现在上面已经有一些文章，您可以时不时地访问我们的<a href="http://objccn.io">首页</a>来查看新的动态。如果有兴趣，也可以考虑<a href="https://github.com/objccn/articles">加入我们</a>，来为中国objc社区的发展贡献一点力量。</p>
+
+<p>对objc中国上的每一篇文章，我都会至少进行一个基本的校对。在整理和收集的过程中，我发现虽然不少文章有相对完整的译文，但其中也存在对原文的理解上有一定偏差的情况。可能是译者并没有原作者对某些问题的深入理解，可能是原文也做过一些修改调整而译文没有更新，也可能是因为翻译时时间上多有仓促，导致了它们并不足以在只是稍加修改后就能发表在主站点上。对于这样的译文，我的想法是为了保证文章质量，牺牲一些个人时间来重新进行翻译。一来可以保证文章质量和站点的水准，二来也算是一次自我学习和提高的过程。</p>
+
+<p>题外话完毕。本文是 objc.io issue #2 的第二篇正文，这篇文章在该主题第一篇<a href="http://objccn.io/issue-2-1/">并发编程：API 及挑战</a>的基础上深层次地讲了一些实践上的例子和技术，颇有难度。对多线程不熟悉的同学可以先参照看看第一篇，再来阅读本文。</p>
+
+<!--more-->
+
+
+<p>本文主要探讨一些常用后台任务的最佳实践。我们将会看看如何并发地使用 Core Data ，如何并行绘制 UI ，如何做异步网络请求等。最后我们将研究如何异步处理大型文件，以保持较低的内存占用。  因为在异步编程中非常容易犯错误，所以，本文中的例子都将使用很简单的方式。因为使用简单的结构可以帮助我们看透代码，抓住问题本质。如果你最后把代码写成了复杂的嵌套回调的话，那么你很可能应该重新考虑自己当初的设计选择了。</p>
+
+<h2>操作队列 (Operation Queues) 还是 GCD ?</h2>
+
+<p>目前在 iOS 和 OS X 中有两套先进的同步 API 可供我们使用：<a href="http://developer.apple.com/library/ios/#documentation/Cocoa/Reference/NSOperationQueue_class/Reference/Reference.html">操作队列</a>和 <a href="https://developer.apple.com/library/ios/#documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html">GCD</a> 。其中 GCD 是基于 C 的底层的 API ，而操作队列则是 GCD 实现的 Objective-C API。关于我们可以使用的并行 API 的更加全面的总览，可以参见 <a href="http://www.objc.io/issue-2-1/">并发编程：API 及挑战</a>。</p>
+
+<p>操作队列提供了在 GCD 中不那么容易复制的有用特性。其中最重要的一个就是可以取消在任务处理队列中的任务，在稍后的例子中我们会看到这个。而且操作队列在管理操作间的依赖关系方面也容易一些。另一面，GCD 给予你更多的控制权力以及操作队列中所不能使用的底层函数。详细介绍可以参考<a href="http://www.objc.io/issue-2-3/">底层并发 API</a> 这篇文章。</p>
+
+<p>扩展阅读：</p>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/10373331/nsoperation-vs-grand-central-dispatch">StackOverflow: NSOperation vs. Grand Central Dispatch</a></li>
+<li><a href="http://eschatologist.net/blog/?p=232">Blog: When to use NSOperation vs. GCD</a></li>
+</ul>
+
+
+<h3>后台的 Core Data</h3>
+
+<p>在着手 Core Data 的并行处理之前，最好先打一些基础。我们强烈建议通读苹果的官方文档 <a href="https://developer.apple.com/library/mac/#documentation/cocoa/conceptual/CoreData/Articles/cdConcurrency.html">Concurrency with Core Data guide</a> 。这个文档中罗列了基本规则，比如绝对不要在线程间传递 managed objects等。这并不单是说你绝不应该在另一个线程中去更改某个其他线程的 managed object ，甚至是读取其中的属性都是不能做的。要想传递这样的对象，正确做法是通过传递它的 object ID ，然后从其他对应线程所绑定的 context 中去获取这个对象。</p>
+
+<p>其实只要你遵循那些规则，并使用这篇文章里所描述的方法的话，处理 Core Data 的并行编程还是比较容易的。</p>
+
+<p>Xcode 所提供的 Core Data 标准模版中，所设立的是运行在主线程中的一个存储调度 (persistent store coordinator)和一个托管对象上下文 (managed object context) 的方式。在很多情况下，这种模式可以运行良好。创建新的对象和修改已存在的对象开销都非常小，也都能在主线程中没有困难滴完成。然后，如果你想要做大量的处理，那么把它放到一个后台上下文来做会比较好。一个典型的应用场景是将大量数据导入到 Core Data 中。</p>
+
+<p>我们的方式非常简单，并且可以被很好地描述：</p>
+
+<ol>
+<li>我们为导入工作单独创建一个操作</li>
+<li>我们创建一个 managed object context ，它和主 managed object context 使用同样的 persistent store coordinator</li>
+<li>一旦导入 context 保存了，我们就通知 主 managed object context 并且合并这些改变</li>
+</ol>
+
+
+<p>在<a href="https://github.com/objcio/issue-2-background-core-data">示例app</a>中，我们要导入一大组柏林的交通数据。在导入的过程中，我们展示一个进度条，如果耗时太长，我们希望可以取消当前的导入操作。同时，我们显示一个随着数据加入可以自动更新的 table view 来展示目前可用的数据。示例用到的数据是采用的 Creative Commons license 公开的，你可以<a href="http://stg.daten.berlin.de/datensaetze/vbb-fahrplan-2013">在此下载</a>它们。这些数据遵守一个叫做 <a href="https://developers.google.com/transit/gtfs/reference">General Transit Feed</a> 格式的交通数据公开标准。</p>
+
+<p>我们创建一个 <code>NSOperation</code> 的子类，将其叫做 <code>ImportOperation</code>，我们通过重写 <code>main</code> 方法，用来处理所有的导入工作。这里我们使用 <code>NSPrivateQueueConcurrencyType</code> 来创建一个独立并拥有自己的私有 dispatch queue 的 managed object context，这个 context 需要管理自己的队列。在队列中的所有操作必须使用 <code>performBlock</code> 或者 <code>performBlockAndWait</code> 来进行触发。这点对于保证这些操作能在正确的线程上执行是相当重要的。</p>
+
+<p>```objc
+NSManagedObjectContext* context = [[NSManagedObjectContext alloc]</p>
+
+<pre><code>                                 initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+</code></pre>
+
+<p>context.persistentStoreCoordinator = self.persistentStoreCoordinator;
+context.undoManager = nil;
+[self.context performBlockAndWait:^
+{</p>
+
+<pre><code>[self import];
+</code></pre>
+
+<p>}];
+```</p>
+
+<p>在这里我们重用了已经存在的 persistent store coordinator 。一般来说，初始化 managed object contexts 要么使用 <code>NSPrivateQueueConcurrencyType</code>，要么使用 <code>NSMainQueueConcurrencyType</code>。第三种并发类型 <code>NSConfinementConcurrencyType</code> 是为老旧代码准备的，我们不建议再使用它了。</p>
+
+<p>在导入前，我们枚举文件中的各行，并对可以解析的每一行创建 managed object ：</p>
+
+<p>```objc
+[lines enumerateObjectsUsingBlock:
+  ^(NSString<em> line, NSUInteger idx, BOOL</em> shouldStop)
+  {</p>
+
+<pre><code>  NSArray* components = [line csvComponents];
+  if(components.count &amp;lt; 5) {
+      NSLog(@"couldn't parse: %@", components);
+      return;
+  }
+  [Stop importCSVComponents:components intoContext:context];
+</code></pre>
+
+<p>  }];
+```</p>
+
+<p>在 view controller 中通过以下代码来开始操作：</p>
+
+<p>```objc
+ImportOperation* operation = [[ImportOperation alloc]</p>
+
+<pre><code> initWithStore:self.store fileName:fileName];
+</code></pre>
+
+<p>[self.operationQueue addOperation:operation];
+```</p>
+
+<p>至此为止，后台导入部分已经完成。接下来，我们要加入取消功能，这其实非常简单，只需要枚举的 block 中加一个判断就行了：</p>
+
+<p>```objc
+if(self.isCancelled) {</p>
+
+<pre><code>*shouldStop = YES;
+return;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>最后为了支持进度条，我们在 operation 中创建一个叫做 <code>progressCallback</code> 的属性。需要注意的是，更新进度条必须在主线程中完成，否则会导致 UIKit 崩溃。</p>
+
+<p>```objc
+operation.progressCallback = ^(float progress)
+{</p>
+
+<pre><code>[[NSOperationQueue mainQueue] addOperationWithBlock:^
+{
+    self.progressIndicator.progress = progress;
+}];
+</code></pre>
+
+<p>};
+```</p>
+
+<p>我们在枚举中来调用这个进度条更新的 block 的操作：</p>
+
+<p><code>objc
+self.progressCallback(idx / (float) count);
+</code></p>
+
+<p>然而，如果你执行示例代码的话，你会发现它运行逐渐变得很慢，取消操作也有迟滞。这是因为主操作队列中塞满了要更新进度条的 block 操作。一个简单的解决方法是降低更新的频度，比如只在每导入一百行时更新一次：</p>
+
+<p>```objc
+NSInteger progressGranularity = lines.count / 100;</p>
+
+<p>if (idx % progressGranularity == 0) {</p>
+
+<pre><code>self.progressCallback(idx / (float) count);
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>更新 Main Context</h3>
+
+<p>在 app 中的 table view 是由一个在主线程上获取了结果的 controller 所驱动的。在导入数据的过程中和导入数据完成后，我们要在 table view 中展示我们的结果。</p>
+
+<p>在让一切运转起来之前之前，还有一件事情要做。现在在后台 context 中导入的数据还不能传送到主 context中，除非我们显式地让它这么去做。我们在 <code>Store</code> 类的设置 Core Data stack 的 <code>init</code> 方法中加入下面的代码：</p>
+
+<p>```objc
+[[NSNotificationCenter defaultCenter]</p>
+
+<pre><code>addObserverForName:NSManagedObjectContextDidSaveNotification
+            object:nil
+             queue:nil
+        usingBlock:^(NSNotification* note)
+</code></pre>
+
+<p>{</p>
+
+<pre><code>NSManagedObjectContext *moc = self.mainManagedObjectContext;
+if (note.object != moc)
+    [moc performBlock:^(){
+        [moc mergeChangesFromContextDidSaveNotification:note];
+    }];
+}];
+</code></pre>
+
+<p>}];
+```</p>
+
+<p>如果 block 在主队列中被作为参数传递的话，那么这个 block 也会在主队列中被执行。如果现在你运行程序的话，你会注意到 table view 会在完成导入数据后刷新数据，但是这个行为会阻塞用户大概几秒钟。</p>
+
+<p>要修正这个问题，我们需要做一些无论如何都应该做的事情：批量保存。在导入较大的数据时，我们需要定期保存，逐渐导入，否则内存很可能就会被耗光，性能一般也会更坏。而且，定期保存也可以分散主线程在更新 table view 时的工作压力。</p>
+
+<p>合理的保存的次数可以通过试错得到。保存太频繁的话，可能会在 I/O 操作上花太多时间；保存次数太少的话，应用会变得无响应。在经过一些尝试后，我们设定每 250 次导入就保存一次。改进后，导入过程变得很平滑，它可以适时更新 table view，也没有阻塞主 context 太久。</p>
+
+<h3>其他考虑</h3>
+
+<p>在导入操作时，我们将整个文件都读入到一个字符串中，然后将其分割成行。这种处理方式对于相对小的文件来说没有问题，但是对于大文件，最好采用惰性读取 (lazily read) 的方式逐行读入。本文最后的示例将使用输入流的方式来实现这个特性，在 <a href="http://stackoverflow.com/questions/3707427/how-to-read-data-from-nsfilehandle-line-by-line/3711079#3711079">StackOverflow</a> 上 Dave DeLong 也提供了一段非常好的示例代码来说明这个问题。</p>
+
+<p>在 app 第一次运行时，除开将大量数据导入 Core Data 这一选择以外，你也可以在你的 app bundle 中直接放一个 sqlite 文件，或者从一个可以动态生成数据的服务器下载。如果使用这些方式的话，可以节省不少在设备上的处理事件。</p>
+
+<p>最后，最近对于 child contexts 有很多争议。我们的建议是不要在后台操作中使用它。如果你以主 context 的 child 的方式创建了一个后台 context 的话，保存这个后台 context 将<a href="http://floriankugler.com/blog/2013/4/29/concurrent-core-data-stack-performance-shootout">阻塞主线程</a>。而要是将主 context 作为后台 context 的 child 的话，实际上和与创建两个传统的独立 contexts 来说是没有区别的。因为你仍然需要手动将后台的改变合并回主 context 中去。</p>
+
+<p>设置一个 persistent store coordinator 和两个独立的 contexts 被证明了是在后台处理 Core Data 的好方法。除非你有足够好的理由，否则在处理时你应该坚持使用这种方式。</p>
+
+<p>扩展阅读：</p>
+
+<ul>
+<li><a href="http://developer.apple.com/library/ios/#documentation/Cocoa/Conceptual/CoreData/Articles/cdImporting.html">Core Data Programming Guide: Efficiently importing data</a></li>
+<li><a href="http://developer.apple.com/library/ios/#documentation/Cocoa/Conceptual/CoreData/Articles/cdConcurrency.html#//apple_ref/doc/uid/TP40003385-SW1j">Core Data Programming Guide: Concurrency with Core Data</a></li>
+<li><a href="http://stackoverflow.com/questions/2138252/core-data-multi-thread-application/2138332#2138332">StackOverflow: Rules for working with Core Data</a></li>
+<li><a href="https://developer.apple.com/videos/wwdc/2012/?id=214">WWDC 2012 Video: Core Data Best Practices</a></li>
+<li><a href="http://pragprog.com/book/mzcd/core-data">Book: Core Data by Marcus Zarra</a></li>
+</ul>
+
+
+<h2>后台 UI 代码</h2>
+
+<p>首先要强调：UIKit 只能在主线程上运行。而那部分不与 UIKit 直接相关，却会消耗大量时间的 UI 代码可以被移动到后台去处理，以避免其将主线程阻塞太久。但是在你将你的 UI 代码移到后台队列之前，你应该好好地测量哪一部分才是你代码中的瓶颈。这非常重要，否则你所做的优化根本是南辕北辙。</p>
+
+<p>如果你找到了你能够隔离出的昂贵操作的话，可以将其放到操作队列中去：</p>
+
+<p>```objc
+__weak id weakSelf = self;
+[self.operationQueue addOperationWithBlock:<sup>{</sup></p>
+
+<pre><code>NSNumber* result = findLargestMersennePrime();
+[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    MyClass* strongSelf = weakSelf;
+    strongSelf.textLabel.text = [result stringValue];
+}];
+</code></pre>
+
+<p>}];
+```</p>
+
+<p>如你所见，这些代码其实一点也不直接明了。我们首先声明了一个 weak 引用来参照 self，否则会形成循环引用（ block 持有了 self，私有的 <code>operationQueue</code> retain 了 block，而 self 又 retain 了 <code>operationQueue</code> ）。为了避免在运行 block 时访问到已被释放的对象，在 block 中我们又需要将其转回 strong 引用。</p>
+
+<blockquote><p><p><span class="secondary radius label">编者注</span> 这在 ARC 和 block 主导的编程范式中是解决 retain cycle 的一种常见也是最标准的方法。</p></blockquote>
+
+<h3>后台绘制</h3>
+
+<p>如果你确定 <code>drawRect:</code> 是你的应用的性能瓶颈，那么你可以将这些绘制代码放到后台去做。但是在你这样做之前，检查下看看是不是有其他方法来解决，比如、考虑使用 core animation layers 或者预先渲染图片而不去做 Core Graphics 绘制。可以看看 Florian 对在真机上图像性能测量的<a href="http://floriankugler.com/blog/2013/5/24/layer-trees-vs-flat-drawing-graphics-performance-across-ios-device-generations">帖子</a>，或者可以看看来自 UIKit 工程师 Andy Matuschak 对个各种方式的权衡的<a href="https://lobste.rs/s/ckm4uw/a_performance-minded_take_on_ios_design/comments/itdkfh">评论</a>。</p>
+
+<p>如果你确实认为在后台执行绘制代码会是你的最好选择时再这么做。其实解决起来也很简单，把 <code>drawRect:</code> 中的代码放到一个后台操作中去做就可以了。然后将原本打算绘制的视图用一个 image view 来替换，等到操作执行完后再去更新。在绘制的方法中，使用 <code>UIGraphicsBeginImageContextWithOptions</code> 来取代 <code>UIGraphicsBeginImageContextWithOpertions</code> ：</p>
+
+<p><code>objc
+UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+// drawing code here
+UIImage *i = UIGraphicsGetImageFromCurrentImageContext();
+UIGraphicsEndImageContext();
+return i;
+</code></p>
+
+<p>通过在第三个参数中传入 0 ，设备的主屏幕的 scale 将被自动传入，这将使图片在普通设备和 retina 屏幕上都有良好的表现。</p>
+
+<p>如果你在 table view 或者是 collection view 的 cell 上做了自定义绘制的话，最好将塔门放入 operation 的子类中去。你可以将它们添加到后台操作队列，也可以在用户将 cell 滚动出边界时的 <code>didEndDisplayingCell</code> 委托方法中进行取消。这些技巧都在 2012 年的WWDC <a href="https://developer.apple.com/videos/wwdc/2012/">Session 211 -- Building Concurrent User Interfaces on iOS</a>中有详细阐述。</p>
+
+<p>除了在后台自己调度绘制代码，以也可以试试看使用 <code>CALayer</code> 的 <code>drawsAsynchronously</code> 属性。然而你需要精心衡量这样做的效果，因为有时候它能使绘制加速，有时候却适得其反。</p>
+
+<h2>异步网络请求处理</h2>
+
+<p>你的所有网络请求都应该采取异步的方式完成。</p>
+
+<p>然而，在 GCD 下，有时候你可能会看到这样的代码</p>
+
+<p>```objc
+// 警告：不要使用这些代码。
+dispatch_async(backgroundQueue, ^{
+   NSData* contents = [NSData dataWithContentsOfURL:url]
+   dispatch_async(dispatch_get_main_queue(), ^{</p>
+
+<pre><code>  // 处理取到的日期
+</code></pre>
+
+<p>   });
+});
+```</p>
+
+<p>乍看起来没什么问题，但是这段代码却有致命缺陷。你没有办法去取消这个同步的网络请求。它将阻塞住线程直到它完成。如果请求一直没结果，那就只能干等到超时（比如 <code>dataWithContentsOfURL:</code> 的超时时间是 30 秒）。</p>
+
+<p>如果队列是串行执行的话，它将一直被阻塞住。假如队列是并行执行的话，GCD 需要重开一个线程来补凑你阻塞住的线程。两种结果都不太妙，所以最好还是不要阻塞线程。</p>
+
+<p>要解决上面的困境，我们可以使用 <code>NSURLConnection</code> 的异步方法，并且把所有操作转化为 operation 来执行。通过这种方法，我们可以从操作队列的强大功能和便利中获益良多：我们能轻易地控制并发操作的数量，添加依赖，以及取消操作。</p>
+
+<p>然而，在这里还有一些事情值得注意： <code>NSURLConnection</code> 是通过 run loop 来发送事件的。因为时间发送不会花多少时间，因此最简单的是就只使用 main run loop 来做这个。然后，我们就可以用后台线程来处理输入的数据了。</p>
+
+<p>另一种可能的方式是使用像 <a href="http://afnetworking.com">AFNetworking</a> 这样的框架：建立一个独立的线程，为建立的线程设置自己的 run loop，然后在其中调度 URL 连接。但是并不推荐你自己去实现这些事情。</p>
+
+<p>要处理URL 连接，我们重写自定义的 operation 子类中的 <code>start</code> 方法：</p>
+
+<p>```objc
+- (void)start
+{</p>
+
+<pre><code>NSURLRequest* request = [NSURLRequest requestWithURL:self.url];
+self.isExecuting = YES;
+self.isFinished = NO;
+[[NSOperationQueue mainQueue] addOperationWithBlock:^
+{
+    self.connection = [NSURLConnectionconnectionWithRequest:request
+                                                   delegate:self];
+}];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>由于重写的是 <code>start</code> 方法，所以我们需要自己要管理操作的 <code>isExecuting</code> 和 <code>isFinished</code> 状态。要取消一个操作，我们需要取消 connection ，并且设定合适的标记，这样操作队列才知道操作已经完成。</p>
+
+<p>```objc
+- (void)cancel
+{</p>
+
+<pre><code>[super cancel];
+[self.connection cancel];
+self.isFinished = YES;
+self.isExecuting = NO;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>当连接完成加载后，它向代理发送回调：</p>
+
+<p>```objc
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{</p>
+
+<pre><code>self.data = self.buffer;
+self.buffer = nil;
+self.isExecuting = NO;
+self.isFinished = YES;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>就这么多了。完整的代码可以参见<a href="https://github.com/objcio/issue-2-background-networking">GitHub上的示例工程</a>。</p>
+
+<p>总结来说，我们建议要么你玩时间来把事情做对做好，要么就直接使用像 <a href="http://afnetworking.com/">AFNetworking</a> 这样的框架。其实 <a href="http://afnetworking.com/">AFNetworking</a> 还提供了不少好用的小工具，比如有个 <code>UIImageView</code> 的 category，来负责异步地从一个 URL 加载图片。在你的 table view 里使用的话，还能自动帮你处理取消加载操作，非常方便。</p>
+
+<p>扩展阅读：</p>
+
+<ul>
+<li><a href="http://developer.apple.com/library/ios/#documentation/General/Conceptual/ConcurrencyProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008091-CH1-SW1">Concurrency Programming Guide</a></li>
+<li><a href="http://developer.apple.com/library/ios/#documentation/Cocoa/Reference/NSOperation_class/Reference/Reference.html%23http://developer.apple.com/library/ios/#documentation/Cocoa/Reference/NSOperation_class/Reference/Reference.html%23//apple_ref/doc/uid/TP40004591-RH2-SW15">NSOperation Class Reference: Concurrent vs. Non-Concurrent Operations</a></li>
+<li><a href="http://www.cocoaintheshell.com/2011/04/nsurlconnection-synchronous-asynchronous/">Blog: synchronous vs. asynchronous NSURLConnection</a></li>
+<li><a href="https://github.com/rs/SDWebImage/blob/master/SDWebImage/SDWebImageDownloaderOperation.m">GitHub: <code>SDWebImageDownloaderOperation.m</code></a></li>
+<li><a href="http://www.cocoaintheshell.com/2011/05/progressive-images-download-imageio/">Blog: Progressive image download with ImageIO</a></li>
+<li><a href="https://developer.apple.com/videos/wwdc/2012/">WWDC 2012 Session 211: Building Concurrent User Interfaces on iOS</a></li>
+</ul>
+
+
+<h2>进阶：后台文件 I/O</h2>
+
+<p>在之前我们的后台 Core Data 示例中，我们将一整个文件加载到了内存中。这种方式对于较小的文件没有问题，但是受限于 iOS 设备的内存容量，对于大文件来说的话就不那么友好了。要解决这个问题，我们将构建一个类，它负责一行一行读取文件而不是一次将整个文件读入内存，另外要在后台队列处理文件，以保持应用相应用户的操作。</p>
+
+<p>为了达到这个目的，我们使用能让我们异步处理文件的 <code>NSInputStream</code> 。根据<a href="http://developer.apple.com/library/ios/#documentation/FileManagement/Conceptual/FileSystemProgrammingGUide/TechniquesforReadingandWritingCustomFiles/TechniquesforReadingandWritingCustomFiles.html">官方文档</a>的描述：</p>
+
+<blockquote><p>如果你需总是需要从头到尾来读/写文件的话，streams 提供了一个简单的接口来异步完成这个操作</p></blockquote>
+
+<p>不管你是否使用 streams，大体上逐行读取一个文件的模式是这样的：</p>
+
+<ol>
+<li>建立一个中间缓冲层以提供，当没有找到换行符号的时候可以向其中添加数据</li>
+<li>从 stream 中读取一块数据</li>
+<li>对于这块数据中发现的每一个换行符，取中间缓冲层，向其中添加数据，直到（并包括）这个换行符，并将其输出</li>
+<li>将剩余的字节添加到中间缓冲层去</li>
+<li>回到 2，直到 stream 关闭</li>
+</ol>
+
+
+<p>为了将其运用到实践中，我们又建立了一个<a href="https://github.com/objcio/issue-2-background-file-io">示例应用</a>，里面有一个 <code>Reader</code> 类完成了这件事情，它的接口十分简单</p>
+
+<p>```objc
+@interface Reader : NSObject
+- (void)enumerateLines:(void (<sup>)(NSString*))block</sup></p>
+
+<pre><code>        completion:(void (^)())completion;
+</code></pre>
+
+<ul>
+<li>(id)initWithFileAtPath:(NSString*)path;
+@end
+```</li>
+</ul>
+
+
+<p>注意，这个类不是 NSOperation 的子类。与 URL connections 类似，输入的 streams 通过 run loop 来传递它的事件。这里，我们仍然采用 main run loop 来分发事件，然后将数据处理过程派发至后台操作线程里去处理。</p>
+
+<p>```objc
+- (void)enumerateLines:(void (<sup>)(NSString*))block</sup></p>
+
+<pre><code>        completion:(void (^)())completion
+</code></pre>
+
+<p>{</p>
+
+<pre><code>if (self.queue == nil) {
+    self.queue = [[NSOperationQueue alloc] init];
+    self.queue.maxConcurrentOperationCount = 1;
+}
+self.callback = block;
+self.completion = completion;
+self.inputStream = [NSInputStream inputStreamWithURL:self.fileURL];
+self.inputStream.delegate = self;
+[self.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop]
+                            forMode:NSDefaultRunLoopMode];
+[self.inputStream open];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>现在，input stream 将（在主线程）向我们发送代理消息，然后我们可以在操作队列中加入一个 block 操作来执行处理了：</p>
+
+<p>```objc
+- (void)stream:(NSStream*)stream handleEvent:(NSStreamEvent)eventCode
+{</p>
+
+<pre><code>switch (eventCode) {
+    ...
+    case NSStreamEventHasBytesAvailable: {
+        NSMutableData *buffer = [NSMutableData dataWithLength:4 * 1024];
+        NSUInteger length = [self.inputStream read:[buffer mutableBytes]
+                                         maxLength:[buffer length]];
+        if (0 &amp;lt; length) {
+            [buffer setLength:length];
+            __weak id weakSelf = self;
+            [self.queue addOperationWithBlock:^{
+                [weakSelf processDataChunk:buffer];
+            }];
+        }
+        break;
+    }
+    ...
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>处理数据块的过程是先查看当前已缓冲的数据，并将新加入的数据附加上去。接下来它将按照换行符分解成小的部分，并处理每一行。</p>
+
+<p>数据处理过程中会不断的从buffer中获取已读入的数据。然后把这些新读入的数据按行分开并存储。剩余的数据被再次存储到缓冲区中：</p>
+
+<p>```objc
+- (void)processDataChunk:(NSMutableData *)buffer;
+{</p>
+
+<pre><code>if (self.remainder != nil) {
+    [self.remainder appendData:buffer];
+} else {
+    self.remainder = buffer;
+}
+[self.remainder obj_enumerateComponentsSeparatedBy:self.delimiter
+                                        usingBlock:^(NSData* component, BOOL last) {
+    if (!last) {
+        [self emitLineWithData:component];
+    } else if (0 &amp;lt; [component length]) {
+        self.remainder = [component mutableCopy];
+    } else {
+        self.remainder = nil;
+    }
+}];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>现在你运行示例应用的话，会发现它在响应事件时非常迅速，内存的开销也保持很低（在我们测试时，不论读入的文件有多大，堆所占用的内存量始终低于 800KB）。绝大部分时候，使用逐块读入的方式来处理大文件，是非常有用的技术。</p>
+
+<p>延伸阅读：</p>
+
+<ul>
+<li><a href="http://developer.apple.com/library/ios/#documentation/FileManagement/Conceptual/FileSystemProgrammingGUide/TechniquesforReadingandWritingCustomFiles/TechniquesforReadingandWritingCustomFiles.html">File System Programming Guide: Techniques for Reading and Writing Files Without File Coordinators</a></li>
+<li><a href="http://stackoverflow.com/questions/3707427/how-to-read-data-from-nsfilehandle-line-by-line">StackOverflow: How to read data from NSFileHandle line by line?</a></li>
+</ul>
+
+
+<h2>总结</h2>
+
+<p>通过我们所列举的几个示例，我们展示了如何异步地在后台执行一些常见任务。在所有的解决方案中，我们尽力保持了代码的简单，这是因为在并发编程中，稍不留神就会捅出篓子来。</p>
+
+<p>很多时候为了避免麻烦，你可能更愿意在主线程中完成你的工作，在你能这么做事，这确实让你的工作轻松不少，但是当你发现性能瓶颈时，你可以尝试尽可能用最简单的策略将那些繁重任务放到后台去做。</p>
+
+<p>我们在上面例子中所展示的方法对于其他任务来说也是安全的选择。在主队列中接收事件或者数据，然后用后台操作队列来执行实际操作，然后回到主队列去传递结果，遵循这样的原则来编写尽量简单的并行代码，将是保证高效正确的不二法则。</p>
+
+<hr />
+
+<p><a href="https://github.com/objcio/issue-2-background-core-data">话题 #2 下的更多文章</a></p>
+
+<p>原文 <a href="http://www.objc.io/issue-2/common-background-practices.html">Common Background Practices</a></p>
+
+<p>译文 <a href="http://blog.jobbole.com/52557/">iOS开发中一些常见的并行处理</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[TDD的iOS开发初步以及Kiwi使用入门]]></title>
@@ -1226,517 +1713,6 @@ RACSignal *signal = RACObserve(self, currentLocation);</div>
 <li>直接使用大神们封好的Store有关的库，比如<a href="https://github.com/mattt/CargoBay">mattt/CargoBay</a>，<a href="https://github.com/robotmedia/RMStore">robotmedia/RMStore</a>或者<a href="https://github.com/MugunthKumar/MKStoreKit">MugunthKumar/MKStoreKit</a>。推荐前两个，因为MKStoreKit有一些恼人的小bug。</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WWDC 2013 Session笔记 - iOS7中的ViewController切换]]></title>
-    <link href="http://onevcat.com/2013/10/vc-transition-in-ios7/"/>
-    <updated>2013-10-11T15:36:00+09:00</updated>
-    <id>http://onevcat.com/2013/10/vc-transition-in-ios7</id>
-    <content type="html"><![CDATA[<p><img src="http://img.onevcat.com/2013/ios-transition-banner.jpg" alt="iOS7中的ViewController切换" /></p>
-
-<p>这是我的WWDC2013系列笔记中的一篇，完整的笔记列表请参看<a href="http://onevcat.com/2013/06/developer-should-know-about-ios7/">这篇总览</a>。本文仅作为个人记录使用，也欢迎在<a href="http://creativecommons.org/licenses/by-nc/3.0/deed.zh">许可协议</a>范围内转载或使用，但是还烦请保留原文链接，谢谢您的理解合作。如果您觉得本站对您能有帮助，您可以使用<a href="http://onevcat.com/atom.xml">RSS</a>或<a href="http://eepurl.com/wNSkj">邮件</a>方式订阅本站，这样您将能在第一时间获取本站信息。</p>
-
-<p>本文涉及到的WWDC2013 Session有</p>
-
-<ul>
-<li>Session 201 Building User Interfaces for iOS 7</li>
-<li>Session 218 Custom Transitions Using View Controllers</li>
-<li>Session 226 Implementing Engaging UI on iOS</li>
-</ul>
-
-
-<p>毫无疑问，ViewController（在本文中简写为VC）是使用MVC构建Cocoa或者CocoaTouch程序时最重要的一个类，我们的日常工作中一般来说最花费时间和精力的也是在为VC部分编写代码。苹果产品是注重用户体验的，而对细节进行琢磨也是苹果对于开发者一直以来的要求和希望。在用户体验中，VC之间的关系，比如不同VC之间迁移和转换动画效果一直是一个值得不断推敲的重点。在iOS7中，苹果给出了一套完整的VC制作之间迁移效果的方案，可以说是为现在这部分各种不同实现方案指出了一条推荐的统一道路。</p>
-
-<h3>iOS 7 SDK之前的VC切换解决方案</h3>
-
-<p>在深入iOS 7的VC切换效果的新API实现之前，先让我们回顾下现在的一般做法吧。这可以帮助理解为什么iOS7要对VC切换给出新的解决方案，如果您对iOS 5中引入的VC容器比较熟悉的话，可以跳过这节。</p>
-
-<!--more-->
-
-
-<p>在iOS5和iOS6中，除了标准的Push，Tab和PresentModal之外，一般是使用ChildViewController的方式来完成VC之间切换的过渡效果。ChildViewController和自定义的Controller容器是iOS 5 SDK中加入的，可以用来生成自定义的VC容器，简单来说典型的一种用法类似这样：</p>
-
-<p>```objc
-//ContainerVC.m</p>
-
-<p>[self addChildViewController:toVC];
-[fromVC willMoveToParentViewController:nil];
-[self.view addSubview:toVC.view];</p>
-
-<p>__weak id weakSelf = self;
-[self transitionFromViewController:fromVC</p>
-
-<pre><code>              toViewController:toVC duration:0.3
-                       options:UIViewAnimationOptionTransitionCrossDissolve
-                    animations:^{}
-                    completion:^(BOOL finished) {
-[fromVC.view removeFromSuperView];
-[fromVC removeFromParentViewController];
-[toVC didMoveToParentViewController:weakSelf];
-</code></pre>
-
-<p>}];
-```</p>
-
-<p>在自己对view进行管理的同时，可以使用transitionFromViewController:toViewController:...的Animation block中可以实现一些简单的切换效果。去年年初我写的<a href="http://onevcat.com/2012/02/uiviewcontroller/">UIViewController的误用</a>一文中曾经指出类似<code>[viewController.view addSubview:someOtherViewController.view];</code>这样的代码的存在，一般就是误用VC。这个结论适用于非Controller容器，对于自定义的Controller容器来说，向当前view上添加其他VC的view是正确的做法（当然不能忘了也将VC本身通过<code>addChildViewController:</code>方法添加到容器中）。</p>
-
-<p>VC容器的主要目的是解决将不同VC添加到同一个屏幕上的需求，以及可以提供一些简单的自定义切换效果。使用VC容器可以使view的关系正确，使添加的VC能够正确接收到例如屏幕旋转，viewDidLoad:等VC事件，进而进行正确相应。VC容器确实可以解决一部分问题，但是也应该看到，对于自定义切换效果来说，这样的解决还有很多不足。首先是代码高度耦合，VC切换部分的代码直接写在container中，难以分离重用；其次能够提供的切换效果比较有限，只能使用UIView动画来切换，管理起来也略显麻烦。iOS 7提供了一套新的自定义VC切换，就是针对这两个问题的。</p>
-
-<h3>iOS 7 自定义ViewController动画切换</h3>
-
-<h4>自定义动画切换的相关的主要API</h4>
-
-<p>在深入之前，我们先来看看新SDK中有关这部分内容的相关接口以及它们的关系和典型用法。这几个接口和类的名字都比较相似，但是还是能比较好的描述出各自的职能的，一开始的话可能比较迷惑，但是当自己动手实现一两个例子之后，它们之间的关系就会逐渐明晰起来。（相关的内容都定义在UIKit的<a href="https://gist.github.com/onevcat/6944809">UIViewControllerTransitioning.h</a>中了）</p>
-
-<h4>@protocol <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIViewControllerContextTransitioning_protocol/Reference/Reference.html">UIViewControllerContextTransitioning</a></h4>
-
-<p>这个接口用来提供切换上下文给开发者使用，包含了从哪个VC到哪个VC等各类信息，一般不需要开发者自己实现。具体来说，iOS7的自定义切换目的之一就是切换相关代码解耦，在进行VC切换时，做切换效果实现的时候必须要需要切换前后VC的一些信息，<strong>系统在新加入的API的比较的地方都会提供一个实现了该接口的对象</strong>，以供我们使用。</p>
-
-<p><strong>对于切换的动画实现来说</strong>（这里先介绍简单的动画，在后面我会再引入手势驱动的动画），这个接口中最重要的方法有：</p>
-
-<ul>
-<li>-(UIView *)containerView; VC切换所发生的view容器，开发者应该将切出的view移除，将切入的view加入到该view容器中。</li>
-<li>-(UIViewController <em>)viewControllerForKey:(NSString </em>)key; 提供一个key，返回对应的VC。现在的SDK中key的选择只有UITransitionContextFromViewControllerKey和UITransitionContextToViewControllerKey两种，分别表示将要切出和切入的VC。</li>
-<li>-(CGRect)initialFrameForViewController:(UIViewController *)vc; 某个VC的初始位置，可以用来做动画的计算。</li>
-<li>-(CGRect)finalFrameForViewController:(UIViewController *)vc; 与上面的方法对应，得到切换结束时某个VC应在的frame。</li>
-<li>-(void)completeTransition:(BOOL)didComplete; 向这个context报告切换已经完成。</li>
-</ul>
-
-
-<h4>@protocol <a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIViewControllerAnimatedTransitioning_Protocol/Reference/Reference.html">UIViewControllerAnimatedTransitioning</a></h4>
-
-<p>这个接口负责切换的具体内容，也即“切换中应该发生什么”。开发者在做自定义切换效果时大部分代码会是用来实现这个接口。它只有两个方法需要我们实现：</p>
-
-<ul>
-<li><p>-(NSTimeInterval)transitionDuration:(id &lt; UIViewControllerContextTransitioning >)transitionContext; 系统给出一个切换上下文，我们根据上下文环境返回这个切换所需要的花费时间（一般就返回动画的时间就好了，SDK会用这个时间来在百分比驱动的切换中进行帧的计算，后面再详细展开）。</p></li>
-<li><p>-(void)animateTransition:(id &lt; UIViewControllerContextTransitioning >)transitionContext; 在进行切换的时候将调用该方法，我们对于切换时的UIView的设置和动画都在这个方法中完成。</p></li>
-</ul>
-
-
-<h4>@protocol <a href="https://developer.apple.com/library/ios/documentation/uikit/reference/UIViewControllerTransitioningDelegate_protocol/Reference/Reference.html">UIViewControllerTransitioningDelegate</a></h4>
-
-<p>这个接口的作用比较简单单一，在需要VC切换的时候系统会像实现了这个接口的对象询问是否需要使用自定义的切换效果。这个接口共有四个类似的方法：</p>
-
-<ul>
-<li><p>-(id&lt; UIViewControllerAnimatedTransitioning >)animationControllerForPresentedController:(UIViewController <em>)presented presentingController:(UIViewController </em>)presenting sourceController:(UIViewController *)source;</p></li>
-<li><p>-(id&lt; UIViewControllerAnimatedTransitioning >)animationControllerForDismissedController:(UIViewController *)dismissed;</p></li>
-<li><p>-(id&lt; UIViewControllerInteractiveTransitioning >)interactionControllerForPresentation:(id &lt; UIViewControllerAnimatedTransitioning >)animator;</p></li>
-<li><p>-(id&lt; UIViewControllerInteractiveTransitioning >)interactionControllerForDismissal:(id &lt; UIViewControllerAnimatedTransitioning >)animator;</p></li>
-</ul>
-
-
-<p>前两个方法是针对动画切换的，我们需要分别在呈现VC和解散VC时，给出一个实现了UIViewControllerAnimatedTransitioning接口的对象（其中包含切换时长和如何切换）。后两个方法涉及交互式切换，之后再说。</p>
-
-<h3>Demo</h3>
-
-<p>还是那句话，一百行的讲解不如一个简单的小Demo，于是..it's demo time～ 整个demo的代码我放到了github的<a href="https://github.com/onevcat/VCTransitionDemo">这个页面</a>上，有需要的朋友可以参照着看这篇文章。</p>
-
-<p>我们打算做一个简单的自定义的modalViewController的切换效果。普通的present modal VC的效果大家都已经很熟悉了，这次我们先实现一个自定义的类似的modal present的效果，与普通效果不同的是，我们希望modalVC出现的时候不要那么乏味的就简单从底部出现，而是带有一个弹性效果（这里虽然是弹性，但是仅指使用UIView的模拟动画，而不设计iOS 7的另一个重要特性UIKit Dynamics。用UIKit Dynamics当然也许可以实现更逼真华丽的效果，但是已经超出本文的主题范畴了，因此不在这里展开了。关于UIKit Dynamics，可以参看我之前关于这个主题的<a href="http://onevcat.com/2013/06/uikit-dynamics-started/">一篇介绍</a>）。我们首先实现简单的ModalVC弹出吧..这段非常基础，就交待了一下背景，非初级人士请跳过代码段..</p>
-
-<p>先定义一个ModalVC，以及相应的protocal和delegate方法：</p>
-
-<p>```objc
-//ModalViewController.h</p>
-
-<p>@class ModalViewController;
-@protocol ModalViewControllerDelegate <NSObject></p>
-
-<p>-(void) modalViewControllerDidClickedDismissButton:(ModalViewController *)viewController;</p>
-
-<p>@end</p>
-
-<p>@interface ModalViewController : UIViewController
-@property (nonatomic, weak) id<ModalViewControllerDelegate> delegate;
-@end</p>
-
-<p>//ModalViewController.m
-- (void)viewDidLoad
-{</p>
-
-<pre><code>[super viewDidLoad];
-// Do any additional setup after loading the view.
-self.view.backgroundColor = [UIColor lightGrayColor];
-
-UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-button.frame = CGRectMake(80.0, 210.0, 160.0, 40.0);
-[button setTitle:@"Dismiss me" forState:UIControlStateNormal];
-[button addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-[self.view addSubview:button];
-</code></pre>
-
-<p>}</p>
-
-<p>-(void) buttonClicked:(id)sender
-{</p>
-
-<pre><code>if (self.delegate &amp;&amp; [self.delegate respondsToSelector:@selector(modalViewControllerDidClickedDismissButton:)]) {
-    [self.delegate modalViewControllerDidClickedDismissButton:self];
-}
-</code></pre>
-
-<p>}</p>
-
-<p>```</p>
-
-<p>这个是很标准的modalViewController的实现方式了。需要多嘴一句的是，在实际使用中有的同学喜欢在-buttonClicked:中直接给self发送dismissViewController的相关方法。在现在的SDK中，如果当前的VC是被显示的话，这个消息会被直接转发到显示它的VC去。但是这并不是一个好的实现，违反了程序设计的哲学，也很容易掉到坑里，具体案例可以参看<a href="http://onevcat.com/2011/11/objective-c%E4%B8%AD%E7%9A%84block/#comment-1052782406">这篇文章的评论</a>。</p>
-
-<p>所以我们用标准的方式来呈现和解散这个VC：</p>
-
-<p>```objc
-//MainViewController.m</p>
-
-<ul>
-<li>(void)viewDidLoad
-{
-  [super viewDidLoad];
-  // Do any additional setup after loading the view.
-  UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-  button.frame = CGRectMake(80.0, 210.0, 160.0, 40.0);
-  [button setTitle:@"Click me" forState:UIControlStateNormal];
-  [button addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-  [self.view addSubview:button];
-}</li>
-</ul>
-
-
-<p>-(void) buttonClicked:(id)sender
-{</p>
-
-<pre><code>ModalViewController *mvc =  [[ModalViewController alloc] init];
-mvc.delegate = self;
-[self presentViewController:mvc animated:YES completion:nil];
-</code></pre>
-
-<p>}</p>
-
-<p>-(void)modalViewControllerDidClickedDismissButton:(ModalViewController *)viewController
-{</p>
-
-<pre><code>[self dismissViewControllerAnimated:YES completion:nil];
-</code></pre>
-
-<p>}
-```</p>
-
-<p>测试一下，没问题，然后我们可以开始实现自定义的切换效果了。首先我们需要一个实现了UIViewControllerAnimatedTransitioning的对象..嗯，新建一个类来实现吧，比如BouncePresentAnimation：</p>
-
-<p>```objc
-//BouncePresentAnimation.h
-@interface BouncePresentAnimation : NSObject<UIViewControllerAnimatedTransitioning></p>
-
-<p>@end</p>
-
-<p>//BouncePresentAnimation.m
-- (NSTimeInterval)transitionDuration:(id <UIViewControllerContextTransitioning>)transitionContext
-{</p>
-
-<pre><code>return 0.8f;
-</code></pre>
-
-<p>}</p>
-
-<ul>
-<li><p>(void)animateTransition:(id <UIViewControllerContextTransitioning>)transitionContext
-{
-  // 1. Get controllers from transition context
-  UIViewController *toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];</p>
-
-<p>  // 2. Set init frame for toVC
-  CGRect screenBounds = [[UIScreen mainScreen] bounds];
-  CGRect finalFrame = [transitionContext finalFrameForViewController:toVC];
-  toVC.view.frame = CGRectOffset(finalFrame, 0, screenBounds.size.height);</p>
-
-<p>  // 3. Add toVC's view to containerView
-  UIView *containerView = [transitionContext containerView];
-  [containerView addSubview:toVC.view];</p>
-
-<p>  // 4. Do animate now
-  NSTimeInterval duration = [self transitionDuration:transitionContext];
-  [UIView animateWithDuration:duration</p>
-
-<pre><code>                    delay:0.0
-   usingSpringWithDamping:0.6
-    initialSpringVelocity:0.0
-                  options:UIViewAnimationOptionCurveLinear
-               animations:^{
-                   toVC.view.frame = finalFrame;
-               } completion:^(BOOL finished) {
-                   // 5. Tell context that we completed.
-                   [transitionContext completeTransition:YES];
-               }];
-</code></pre>
-
-<p>}
-```</p></li>
-</ul>
-
-
-<p>解释一下这个实现：</p>
-
-<ol>
-<li>我们首先需要得到参与切换的两个ViewController的信息，使用context的方法拿到它们的参照；</li>
-<li>对于要呈现的VC，我们希望它从屏幕下方出现，因此将初始位置设置到屏幕下边缘；</li>
-<li>将view添加到containerView中；</li>
-<li>开始动画。这里的动画时间长度和切换时间长度一致，都为0.8s。usingSpringWithDamping的UIView动画API是iOS7新加入的，描述了一个模拟弹簧动作的动画曲线，我们在这里只做使用，更多信息可以参看<a href="https://developer.apple.com/library/ios/documentation/uikit/reference/uiview_class/UIView/UIView.html#//apple_ref/occ/clm/UIView/animateWithDuration:delay:usingSpringWithDamping:initialSpringVelocity:options:animations:completion:">相关文档</a>；（顺便多说一句，iOS7中对UIView动画添加了一个很方便的Category，UIViewKeyframeAnimations。使用其中方法可以为UIView动画添加关键帧动画）</li>
-<li>在动画结束后我们必须向context报告VC切换完成，是否成功（在这里的动画切换中，没有失败的可能性，因此直接pass一个YES过去）。系统在接收到这个消息后，将对VC状态进行维护。</li>
-</ol>
-
-
-<p>接下来我们实现一个UIViewControllerTransitioningDelegate，应该就能让它工作了。简单来说，一个比较好的地方是直接在MainViewController中实现这个接口。在MainVC中声明实现这个接口，然后加入或变更为如下代码：</p>
-
-<p>```objc
-@interface MainViewController ()&lt;ModalViewControllerDelegate, UIViewControllerTransitioningDelegate>
-@property (nonatomic, strong) BouncePresentAnimation *presentAnimation;
-@end</p>
-
-<p>@implementation MainViewController</p>
-
-<ul>
-<li>(id)initWithNibName:(NSString <em>)nibNameOrNil bundle:(NSBundle </em>)nibBundleOrNil
-{
-  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-  if (self) {
-
-<pre><code>  // Custom initialization
-  _presentAnimation = [BouncePresentAnimation new];
-</code></pre>
-
-<p>  }
-  return self;
-}</p></li>
-</ul>
-
-
-<p>-(void) buttonClicked:(id)sender
-{</p>
-
-<pre><code>//...
-mvc.transitioningDelegate = self;
-//...
-</code></pre>
-
-<p>}</p>
-
-<ul>
-<li>(id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController <em>)presented presentingController:(UIViewController </em>)presenting sourceController:(UIViewController *)source
-{
-  return self.presentAnimation;
-}
-```</li>
-</ul>
-
-
-<p>Believe or not, we have done. 跑一下，应该可以得到如下效果：</p>
-
-<p><img src="http://img.onevcat.com/2013/custom-vc-transition-1.gif" alt="BouncePresentAnimation的实际效果" /></p>
-
-<h3>手势驱动的百分比切换</h3>
-
-<p>iOS7引入了一种手势驱动的VC切换的方式（交互式切换）。如果你使用系统的各种应用，在navViewController里push了一个新的VC的话，返回时并不需要点击左上的Back按钮，而是通过从屏幕左侧划向右侧即可完成返回操作。而在这个操作过程中，我们甚至可以撤销我们的手势，以取消这次VC转移。在新版的Safari中，我们甚至可以用相同的手势来完成网页的后退功能（所以很大程度上来说屏幕底部的工具栏成为了摆设）。如果您还不知道或者没太留意过这个改动，不妨现在就拿手边的iOS7这辈试试看，手机浏览的朋友记得切回来哦 :)</p>
-
-<p>我们这就动手在自己的VC切换中实现这个功能吧，首先我们需要在刚才的知识基础上补充一些东西：</p>
-
-<p>首先是UIViewControllerContextTransitioning，刚才提到这个是系统提供的VC切换上下文，如果您深入看了它的头文件描述的话，应该会发现其中有三个关于InteractiveTransition的方法，正是用来处理交互式切换的。但是在初级的实际使用中我们其实可以不太理会它们，而是使用iOS 7 SDK已经给我们准备好的一个现成转为交互式切换而新加的类：UIPercentDrivenInteractiveTransition。</p>
-
-<h4><a href="https://developer.apple.com/library/ios/documentation/uikit/reference/UIPercentDrivenInteractiveTransition_class/Reference/Reference.html">UIPercentDrivenInteractiveTransition</a>是什么</h4>
-
-<p>这是一个实现了UIViewControllerInteractiveTransitioning接口的类，为我们预先实现和提供了一系列便利的方法，可以用一个百分比来控制交互式切换的过程。一般来说我们更多地会使用某些手势来完成交互式的转移（当然用的高级的话用其他的输入..比如声音，iBeacon距离或者甚至面部微笑来做输入驱动也无不可，毕竟想象无极限嘛..），这样使用这个类（一般是其子类）的话就会非常方便。我们在手势识别中只需要告诉这个类的实例当前的状态百分比如何，系统便根据这个百分比和我们之前设定的迁移方式为我们计算当前应该的UI渲染，十分方便。具体的几个重要方法：</p>
-
-<ul>
-<li>-(void)updateInteractiveTransition:(CGFloat)percentComplete 更新百分比，一般通过手势识别的长度之类的来计算一个值，然后进行更新。之后的例子里会看到详细的用法</li>
-<li>-(void)cancelInteractiveTransition 报告交互取消，返回切换前的状态</li>
-<li>–(void)finishInteractiveTransition 报告交互完成，更新到切换后的状态</li>
-</ul>
-
-
-<h4>@protocol <a href="https://developer.apple.com/library/ios/documentation/uikit/reference/UIViewControllerInteractiveTransitioning_protocol/Reference/Reference.html">UIViewControllerInteractiveTransitioning</a></h4>
-
-<p>就如上面提到的，UIPercentDrivenInteractiveTransition只是实现了这个接口的一个类。为了实现交互式切换的功能，我们需要实现这个接口。因为大部分时候我们其实不需要自己来实现这个接口，因此在这篇入门中就不展开说明了，有兴趣的童鞋可以自行钻研。</p>
-
-<p>还有就是上面提到过的UIViewControllerTransitioningDelegate中的返回Interactive实现对象的方法，我们同样会在交互式切换中用到它们。</p>
-
-<h3>继续Demo</h3>
-
-<p>Demo time again。在刚才demo的基础上，这次我们用一个向上划动的手势来吧之前呈现的ModalViewController给dismiss掉～当然是交互式的切换，可以半途取消的那种。</p>
-
-<p>首先新建一个类，继承自UIPercentDrivenInteractiveTransition，这样我们可以省不少事儿。</p>
-
-<p>```objc
-//SwipeUpInteractiveTransition.h
-@interface SwipeUpInteractiveTransition : UIPercentDrivenInteractiveTransition</p>
-
-<p>@property (nonatomic, assign) BOOL interacting;</p>
-
-<ul>
-<li>(void)wireToViewController:(UIViewController*)viewController;</li>
-</ul>
-
-
-<p>@end</p>
-
-<p>//SwipeUpInteractiveTransition.m
-@interface SwipeUpInteractiveTransition()
-@property (nonatomic, assign) BOOL shouldComplete;
-@property (nonatomic, strong) UIViewController *presentingVC;
-@end</p>
-
-<p>@implementation SwipeUpInteractiveTransition
--(void)wireToViewController:(UIViewController *)viewController
-{</p>
-
-<pre><code>self.presentingVC = viewController;
-[self prepareGestureRecognizerInView:viewController.view];
-</code></pre>
-
-<p>}</p>
-
-<ul>
-<li>(void)prepareGestureRecognizerInView:(UIView<em>)view {
-  UIPanGestureRecognizer </em>gesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
-  [view addGestureRecognizer:gesture];
-}</li>
-</ul>
-
-
-<p>-(CGFloat)completionSpeed
-{</p>
-
-<pre><code>return 1 - self.percentComplete;
-</code></pre>
-
-<p>}</p>
-
-<ul>
-<li>(void)handleGesture:(UIPanGestureRecognizer *)gestureRecognizer {
-  CGPoint translation = [gestureRecognizer translationInView:gestureRecognizer.view.superview];
-  switch (gestureRecognizer.state) {
-
-<pre><code>  case UIGestureRecognizerStateBegan:
-      // 1. Mark the interacting flag. Used when supplying it in delegate.
-      self.interacting = YES;
-      [self.presentingVC dismissViewControllerAnimated:YES completion:nil];
-      break;
-  case UIGestureRecognizerStateChanged: {
-      // 2. Calculate the percentage of guesture
-      CGFloat fraction = translation.y / 400.0;
-      //Limit it between 0 and 1
-      fraction = fminf(fmaxf(fraction, 0.0), 1.0);
-      self.shouldComplete = (fraction &gt; 0.5);
-
-      [self updateInteractiveTransition:fraction];
-      break;
-  }
-  case UIGestureRecognizerStateEnded:
-  case UIGestureRecognizerStateCancelled: {
-      // 3. Gesture over. Check if the transition should happen or not
-      self.interacting = NO;
-      if (!self.shouldComplete || gestureRecognizer.state == UIGestureRecognizerStateCancelled) {
-          [self cancelInteractiveTransition];
-      } else {
-          [self finishInteractiveTransition];
-      }
-      break;
-  }
-  default:
-      break;
-</code></pre>
-
-<p>  }
-}</p></li>
-</ul>
-
-
-<p>@end</p>
-
-<p>```</p>
-
-<p>有点长，但是做的事情还是比较简单的。</p>
-
-<ol>
-<li>我们设定了一个BOOL变量来表示是否处于切换过程中。这个布尔值将在监测到手势开始时被设置，我们之后会在调用返回这个InteractiveTransition的时候用到。</li>
-<li>计算百分比，我们设定了向下划动400像素或以上为100%，每次手势状态变化时根据当前手势位置计算新的百分比，结果被限制在0～1之间。然后更新InteractiveTransition的百分数。</li>
-<li>手势结束时，把正在切换的标设置回NO，然后进行判断。在2中我们设定了手势距离超过设定一半就认为应该结束手势，否则就应该返回原来状态。在这里使用其进行判断，已决定这次transition是否应该结束。</li>
-</ol>
-
-
-<p>接下来我们需要添加一个向下移动的UIView动画，用来表现dismiss。这个十分简单，和BouncePresentAnimation很相似，写一个NormalDismissAnimation的实现了UIViewControllerAnimatedTransitioning接口的类就可以了，本文里略过不写了，感兴趣的童鞋可以自行查看源码。</p>
-
-<p>最后调整MainViewController的内容，主要修改点有三个地方：</p>
-
-<p>```objc
-//MainViewController.m
-@interface MainViewController ()&lt;ModalViewControllerDelegate,UIViewControllerTransitioningDelegate>
-//...
-// 1. Add dismiss animation and transition controller
-@property (nonatomic, strong) NormalDismissAnimation <em>dismissAnimation;
-@property (nonatomic, strong) SwipeUpInteractiveTransition </em>transitionController;
-@end</p>
-
-<p>@implementation MainViewController</p>
-
-<ul>
-<li>(id)initWithNibName:(NSString <em>)nibNameOrNil bundle:(NSBundle </em>)nibBundleOrNil
-{
-  //...
-
-<pre><code>  _dismissAnimation = [NormalDismissAnimation new];
-  _transitionController = [SwipeUpInteractiveTransition new];
-</code></pre>
-
-<p>  //...
-}</p></li>
-</ul>
-
-
-<p>-(void) buttonClicked:(id)sender
-{</p>
-
-<pre><code>//...
-// 2. Bind current VC to transition controller.
-[self.transitionController wireToViewController:mvc];
-//...
-</code></pre>
-
-<p>}</p>
-
-<p>// 3. Implement the methods to supply proper objects.
--(id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
-{</p>
-
-<pre><code>return self.dismissAnimation;
-</code></pre>
-
-<p>}</p>
-
-<p>-(id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:(id<UIViewControllerAnimatedTransitioning>)animator {</p>
-
-<pre><code>return self.transitionController.interacting ? self.transitionController : nil;
-</code></pre>
-
-<p>}</p>
-
-<p>```</p>
-
-<ol>
-<li>在其中添加dismiss时候的动画和交互切换Controller</li>
-<li>在初始化modalVC的时候为交互切换的Controller绑定VC</li>
-<li>为UIViewControllerTransitioningDelegate实现dismiss时候的委托方法，包括返回对应的动画以及交互切换Controller</li>
-</ol>
-
-
-<p>完成了，如果向下划动时，效果如下：</p>
-
-<p><img src="http://img.onevcat.com/2013/custom-vc-transition-2.gif" alt="交互驱动的VC转移" /></p>
-
-<h3>关于iOS 7中自定义VC切换的一些总结</h3>
-
-<p>demo中只展示了对于modalVC的present和dismiss的自定义切换效果，当然对与Navigation Controller的Push和Pop切换也是有相应的一套方法的。实现起来和dismiss十分类似，只不过对应UIViewControllerTransitioningDelegate的询问动画和交互的方法换到了UINavigationControllerDelegate中（为了区别push或者pop，看一下这个接口应该能马上知道）。另外一个很好的福利是，对于标准的navController的Pop操作，苹果已经替我们实现了手势驱动返回，我们不用再费心每个去实现一遍了，cheers～</p>
-
-<p>另外，可能你会觉得使用VC容器其提供的transition动画方法来进行VC切换就已经够好够方便了，为什么iOS7中还要引入一套自定义的方式呢。其实从根本来说它们所承担的是两类完全不同的任务：自定义VC容器可以提供自己定义的VC结构，并保证系统的各类方法和通知能够准确传递到合适的VC，它提供的transition方法虽然可以实现一些简单的UIView动画，但是难以重用，可以说是和containerVC完全耦合在一起的；而自定义切换并不改变VC的组织结构，只是负责提供view的效果，因为VC切换将动画部分、动画驱动部分都使用接口的方式给出，因此重用性非常优秀。在绝大多数情况下，精心编写的一套UIView动画是可以轻易地用在不同的VC中，甚至是不同的项目中的。</p>
-
-<p>需要特别一提的是，Github上的<a href="https://github.com/ColinEberhardt/VCTransitionsLibrary">ColinEberhardt的VCTransitionsLibrary</a>已经为我们提供了一系列的VC自定义切换动画效果，正是得益于iOS7中这一块的良好设计（虽然这几个接口的命名比较相似，在弄明白之前会有些confusing），因此这些效果使用起来非常方便，相信一般项目中是足够使用的了。而其他更复杂或者炫目的效果，亦可在其基础上进行扩展改进得到。可以说随着越来越多的应用转向iOS7，自定义VC切换将成为新的用户交互实现的基础和重要部分，对于今后会在其基础上会衍生出怎样让人眼前一亮的交互设计，不妨让我们拭目以待（或者自己努力去创造）。</p>
 ]]></content>
   </entry>
   
